@@ -1,6 +1,6 @@
 # The Stilled Bell: Village v0
 
-An unofficial, non-commercial *Wheel of Time* fan game prototype. This Godot 4 project is a roughly three-minute, third-person village episode built from original code and temporary graybox geometry. It uses no external game assets or runtime dependencies. The Godot MCP bridge is an editor-only development add-on and is excluded from exports.
+An unofficial, non-commercial *Wheel of Time* fan game prototype. The current v0 is one authored 3D village scene in Godot, built to match `concepts/v0-awakening-graybox.png`. It is a visual prototype and does not need to be playable yet. The Godot MCP bridge is an editor-only development add-on and is excluded from exports.
 
 ## Run
 
@@ -8,16 +8,13 @@ Open this directory in Godot 4.7.2 and press **F5** to run the project. The proj
 
 The first configured export target is macOS. Install matching Godot export templates, then use the **macOS** preset in **Project → Export**. Exported files belong in the ignored `builds/` directory. The main scene and rules check have been verified with Godot 4.7.2 in headless mode; no distributable build has been exported yet.
 
-## Play
+## Current v0
 
-- **WASD** move; **arrow keys** rotate the third-person camera.
-- **E** interacts with nearby people and objects.
-- **F** attacks; **Space** dodges.
-- **Q** uses the limited One Power after the awakening.
-- **Tab/arrow keys** select menu options; **Enter** confirms.
-- **Esc** opens/closes the pause menu.
+- Open the project and inspect the single camera-ready village scene.
+- The immediate work is character models, clothing, props, authored buildings, lighting, camera composition, and the blue-white awakening effect.
+- Playability, controls, combat, quest flow, and localization are deferred until the visual scene is accepted.
 
-Find Serah in the square and hear her request and the order behind it. Defeat the guard, use the Power on the glowing stones, and choose who keeps the record and what you say about the awakening. The language toggle on the title screen switches between English and Brazilian Portuguese.
+The earlier playable route remains in the repository as reference material. It is not required for the current v0.
 
 ## Project map
 

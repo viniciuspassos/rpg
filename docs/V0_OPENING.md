@@ -1,6 +1,6 @@
 # The Stilled Bell — opening contract
 
-This document locks the narrative assumptions used by the playable v0. It is a local episode design and does not claim to settle future campaign canon.
+This document records the narrative assumptions behind the reference scene. The current v0 is a visual scene and does not require a playable episode; these assumptions guide character placement, props, and the awakening tableau. It does not claim to settle future campaign canon.
 
 ## Place and chronology
 
@@ -53,4 +53,4 @@ The testimony changes trust and dialogue; it cannot change the witnessed event. 
 
 ## Runtime choices
 
-Godot 4.7.2 standard build; macOS desktop is the first export target. The prototype uses keyboard-only controls, a follow camera with arrow-key orbit, typed GDScript, temporary built-in primitives, in-memory session state, and a Godot-imported CSV translation catalog. No third-party asset licenses or external runtime dependencies are involved.
+Godot 4.7.2 standard build; macOS desktop is the first preview target. The visual prototype uses an authored fixed camera, typed GDScript, Blender-produced scene assets, and Godot's imported scene resources. No gameplay controls or runtime quest dependencies are required for this milestone.

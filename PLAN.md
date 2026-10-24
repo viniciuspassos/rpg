@@ -1,24 +1,22 @@
 # v0 implementation plan
 
-Tracking issue: [#3 — Build v0: a playable village opening with awakening and consequential choices](https://github.com/viniciuspassos/rpg/issues/3).
+Tracking issue: [#3 — Build v0: a visual village scene](https://github.com/viniciuspassos/rpg/issues/3).
 
 ## Goal
 
-Deliver a roughly three-minute playable village episode based on the local `GAME_DIRECTION.md` direction draft, which is intentionally not tracked in this repository. This plan includes the implementation scope independently of that draft. A new player must be able to launch the exported build, understand their objective, explore, complete one combat encounter, discover and try the One Power, make a consequential decision, and see its result without developer guidance. All player-facing content must work in English and Brazilian Portuguese (`pt-BR`).
+Deliver one authored 3D village scene based on the local `GAME_DIRECTION.md` direction draft, which is intentionally not tracked in this repository. This v0 is a visual prototype and does not need to be playable. The scene should recreate the composition, modeled characters, warm lighting, architecture, and blue-white awakening effect from `concepts/v0-awakening-graybox.png`. Gameplay, controls, quest flow, combat, localization, and export validation are deferred.
 
-Current baseline: the repository contains a Godot project with a procedural village graybox, title setup, bilingual UI, one combat encounter, awakening, a limited Power trial, and two local outcomes. The current route is shortened to target three minutes. The in-game art still needs authored models and a visual playtest against the local concept image; an exported build has not been verified.
+Current baseline: the repository contains a Godot project with a procedural village graybox and an earlier playable experiment. That experiment is reference code, not the v0 acceptance target. The next step is visual production for one scene; no playable loop is required for this milestone.
 
 ## Scope
 
 - Godot 4 with typed GDScript; open-source tools and no paid services.
-- One compact village with stylized modeled characters and environment art matching the local concept image, third-person camera, and real-time combat.
+- One compact village scene with stylized modeled characters and environment art matching the local concept image.
 - One player with male/female selection and provisional presentation; include at least one contextual NPC reaction for each selection.
 - Two origin options and two motivation options, selected during initial setup. These affect the opening dialogue, not separate levels or quest chains.
 - Three recurring villagers, one visitor, and one enemy archetype. A close acquaintance accompanies part of the quest and reacts to its outcome.
-- One quest, one combat encounter, one basic weapon attack, one dodge, and one limited controllable One Power ability introduced after the involuntary awakening.
-- Two main record-custody outcomes. The player's account of the awakening modifies reactions and ending dialogue within those outcomes.
-- Pause, restart, defeat/retry, objective display, basic combat feedback, language selection, and an ending screen.
-- One desktop export target. Select it before project setup; keyboard-only controls are the initial input baseline.
+- One staged awakening pose and blue-white Power effect; the effect does not need to be interactive.
+- One desktop preview target for visual review. Keyboard controls are deferred.
 
 ## 1. Lock the opening design — P0
 
@@ -35,25 +33,26 @@ Current baseline: the repository contains a Godot project with a procedural vill
 
 Exit condition: the mission can be walked through on paper from start to both endings, with clear objectives, understandable stakes, and no unexplained escalation. Do not require the full campaign or all prophecy fragments to be written.
 
-## 2. Build the playable foundation — P1
+## 2. Build the visual scene — P0
 
 Depends on the camera, controls, and platform decisions in step 1.
 
 - [x] Create the Godot project, initial scene, input map, export preset, and minimal run/export instructions.
 - [x] Keep source assets and project configuration under version control; exclude generated/import caches and exported builds.
 - [x] Verify licenses and cost constraints before introducing dependencies or assets; record attribution where needed.
-- [x] Implement movement, camera, collisions, and a reusable interaction prompt.
-- [x] Build the compact village with placeholder geometry and a readable route through the quest.
-- [x] Implement basic attack, dodge, health, one enemy behavior, damage feedback, defeat, and retry.
-- [x] Implement the scripted involuntary awakening and a separate limited player-controlled ability afterward. Communicate its limits and availability.
+- [ ] Replace placeholder geometry with authored village meshes, roofs, stairs, market props, banner, well, and stone paving.
+- [ ] Create or source properly licensed stylized human models for the protagonist, guard, villagers, and archivist; rig and pose them in Blender.
+- [ ] Build clothing, hair, weapons, and readable silhouettes for the characters in the reference composition.
+- [ ] Stage the characters in one camera composition matching the concept image.
+- [ ] Add warm sunset lighting, shadows, atmospheric depth, and the blue-white awakening effect.
 
-Exit condition: movement and combat are playable in graybox; the encounter can be won, lost, and restarted without trapping the player. The ability can be tested after the awakening without adding a second combat encounter.
+Exit condition: the project opens directly into one camera-ready 3D scene that can be compared with the reference image. No input, combat, quest progression, or restart flow is required.
 
-Visual acceptance for v0: replace capsule characters with rigged and animated human models, replace box-only buildings with authored meshes, stage the encounter at the concept image's camera angle and warm lighting, and add a readable blue-white Power effect. Model and rig game assets in Blender; use ComfyUI for concept variations or texture references where useful. Compare in-game screenshots against `concepts/v0-awakening-graybox.png` at the target resolution.
+Visual acceptance for v0: compare a rendered screenshot against `concepts/v0-awakening-graybox.png` at the target resolution. Model and rig game assets in Blender; use ComfyUI for concept variations, texture references, or paintovers where useful. The screenshot is the acceptance artifact, not a playable build.
 
-## 3. Connect story, choices, and consequences — P1
+## 3. Deferred gameplay and story — later milestone
 
-Depends on step 1's script and step 2's interaction and gameplay foundation.
+This work starts after the visual scene is accepted.
 
 - [x] Choose the smallest editable content format supported by the actual needs; keep dialogue and quest text separate from gameplay logic.
 - [x] Implement initial character choices and their specified dialogue/task variations.
@@ -66,39 +65,31 @@ Depends on step 1's script and step 2's interaction and gameplay foundation.
 
 Exit condition: both endings are reachable, choices have visible effects in the episode, and neither protagonist selection is forced into a permanent allegiance or prophecy interpretation.
 
-## 4. Make the slice independently playable — P1
+## 4. Deferred playable slice — later milestone
 
 Build localization support with the first content in step 3; complete presentation after the quest is connected.
 
-- [x] Add concise controls/tutorial prompts, current objective, health, interaction and combat feedback, pause, restart, and ending UI.
-- [x] Provide English source text and `pt-BR` translations for all player-facing strings, including character setup and both endings.
-- [ ] Implement language selection and check layout, accents, missing keys, and text overflow in both languages.
-- [x] Add minimal sound or visual cues needed to read attacks, damage, interaction, and the awakening. Final assets and voice acting are not required.
-- [ ] Export a build for the selected desktop platform and document how to launch it.
+- [ ] Add controls/tutorial prompts, objectives, health, interaction and combat feedback after visual acceptance.
+- [ ] Provide English source text and `pt-BR` translations when playable content is authored.
+- [ ] Add pause, restart, defeat/retry, and ending UI when the playable slice begins.
+- [ ] Export a playable build only in the later milestone.
 
-Exit condition: someone unfamiliar with the project can play the exported build without editor access or live explanations.
+Exit condition: deferred until the visual scene is accepted and gameplay work is authorized.
 
-## 5. Validate the complete episode — P2
+## 5. Validate the visual scene — P1
 
-- [ ] For gameplay behavior changes, write focused failing tests first, then implement and refactor. Cover quest transitions, decision outcomes, retry/reset state, and localization completeness where automation is meaningful.
-- [ ] Verify both custody outcomes and every testimony variant against the outcome table.
-- [ ] Verify both protagonist selections and all origin/motivation variations without requiring redundant full playthroughs for every combination.
-- [ ] Complete the episode in English and `pt-BR`; exercise both endings in both languages.
-- [ ] Test defeat/retry, pause/resume, and a fresh run after finishing. Check for skipped beats, stale choices, duplicate rewards/events, and softlocks.
-- [ ] Run the exported build and inspect runtime errors, collisions, camera behavior, and combat feedback.
-- [ ] Observe a new player without coaching: record completion time, where objectives become unclear, whether combat is readable, and how they describe their choice's consequence.
-- [ ] Fix blocking defects and repeat affected checks. Record remaining nonblocking issues and the tested build/version.
+- [ ] Open the scene in Godot and capture the target camera view.
+- [ ] Compare composition, character silhouettes, architecture, palette, lighting, shadows, and Power effect against the reference.
+- [ ] Check that imported meshes, textures, rigs, and licenses load without errors.
+- [ ] Record the accepted screenshot and remaining visual gaps.
 
 ## Definition of done
 
-- The exported build launches on the selected platform and supports a complete three-minute episode without developer guidance.
-- The player explores, interacts, completes combat, experiences the awakening, and tries one controllable ability.
-- Initial character choices have their promised contextual effects.
-- Both local endings work; custody and testimony affect visible reactions consistently.
-- The companion reacts, and at least one relationship plus one concrete local response changes.
-- All player-facing content works in English and `pt-BR`.
-- Defeat/retry and a new playthrough work without stale or contradictory quest state.
-- No known crash or progression blocker remains in the tested paths; verification results and run/export instructions are recorded.
+- The project opens into one camera-ready 3D village scene.
+- Visible characters and key architecture use authored or properly licensed models instead of placeholders.
+- Composition, warm lighting, shadows, character poses, and the blue-white awakening effect are visibly close to the reference image.
+- A comparison screenshot and visual gap list are recorded.
+- Playability, controls, quest flow, localization, combat, and export are explicitly deferred.
 
 ## Explicitly deferred
 
@@ -106,4 +97,4 @@ Open world, additional regions, full faction entry or leadership systems, foundi
 
 ## Delivery order
 
-Lock the small story and gameplay contract → prototype movement and combat → connect the quest and local consequences → finish bilingual presentation → export and validate with a new player. Expand content only after the complete loop meets the definition of done.
+Produce character and environment art in Blender → stage the single scene in Godot → tune lighting, camera, and Power effect → capture and compare the reference screenshot → begin gameplay after visual acceptance.

@@ -1,6 +1,6 @@
 # Game architecture: village v0 and later campaign
 
-Status: initial playable pass. `PLAN.md` tracks remaining delivery and validation; the local `GAME_DIRECTION.md` remains the narrative direction draft. The first village implementation is deliberately compact and can be split further after the playable loop is validated.
+Status: visual v0 direction. `PLAN.md` tracks the single-scene visual milestone; the local `GAME_DIRECTION.md` remains the narrative direction draft. The earlier playable experiment is reference code and is not the current acceptance target.
 
 ## Decisions
 
@@ -20,7 +20,7 @@ Godot's [scene organization guidance](https://docs.godotengine.org/en/stable/tut
 
 ```mermaid
 flowchart TD
-    Main[Main scene and screen flow] --> World[Procedural village graybox]
+    Main[Main scene] --> World[Authored village scene]
     Main --> HUD[HUD, dialogue, setup, pause, ending]
     Main --> Director[VillageQuestDirector]
     Session[GameSession autoload: RunState] --> Director
@@ -49,7 +49,7 @@ The village uses explicit beats:
 
 `PERSONAL_TASK → RECORD_REQUEST → SEIZURE → AWAKENING → POWER_TRIAL → DECISION → CONSEQUENCE → COMPLETE`
 
-Only the director can advance a beat. The three-minute route begins with Serah's request and includes the order and villagers' positions in one conversation before the seizure. The older rope task remains in the code but is not part of this route. A choice is recorded once; revisiting an interaction reads the recorded result. A pure `VillageQuestRules` function maps custody and testimony to a relationship response, a concrete local response, and ending dialogue IDs. It preserves witnesses' independent knowledge, so a player's silence cannot clear the witnessed awakening.
+The current v0 does not require a route or gameplay state. The earlier quest director and run state remain available for the later playable milestone. The scene exposes authored positions for the protagonist, guard, villagers, archivist, props, and awakening effect without coupling visual staging to input or quest logic.
 
 Before the seizure, `GameSession` takes an encounter checkpoint after the request is resolved. Retry restores that snapshot, reloads the village encounter, and keeps earlier character choices and completed personal-task dialogue. Fresh run creates a new `RunState`. Scene initialization reads the state and is idempotent: it must not replay rewards, repeat the awakening, or duplicate consequences merely because the scene loaded.
 
@@ -79,7 +79,7 @@ Dialogue is authored as small Godot text resources (`.tres`) with stable convers
 
 ## Input and camera contract
 
-The keyboard bindings are `WASD` movement, arrow keys for camera orbit, `F` basic attack, `Space` dodge, `E` interact, `Q` Power ability after unlocking, `Esc` pause/back, and `Tab`/`Enter` for menus. Set gameplay controls as Godot input actions so later remapping and controller support remain possible. The camera follows behind the player, avoids wall clipping, and keeps combat targets and nearby interaction prompts readable. Exact sensitivity, distance, and attack timing are prototype tuning values.
+Controls are deferred for visual v0. The camera is authored for one reference composition and does not need player input. Later gameplay can reuse the earlier keyboard contract.
 
 ## Validation and expansion seams
 
