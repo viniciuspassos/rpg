@@ -58,7 +58,7 @@ func hear_keeper_response() -> bool:
 	return true
 
 func start_seizure() -> bool:
-	if state.beat != RunState.Beat.RECORD_REQUEST or not state.visitor_request_heard or not state.order_read or not state.leader_response_heard or not state.keeper_response_heard:
+	if state.beat != RunState.Beat.RECORD_REQUEST or not state.visitor_request_heard:
 		return false
 	state.beat = RunState.Beat.SEIZURE
 	return true

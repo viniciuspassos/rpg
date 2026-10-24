@@ -29,7 +29,7 @@ func _ready() -> void:
 	_build_character()
 	_build_camera()
 	add_to_group("player")
-	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 
 func _build_character() -> void:
 	var collision: CollisionShape3D = CollisionShape3D.new()
@@ -110,13 +110,10 @@ func _build_camera() -> void:
 	camera.fov = 62.0
 	camera_pivot.add_child(camera)
 
-func _unhandled_input(event: InputEvent) -> void:
-	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
-		camera_pivot.rotate_y(-event.relative.x * 0.003)
-		camera_pivot.rotation.x = clampf(camera_pivot.rotation.x - event.relative.y * 0.002, deg_to_rad(-48.0), deg_to_rad(12.0))
-
 func _physics_process(delta: float) -> void:
 	camera_pivot.global_position = global_position + Vector3(0, 1.35, 0)
+	camera_pivot.rotate_y(-Input.get_axis("look_left", "look_right") * delta * 1.8)
+	camera_pivot.rotation.x = clampf(camera_pivot.rotation.x - Input.get_axis("look_up", "look_down") * delta * 1.4, deg_to_rad(-48.0), deg_to_rad(12.0))
 	attack_cooldown = maxf(attack_cooldown - delta, 0.0)
 	power_cooldown = maxf(power_cooldown - delta, 0.0)
 	dodge_time = maxf(dodge_time - delta, 0.0)

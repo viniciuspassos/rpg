@@ -4,21 +4,21 @@ Tracking issue: [#3 — Build v0: a playable village opening with awakening and 
 
 ## Goal
 
-Deliver a 15–30 minute playable village episode based on the local `GAME_DIRECTION.md` direction draft, which is intentionally not tracked in this repository. This plan includes the implementation scope independently of that draft. A new player must be able to launch the exported build, understand their objective, explore, complete one combat encounter, discover and try the One Power, make a consequential decision, and see its result without developer guidance. All player-facing content must work in English and Brazilian Portuguese (`pt-BR`).
+Deliver a roughly three-minute playable village episode based on the local `GAME_DIRECTION.md` direction draft, which is intentionally not tracked in this repository. This plan includes the implementation scope independently of that draft. A new player must be able to launch the exported build, understand their objective, explore, complete one combat encounter, discover and try the One Power, make a consequential decision, and see its result without developer guidance. All player-facing content must work in English and Brazilian Portuguese (`pt-BR`).
 
-Current baseline: the repository now contains a first playable Godot project with a procedural village graybox, title setup, bilingual UI, personal task, one combat encounter, awakening, a limited Power trial, and two local outcomes. The project has not yet been launched in Godot, exported, or observed in a new-player playtest; those checks remain open. This plan continues to track work to do, not verified completion.
+Current baseline: the repository contains a Godot project with a procedural village graybox, title setup, bilingual UI, one combat encounter, awakening, a limited Power trial, and two local outcomes. The current route is shortened to target three minutes. The in-game art still needs authored models and a visual playtest against the local concept image; an exported build has not been verified.
 
 ## Scope
 
 - Godot 4 with typed GDScript; open-source tools and no paid services.
-- One compact graybox village, third-person camera, and real-time combat.
+- One compact village with stylized modeled characters and environment art matching the local concept image, third-person camera, and real-time combat.
 - One player with male/female selection and provisional presentation; include at least one contextual NPC reaction for each selection.
-- Two origin options and two motivation options, selected during initial setup. These affect dialogue and the personal task's framing, not separate levels or quest chains.
+- Two origin options and two motivation options, selected during initial setup. These affect the opening dialogue, not separate levels or quest chains.
 - Three recurring villagers, one visitor, and one enemy archetype. A close acquaintance accompanies part of the quest and reacts to its outcome.
 - One quest, one combat encounter, one basic weapon attack, one dodge, and one limited controllable One Power ability introduced after the involuntary awakening.
 - Two main record-custody outcomes. The player's account of the awakening modifies reactions and ending dialogue within those outcomes.
 - Pause, restart, defeat/retry, objective display, basic combat feedback, language selection, and an ending screen.
-- One desktop export target. Select it before project setup; keyboard and mouse are the initial input baseline.
+- One desktop export target. Select it before project setup; keyboard-only controls are the initial input baseline.
 
 ## 1. Lock the opening design — P0
 
@@ -29,7 +29,7 @@ Current baseline: the repository now contains a first playable Godot project wit
 - [x] Define the visitor's concrete objective, who orders the attempted seizure, and why the dispute escalates.
 - [x] Define the three villagers' goals, relationships, and conflicting views of the imperial inheritance.
 - [x] Write two origins and two motivations. Map each to a dialogue variation or task framing change.
-- [x] Write the six quest beats: personal task, request, seizure, awakening, custody/testimony, and consequence.
+- [x] Write the short route: request, seizure, awakening, Power trial, custody/testimony, and consequence.
 - [x] Specify the two custody recipients and the testimony options, including what witnesses know independently of the player.
 - [x] Write an outcome table mapping each decision to a relationship change and an immediate visible response. Include the companion's reaction and the reason to leave the village.
 
@@ -48,6 +48,8 @@ Depends on the camera, controls, and platform decisions in step 1.
 - [x] Implement the scripted involuntary awakening and a separate limited player-controlled ability afterward. Communicate its limits and availability.
 
 Exit condition: movement and combat are playable in graybox; the encounter can be won, lost, and restarted without trapping the player. The ability can be tested after the awakening without adding a second combat encounter.
+
+Visual acceptance for v0: replace capsule characters with rigged and animated human models, replace box-only buildings with authored meshes, stage the encounter at the concept image's camera angle and warm lighting, and add a readable blue-white Power effect. Model and rig game assets in Blender; use ComfyUI for concept variations or texture references where useful. Compare in-game screenshots against `concepts/v0-awakening-graybox.png` at the target resolution.
 
 ## 3. Connect story, choices, and consequences — P1
 
@@ -89,7 +91,7 @@ Exit condition: someone unfamiliar with the project can play the exported build 
 
 ## Definition of done
 
-- The exported build launches on the selected platform and supports a complete 15–30 minute episode without developer guidance.
+- The exported build launches on the selected platform and supports a complete three-minute episode without developer guidance.
 - The player explores, interacts, completes combat, experiences the awakening, and tries one controllable ability.
 - Initial character choices have their promised contextual effects.
 - Both local endings work; custody and testimony affect visible reactions consistently.

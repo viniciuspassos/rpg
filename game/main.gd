@@ -5,6 +5,7 @@ const GuardScript = preload("res://game/actors/guard.gd")
 const PowerMarkerScript = preload("res://game/actors/power_marker.gd")
 const QuestRules = preload("res://game/village/village_quest_rules.gd")
 const QuestDirector = preload("res://game/village/village_quest_director.gd")
+const KeyboardControls = preload("res://game/keyboard_controls.gd")
 
 const STONE_GOLD: Color = Color("#d8ae63")
 const INK: Color = Color("#20242a")
@@ -24,8 +25,10 @@ var modal_title: Label
 var modal_body: Label
 var modal_options: VBoxContainer
 var title_screen: Control
+var title_first_button: Button
 var setup_feedback: Label
 var pause_overlay: Control
+var pause_first_button: Button
 var trial_target: MeshInstance3D
 var map_door: StaticBody3D
 var village_gate: StaticBody3D
@@ -41,7 +44,7 @@ var game_started: bool = false
 
 func _ready() -> void:
 	GameSession.set_language(GameSession.language)
-	_install_input_map()
+	KeyboardControls.install()
 	_build_world()
 	_build_player()
 	_build_hud()
@@ -51,32 +54,6 @@ func _ready() -> void:
 		_show_setup()
 	else:
 		_resume_existing_run()
-
-func _install_input_map() -> void:
-	_add_key_action("move_left", KEY_A)
-	_add_key_action("move_right", KEY_D)
-	_add_key_action("move_forward", KEY_W)
-	_add_key_action("move_back", KEY_S)
-	_add_key_action("interact", KEY_E)
-	_add_key_action("dodge", KEY_SPACE)
-	_add_key_action("power", KEY_Q)
-	_add_mouse_action("attack", MOUSE_BUTTON_LEFT)
-
-func _add_key_action(action_name: String, key: Key) -> void:
-	if InputMap.has_action(action_name):
-		return
-	InputMap.add_action(action_name)
-	var event: InputEventKey = InputEventKey.new()
-	event.physical_keycode = key
-	InputMap.action_add_event(action_name, event)
-
-func _add_mouse_action(action_name: String, button: MouseButton) -> void:
-	if InputMap.has_action(action_name):
-		return
-	InputMap.add_action(action_name)
-	var event: InputEventMouseButton = InputEventMouseButton.new()
-	event.button_index = button
-	InputMap.action_add_event(action_name, event)
 
 func _build_world() -> void:
 	var environment: WorldEnvironment = WorldEnvironment.new()
@@ -273,9 +250,8 @@ func _build_hud() -> void:
 	_update_hud()
 
 func _build_modal(root: Control) -> void:
-	modal = _make_panel(root, Vector2(0, 0), Vector2(710, 340))
-	modal.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
-	modal.position = Vector2(-355, -170)
+	modal = _make_panel(root, Vector2.ZERO, Vector2(780, 420))
+	_center_panel(modal, Vector2(780, 420))
 	modal.visible = false
 	var stack: VBoxContainer = VBoxContainer.new()
 	stack.add_theme_constant_override("separation", 12)
@@ -295,12 +271,12 @@ func _build_pause(root: Control) -> void:
 	pause_overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	pause_overlay.visible = false
 	root.add_child(pause_overlay)
-	var panel: PanelContainer = _make_panel(pause_overlay, Vector2(-180, -120), Vector2(360, 240))
-	panel.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
+	var panel: PanelContainer = _make_panel(pause_overlay, Vector2.ZERO, Vector2(360, 240))
+	_center_panel(panel, Vector2(360, 240))
 	var stack: VBoxContainer = VBoxContainer.new()
 	panel.add_child(stack)
 	stack.add_child(_label("PAUSE", 27, STONE_GOLD))
-	_add_button(stack, "RESUME", Callable(self, "_toggle_pause"))
+	pause_first_button = _add_button(stack, "RESUME", Callable(self, "_toggle_pause"))
 	_add_button(stack, "RESTART", Callable(self, "_restart_run"))
 	_add_button(stack, "BACK_TO_TITLE", Callable(self, "_return_to_title"))
 
@@ -313,15 +289,14 @@ func _build_title(root: Control) -> void:
 	shade.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	title_screen.add_child(shade)
 	var panel: PanelContainer = _make_panel(title_screen, Vector2(0, 0), Vector2(560, 690))
-	panel.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
-	panel.position = Vector2(-280, -345)
+	_center_panel(panel, Vector2(560, 690))
 	var stack: VBoxContainer = VBoxContainer.new()
 	stack.add_theme_constant_override("separation", 7)
 	panel.add_child(stack)
 	stack.add_child(_label("GAME_TITLE", 36, STONE_GOLD))
 	stack.add_child(_label("SUBTITLE", 19, Color("#ece1d1")))
 	stack.add_child(_label("CHOOSE_HERO", 14, Color("#aaa194")))
-	_add_button(stack, "HERO_FEMALE", Callable(self, "_select_female"))
+	title_first_button = _add_button(stack, "HERO_FEMALE", Callable(self, "_select_female"))
 	_add_button(stack, "HERO_MALE", Callable(self, "_select_male"))
 	stack.add_child(_label("CHOOSE_ORIGIN", 14, Color("#aaa194")))
 	_add_button(stack, "ORIGIN_FOUNDLING", Callable(self, "_select_foundling"))
@@ -368,6 +343,7 @@ func _show_setup() -> void:
 	game_started = false
 	player.set_physics_process(false)
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	title_first_button.grab_focus()
 
 func _select_female() -> void:
 	GameSession.state.protagonist = "female"
@@ -419,8 +395,8 @@ func _start_run() -> void:
 	player.set_physics_process(true)
 	title_screen.visible = false
 	game_started = true
-	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-	_update_objective("TASK_OBJECTIVE")
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	_update_objective(_objective_key())
 	_show_toast(_tr("ORIGIN_REACTION_HAWKWING") if run.origin == "hawkwing" else _tr("ORIGIN_REACTION_FOUNDLING"))
 
 func _reset_world_for_fresh_run() -> void:
@@ -447,7 +423,7 @@ func _reset_world_for_fresh_run() -> void:
 func _resume_existing_run() -> void:
 	game_started = true
 	title_screen.visible = false
-	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	_apply_saved_scene_state()
 	_update_objective(_objective_key())
 
@@ -472,6 +448,8 @@ func _apply_saved_scene_state() -> void:
 
 func _objective_key() -> String:
 	var run: RunState = GameSession.state
+	if run.beat == RunState.Beat.SETUP:
+		return ""
 	if run.beat == RunState.Beat.PERSONAL_TASK:
 		if not run.keeper_task_talked:
 			return "TALK_KEEPER"
@@ -479,15 +457,7 @@ func _objective_key() -> String:
 			return "TALK_ACQUAINTANCE"
 		return "TASK_DELIVER" if run.rope_picked else "TASK_PICKUP"
 	if run.beat == RunState.Beat.RECORD_REQUEST:
-		if not run.visitor_request_heard:
-			return "REQUEST_OBJECTIVE"
-		if not run.order_read:
-			return "READ_ORDER_OBJECTIVE"
-		if not run.leader_response_heard:
-			return "HEAR_LEADER_OBJECTIVE"
-		if not run.keeper_response_heard:
-			return "HEAR_KEEPER_OBJECTIVE"
-		return "NEGOTIATE_OBJECTIVE"
+		return "REQUEST_OBJECTIVE"
 	if run.beat == RunState.Beat.SEIZURE:
 		return "OBJECTIVE_COMBAT"
 	if run.beat == RunState.Beat.AWAKENING:
@@ -591,12 +561,12 @@ func _interact_visitor() -> void:
 	var run: RunState = GameSession.state
 	if run.beat == RunState.Beat.RECORD_REQUEST:
 		if director.hear_visitor_request():
-			_show_dialogue("RECORD_REQUEST_TITLE", "RECORD_REQUEST_BODY", [{"key": "CONTINUE", "action": Callable(self, "_close_dialogue")}])
+			var motivation_key: String = "MOTIVATION_REACTION_" + run.motivation.to_upper()
+			var conflict: String = _tr("RECORD_REQUEST_BODY") + "\n\n" + _tr("ORDER_BODY") + "\n\n" + _tr(motivation_key)
+			_show_dialogue("RECORD_REQUEST_TITLE", "RECORD_REQUEST_BODY", [{"key": "CONTINUE", "action": Callable(self, "_start_request")}], conflict)
 			_update_objective(_objective_key())
-		elif run.leader_response_heard and run.keeper_response_heard:
+		elif run.visitor_request_heard:
 			_start_request()
-		else:
-			_show_dialogue("VISITOR", "REQUEST_PENDING_BODY", [{"key": "CONTINUE", "action": Callable(self, "_close_dialogue")}])
 	elif run.beat == RunState.Beat.DECISION:
 		_open_custody_choice()
 	else:
@@ -770,6 +740,7 @@ func _return_to_title() -> void:
 	game_started = false
 	player.set_physics_process(false)
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	title_first_button.grab_focus()
 
 func _toggle_pause() -> void:
 	if not game_started:
@@ -778,7 +749,9 @@ func _toggle_pause() -> void:
 	player.set_physics_process(not pause_overlay.visible)
 	if is_instance_valid(guard):
 		guard.set_physics_process(not pause_overlay.visible)
-	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE if pause_overlay.visible else Input.MOUSE_MODE_CAPTURED
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	if pause_overlay.visible:
+		pause_first_button.grab_focus()
 
 func _on_player_defeated() -> void:
 	_show_dialogue("DEFEAT_TITLE", "DEFEAT_BODY", [{"key": "RETRY", "action": Callable(self, "_retry_encounter")}])
@@ -814,8 +787,13 @@ func _show_dialogue(title_key: String, body_key: String, choices: Array[Dictiona
 	modal_title.text = _tr(title_key)
 	modal_body.text = body_override if not body_override.is_empty() else _tr(body_key)
 	_clear_options()
+	var first_button: Button
 	for choice: Dictionary in choices:
-		_add_button(modal_options, str(choice["key"]), choice["action"] as Callable)
+		var button: Button = _add_button(modal_options, str(choice["key"]), choice["action"] as Callable)
+		if first_button == null:
+			first_button = button
+	if first_button != null:
+		first_button.grab_focus()
 
 func _clear_options() -> void:
 	for child: Node in modal_options.get_children():
@@ -828,7 +806,7 @@ func _close_dialogue() -> void:
 		player.set_physics_process(true)
 		if is_instance_valid(guard) and GameSession.state.beat == RunState.Beat.SEIZURE:
 			guard.set_physics_process(true)
-		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+		Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 
 func _make_panel(parent: Control, at: Vector2, size: Vector2) -> PanelContainer:
 	var panel: PanelContainer = PanelContainer.new()
@@ -844,6 +822,13 @@ func _make_panel(parent: Control, at: Vector2, size: Vector2) -> PanelContainer:
 	parent.add_child(panel)
 	return panel
 
+func _center_panel(panel: PanelContainer, size: Vector2) -> void:
+	panel.set_anchors_preset(Control.PRESET_CENTER)
+	panel.offset_left = -size.x / 2.0
+	panel.offset_top = -size.y / 2.0
+	panel.offset_right = size.x / 2.0
+	panel.offset_bottom = size.y / 2.0
+
 func _label(key: String, font_size: int, color: Color) -> Label:
 	var label: Label = Label.new()
 	label.text = _tr(key)
@@ -852,7 +837,7 @@ func _label(key: String, font_size: int, color: Color) -> Label:
 	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	return label
 
-func _add_button(parent: Node, key: String, action: Callable) -> void:
+func _add_button(parent: Node, key: String, action: Callable) -> Button:
 	var button: Button = Button.new()
 	button.text = _tr(key)
 	button.custom_minimum_size.y = 34
@@ -867,8 +852,13 @@ func _add_button(parent: Node, key: String, action: Callable) -> void:
 	var hover: StyleBoxFlat = normal.duplicate() as StyleBoxFlat
 	hover.bg_color = Color("#544634")
 	button.add_theme_stylebox_override("hover", hover)
+	var focus: StyleBoxFlat = hover.duplicate() as StyleBoxFlat
+	focus.border_color = STONE_GOLD
+	focus.set_border_width_all(2)
+	button.add_theme_stylebox_override("focus", focus)
 	button.pressed.connect(action)
 	parent.add_child(button)
+	return button
 
 func _show_toast(message: String) -> void:
 	if toast_label == null:

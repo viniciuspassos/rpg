@@ -8,6 +8,7 @@ func _initialize() -> void:
 	_check_outcome_mapping()
 	_check_quest_transitions()
 	_check_fresh_state_reset()
+	_check_three_minute_route()
 	_check_localization_catalog()
 	print("Village quest rules and fresh-run reset passed.")
 	quit()
@@ -39,6 +40,23 @@ func _check_fresh_state_reset() -> void:
 	assert(not state.power_awakened)
 	assert(not state.rope_picked)
 
+func _check_three_minute_route() -> void:
+	var session: Node = load("res://game/session/game_session.gd").new()
+	session.begin_fresh_run("female", "foundling", "leave")
+	var state: RunState = session.state
+	assert(state.beat == RunState.Beat.RECORD_REQUEST)
+	var director: VillageQuestDirector = DirectorScript.new(state) as VillageQuestDirector
+	assert(not director.start_seizure())
+	assert(director.hear_visitor_request())
+	assert(director.start_seizure())
+	assert(director.trigger_awakening())
+	assert(director.begin_power_trial())
+	assert(director.complete_power_trial())
+	assert(director.choose_custody("visitor"))
+	assert(not director.choose_testimony("silent").is_empty())
+	assert(state.beat == RunState.Beat.CONSEQUENCE)
+	session.free()
+
 func _check_quest_transitions() -> void:
 	var state: RunState = State.new() as RunState
 	state.beat = RunState.Beat.PERSONAL_TASK
@@ -52,7 +70,6 @@ func _check_quest_transitions() -> void:
 	assert(state.task_complete)
 	assert(not director.start_seizure())
 	assert(director.hear_visitor_request())
-	assert(not director.start_seizure())
 	assert(director.read_order())
 	assert(director.hear_leader_response())
 	assert(director.hear_keeper_response())

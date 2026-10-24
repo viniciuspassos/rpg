@@ -3,7 +3,7 @@ extends CharacterBody3D
 
 signal defeated
 
-var health: int = 100
+var health: int = 68
 var attack_timer: float = 0.0
 var flash_timer: float = 0.0
 var target: PlayerActor
@@ -67,8 +67,8 @@ func _physics_process(delta: float) -> void:
 		velocity.x = move_toward(velocity.x, 0.0, 8.0 * delta)
 		velocity.z = move_toward(velocity.z, 0.0, 8.0 * delta)
 		if attack_timer <= 0.0:
-			attack_timer = 1.6
-			target.take_damage(13)
+			attack_timer = 2.2
+			target.take_damage(8)
 	if not is_on_floor():
 		velocity.y -= 22.0 * delta
 	else:

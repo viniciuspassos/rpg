@@ -7,7 +7,7 @@ Status: initial playable pass. `PLAN.md` tracks remaining delivery and validatio
 | Area | v0 decision | Later growth path |
 | --- | --- | --- |
 | Engine | Pin Godot 4.7.2 stable, standard build, with typed GDScript. Do not add a JavaScript runtime to gameplay. | Upgrade deliberately after exported-build and test checks; add native extensions only for a measured need. |
-| First platform | macOS desktop export for the current development and playtest host; keyboard and mouse. | Add Windows and Linux presets after the slice works. Keep input actions independent of physical keys. |
+| First platform | macOS desktop export for the current development and playtest host; keyboard only. | Add Windows and Linux presets after the slice works. Keep input actions independent of physical keys. |
 | World | One compact `Village` scene with placeholder geometry and authored encounter positions. | Load additional region scenes through the same screen flow; do not create an open-world streaming system for v0. |
 | State | One in-memory `RunState` owned by a small `GameSession` autoload. | Add versioned disk serialization when saves become a campaign requirement. |
 | Narrative | One explicit village quest director and typed outcome rules. Dialogue content is separate from rules. | Add quest modules per region; generalize shared patterns only after a second quest proves them. |
@@ -49,7 +49,7 @@ The village uses explicit beats:
 
 `PERSONAL_TASK → RECORD_REQUEST → SEIZURE → AWAKENING → POWER_TRIAL → DECISION → CONSEQUENCE → COMPLETE`
 
-Only the director can advance a beat. The personal task requires talking to Mara and Tovin, picking up the rope, and delivering it to the bell. A choice is recorded once; revisiting an interaction reads the recorded result. A pure `VillageQuestRules` function maps custody and testimony to a relationship response, a concrete local response, and ending dialogue IDs. It preserves witnesses' independent knowledge, so a player's silence cannot clear the witnessed awakening.
+Only the director can advance a beat. The three-minute route begins with Serah's request and includes the order and villagers' positions in one conversation before the seizure. The older rope task remains in the code but is not part of this route. A choice is recorded once; revisiting an interaction reads the recorded result. A pure `VillageQuestRules` function maps custody and testimony to a relationship response, a concrete local response, and ending dialogue IDs. It preserves witnesses' independent knowledge, so a player's silence cannot clear the witnessed awakening.
 
 Before the seizure, `GameSession` takes an encounter checkpoint after the request is resolved. Retry restores that snapshot, reloads the village encounter, and keeps earlier character choices and completed personal-task dialogue. Fresh run creates a new `RunState`. Scene initialization reads the state and is idempotent: it must not replay rewards, repeat the awakening, or duplicate consequences merely because the scene loaded.
 
@@ -79,7 +79,7 @@ Dialogue is authored as small Godot text resources (`.tres`) with stable convers
 
 ## Input and camera contract
 
-The first keyboard/mouse bindings are `WASD` movement, mouse orbit, left click basic attack, `Space` dodge, `E` interact, `Q` Power ability after unlocking, and `Esc` pause/back. Set these as Godot input actions so menus, remapping, and later controller support do not depend on hard-coded keys. The camera follows behind the player, rotates with the mouse, avoids wall clipping, and keeps combat target and nearby interaction prompts readable. Lock or release the cursor according to gameplay/menu state. Exact sensitivity, distance, and attack timing are prototype tuning values.
+The keyboard bindings are `WASD` movement, arrow keys for camera orbit, `F` basic attack, `Space` dodge, `E` interact, `Q` Power ability after unlocking, `Esc` pause/back, and `Tab`/`Enter` for menus. Set gameplay controls as Godot input actions so later remapping and controller support remain possible. The camera follows behind the player, avoids wall clipping, and keeps combat targets and nearby interaction prompts readable. Exact sensitivity, distance, and attack timing are prototype tuning values.
 
 ## Validation and expansion seams
 

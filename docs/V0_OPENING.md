@@ -22,7 +22,7 @@ Author-facing truth: the fragment is an authentic but incomplete prophecy. The w
 
 - **Edrin**, elected village speaker, wants a public imperial recognition that could protect the road and restore Bellfold's standing. He rejects a private witnessed copy because he fears the settlement will receive no recognition.
 - **Mara**, keeper, values the ledger as an inheritance and fears a one-way transfer will erase the village's only evidence.
-- **Tovin**, the protagonist's close friend, helped prepare their personal task. Tovin wants the protagonist's future to stay theirs and will react to the chosen account without becoming a combat companion.
+- **Tovin**, the protagonist's close friend, wants their future to stay theirs and reacts to the chosen account without becoming a combat companion.
 - **Serah**, an itinerant Cairhienin archivist, carries a magistrate's sealed order. A border archive burned; she needs the ledger to reconstruct land grants before troops arrive. She is willing to negotiate, but the magistrate's order permits seizure after talks fail.
 - **The guard** follows the magistrate's order. Edrin refuses a witnessed copy and demands a public pledge of village status. Serah does not order the guard to attack; the conflict escalates because her written authority allows seizure and the parties reject the available compromise.
 
@@ -32,13 +32,13 @@ The episode uses one enemy archetype. Combat starts with the protagonist's weapo
 
 | Choice | Shared playable sequence | Contextual effect |
 | --- | --- | --- |
-| Raised by Mara's family | Repair and deliver the bell rope | The task is framed as a promise and family duty. |
-| Family claims Hawkwing descent | Repair and deliver the bell rope | Edrin invokes the claimed heritage; the text does not treat descent as proven. |
-| Prepare to leave | Same task, people, and location | Tovin connects the rope to the protagonist's travel preparations. |
-| Care for someone here | Same task, people, and location | Tovin recalls Mara teaching the old repair knot. |
+| Raised by Mara's family | Hear Serah's request | Mara's ledger is framed as part of the protagonist's home. |
+| Family claims Hawkwing descent | Hear Serah's request | Edrin invokes the claimed heritage; the text does not treat descent as proven. |
+| Prepare to leave | Same scene and encounter | Tovin asks for help before the protagonist leaves. |
+| Care for someone here | Same scene and encounter | Tovin asks the protagonist to protect Mara. |
 | Woman / man | Same combat and quest rules | Mara's reaction during the awakening changes in dialogue. |
 
-Six beats: personal task → record request → attempted seizure → involuntary awakening → custody and testimony → immediate consequence. After the request, the player reads Serah's signed order and hears Edrin's and Mara's independent responses before returning to Serah. Both reject the available compromise; the order's seizure clause explains why the guard arrives.
+Six short beats: record request → attempted seizure → involuntary awakening → Power trial → custody and testimony → immediate consequence. Serah's opening conversation summarizes the signed order and Edrin's and Mara's independent positions. Both reject the available compromise; the order's seizure clause explains why the guard arrives.
 
 ## Outcome contract
 
@@ -53,4 +53,4 @@ The testimony changes trust and dialogue; it cannot change the witnessed event. 
 
 ## Runtime choices
 
-Godot 4.7.2 standard build; macOS desktop is the first export target. The prototype uses keyboard/mouse, a follow camera with mouse orbit, typed GDScript, built-in primitives, in-memory session state, and a Godot-imported CSV translation catalog. No third-party asset licenses or external runtime dependencies are involved.
+Godot 4.7.2 standard build; macOS desktop is the first export target. The prototype uses keyboard-only controls, a follow camera with arrow-key orbit, typed GDScript, temporary built-in primitives, in-memory session state, and a Godot-imported CSV translation catalog. No third-party asset licenses or external runtime dependencies are involved.

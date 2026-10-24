@@ -8,7 +8,7 @@ func begin_fresh_run(protagonist: String, origin: String, motivation: String) ->
 	state.protagonist = protagonist
 	state.origin = origin
 	state.motivation = motivation
-	state.beat = RunState.Beat.PERSONAL_TASK
+	state.beat = RunState.Beat.RECORD_REQUEST
 
 func set_language(locale: String) -> void:
 	language = locale
