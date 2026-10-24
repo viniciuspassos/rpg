@@ -7,10 +7,11 @@
 Before creating a plan or starting any project work:
 
 1. Inspect the current branch and working tree, including untracked files and ignored local drafts that a checkout could overwrite.
-2. Fetch `origin` to obtain the latest remote `main`.
-3. Check out local `main` and update it to `origin/main` using a fast-forward-only update. Do not start planning or implementation from a stale branch.
-4. If local changes or divergent commits prevent a safe update, preserve them in a separate branch, worktree, or backup first. Never discard user work or overwrite ignored drafts. If needed, use an isolated checkout of `origin/main` to begin the task safely.
-5. Create any task branch from that updated baseline. Recheck remote `main` before merging and resolve conflicts without losing unrelated changes.
+2. Run `rtk git switch main`.
+3. Run `rtk git pull --ff-only origin main`. Only start planning or implementation after the pull succeeds. Do not reuse a stale task branch as the starting point.
+4. Create the task branch from this updated `main`, then implement the changes. The normal flow is: checkout main → pull → task branch → implementation. Do not create archive branches as a routine step.
+5. For parallel sessions, use a separate worktree and task branch per session, each based on the latest remote `main`. Never switch branches in a working tree another session is using. In an isolated worktree where `main` is already checked out elsewhere, fetch `origin` and create the task branch from `origin/main` instead.
+6. If uncommitted changes or divergent local history block the switch or pull, stop before overwriting anything and resolve that specific condition. Never discard user work. Recheck remote `main` before merging; starting from an updated base reduces conflicts but does not eliminate conflicts between concurrent edits.
 
 ## Engineering practices
 
