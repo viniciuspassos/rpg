@@ -1,0 +1,31 @@
+; Engine configuration file.
+config_version=5
+
+[application]
+config/name="The Stilled Bell: Village v0"
+run/main_scene="res://game/main.tscn"
+config/features=PackedStringArray("4.7", "GL Compatibility")
+config/description="A short, bilingual third-person village episode. Unofficial, non-commercial fan work."
+
+[autoload]
+GameSession="*res://game/session/game_session.gd"
+
+[display]
+window/size/viewport_width=1440
+window/size/viewport_height=810
+window/size/window_width_override=1280
+window/size/window_height_override=720
+window/stretch/mode="canvas_items"
+
+[rendering]
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+textures/default_filters/use_nearest_mipmap_filter=false
+environment/defaults/default_clear_color=Color(0.17, 0.2, 0.22, 1)
+
+[internationalization]
+locale/translations=PackedStringArray("res://game/i18n/strings.en.translation", "res://game/i18n/strings.pt_BR.translation")
+
+[editor_plugins]
+enabled=PackedStringArray("res://addons/godot_mcp/plugin.cfg")
+

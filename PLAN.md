@@ -6,7 +6,7 @@ Tracking issue: [#3 — Build v0: a playable village opening with awakening and 
 
 Deliver a 15–30 minute playable village episode based on the local `GAME_DIRECTION.md` direction draft, which is intentionally not tracked in this repository. This plan includes the implementation scope independently of that draft. A new player must be able to launch the exported build, understand their objective, explore, complete one combat encounter, discover and try the One Power, make a consequential decision, and see its result without developer guidance. All player-facing content must work in English and Brazilian Portuguese (`pt-BR`).
 
-Current baseline: project direction only; no Godot project or gameplay implementation exists yet. This plan describes work to do, not completed features.
+Current baseline: the repository now contains a first playable Godot project with a procedural village graybox, title setup, bilingual UI, personal task, one combat encounter, awakening, a limited Power trial, and two local outcomes. The project has not yet been launched in Godot, exported, or observed in a new-player playtest; those checks remain open. This plan continues to track work to do, not verified completion.
 
 ## Scope
 
@@ -22,16 +22,16 @@ Current baseline: project direction only; no Godot project or gameplay implement
 
 ## 1. Lock the opening design — P0
 
-- [ ] Choose the desktop target, record the Godot version, and specify input bindings and camera behavior.
-- [ ] Name and locate the village; select a precise event anchor within the established book-period window.
-- [ ] Record what has already happened, what news the village knows, and what remains available for later divergence.
-- [ ] Write the opening prophecy fragment, its provenance, how the record survived, and its author-facing meaning. Separate fact, uncertainty, and faction interpretation.
-- [ ] Define the visitor's concrete objective, who orders the attempted seizure, and why the dispute escalates.
-- [ ] Define the three villagers' goals, relationships, and conflicting views of the imperial inheritance.
-- [ ] Write two origins and two motivations. Map each to a dialogue variation or task framing change.
-- [ ] Write the six quest beats: personal task, request, seizure, awakening, custody/testimony, and consequence.
-- [ ] Specify the two custody recipients and the testimony options, including what witnesses know independently of the player.
-- [ ] Write an outcome table mapping each decision to a relationship change and an immediate visible response. Include the companion's reaction and the reason to leave the village.
+- [x] Choose the desktop target, record the Godot version, and specify input bindings and camera behavior.
+- [x] Name and locate the village; select a precise event anchor within the established book-period window.
+- [x] Record what has already happened, what news the village knows, and what remains available for later divergence.
+- [x] Write the opening prophecy fragment, its provenance, how the record survived, and its author-facing meaning. Separate fact, uncertainty, and faction interpretation.
+- [x] Define the visitor's concrete objective, who orders the attempted seizure, and why the dispute escalates.
+- [x] Define the three villagers' goals, relationships, and conflicting views of the imperial inheritance.
+- [x] Write two origins and two motivations. Map each to a dialogue variation or task framing change.
+- [x] Write the six quest beats: personal task, request, seizure, awakening, custody/testimony, and consequence.
+- [x] Specify the two custody recipients and the testimony options, including what witnesses know independently of the player.
+- [x] Write an outcome table mapping each decision to a relationship change and an immediate visible response. Include the companion's reaction and the reason to leave the village.
 
 Exit condition: the mission can be walked through on paper from start to both endings, with clear objectives, understandable stakes, and no unexplained escalation. Do not require the full campaign or all prophecy fragments to be written.
 
@@ -39,13 +39,13 @@ Exit condition: the mission can be walked through on paper from start to both en
 
 Depends on the camera, controls, and platform decisions in step 1.
 
-- [ ] Create the Godot project, initial scene, input map, export preset, and minimal run/export instructions.
-- [ ] Keep source assets and project configuration under version control; exclude generated/import caches and exported builds.
-- [ ] Verify licenses and cost constraints before introducing dependencies or assets; record attribution where needed.
-- [ ] Implement movement, camera, collisions, and a reusable interaction prompt.
-- [ ] Build the compact village with placeholder geometry and a readable route through the quest.
-- [ ] Implement basic attack, dodge, health, one enemy behavior, damage feedback, defeat, and retry.
-- [ ] Implement the scripted involuntary awakening and a separate limited player-controlled ability afterward. Communicate its limits and availability.
+- [x] Create the Godot project, initial scene, input map, export preset, and minimal run/export instructions.
+- [x] Keep source assets and project configuration under version control; exclude generated/import caches and exported builds.
+- [x] Verify licenses and cost constraints before introducing dependencies or assets; record attribution where needed.
+- [x] Implement movement, camera, collisions, and a reusable interaction prompt.
+- [x] Build the compact village with placeholder geometry and a readable route through the quest.
+- [x] Implement basic attack, dodge, health, one enemy behavior, damage feedback, defeat, and retry.
+- [x] Implement the scripted involuntary awakening and a separate limited player-controlled ability afterward. Communicate its limits and availability.
 
 Exit condition: movement and combat are playable in graybox; the encounter can be won, lost, and restarted without trapping the player. The ability can be tested after the awakening without adding a second combat encounter.
 
@@ -53,14 +53,14 @@ Exit condition: movement and combat are playable in graybox; the encounter can b
 
 Depends on step 1's script and step 2's interaction and gameplay foundation.
 
-- [ ] Choose the smallest editable content format supported by the actual needs; keep dialogue and quest text separate from gameplay logic.
-- [ ] Implement initial character choices and their specified dialogue/task variations.
-- [ ] Implement dialogue conditions, current objective, quest progression, and decision state.
-- [ ] Connect all six opening beats to the playable location and encounter.
-- [ ] Make the close acquaintance accompany the relevant segment and react to the decision; omit party management and combat AI.
-- [ ] Implement both custody outcomes and testimony reactions without duplicating the whole quest.
-- [ ] Show a relationship change and a concrete scene, access, or assistance change before the ending screen.
-- [ ] Keep choices consistent for the current playthrough. A fresh run must clear them; retry must restore a coherent encounter state without duplicating consequences.
+- [x] Choose the smallest editable content format supported by the actual needs; keep dialogue and quest text separate from gameplay logic.
+- [x] Implement initial character choices and their specified dialogue/task variations.
+- [x] Implement dialogue conditions, current objective, quest progression, and decision state.
+- [x] Connect all six opening beats to the playable location and encounter.
+- [x] Make the close acquaintance accompany the relevant segment and react to the decision; omit party management and combat AI.
+- [x] Implement both custody outcomes and testimony reactions without duplicating the whole quest.
+- [x] Show a relationship change and a concrete scene, access, or assistance change before the ending screen.
+- [x] Keep choices consistent for the current playthrough. A fresh run must clear them; retry must restore a coherent encounter state without duplicating consequences.
 
 Exit condition: both endings are reachable, choices have visible effects in the episode, and neither protagonist selection is forced into a permanent allegiance or prophecy interpretation.
 
@@ -68,10 +68,10 @@ Exit condition: both endings are reachable, choices have visible effects in the 
 
 Build localization support with the first content in step 3; complete presentation after the quest is connected.
 
-- [ ] Add concise controls/tutorial prompts, current objective, health, interaction and combat feedback, pause, restart, and ending UI.
-- [ ] Provide English source text and `pt-BR` translations for all player-facing strings, including character setup and both endings.
+- [x] Add concise controls/tutorial prompts, current objective, health, interaction and combat feedback, pause, restart, and ending UI.
+- [x] Provide English source text and `pt-BR` translations for all player-facing strings, including character setup and both endings.
 - [ ] Implement language selection and check layout, accents, missing keys, and text overflow in both languages.
-- [ ] Add minimal sound or visual cues needed to read attacks, damage, interaction, and the awakening. Final assets and voice acting are not required.
+- [x] Add minimal sound or visual cues needed to read attacks, damage, interaction, and the awakening. Final assets and voice acting are not required.
 - [ ] Export a build for the selected desktop platform and document how to launch it.
 
 Exit condition: someone unfamiliar with the project can play the exported build without editor access or live explanations.
