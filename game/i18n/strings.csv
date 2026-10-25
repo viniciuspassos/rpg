@@ -1,0 +1,98 @@
+keys,en,pt_BR
+game_title,THE STILLED BELL,O SINO SILENCIOSO
+subtitle,A village episode,Um episódio na aldeia
+start,Begin journey,Iniciar jornada
+language,Language / Idioma,Idioma / Language
+english,English,English
+portuguese,Brasileiro (pt-BR),Brasileiro (pt-BR)
+choose_hero,Who are you?,Quem é você?
+hero_female,Play as a woman,Jogar como mulher
+hero_male,Play as a man,Jogar como homem
+choose_origin,Your place in the village,Seu lugar na aldeia
+origin_foundling,Raised by the keeper,Criada pela guardiã
+origin_hawkwing,Family claims Hawkwing descent,Família reivindica descendência de Hawkwing
+choose_motivation,What do you want?,O que você deseja?
+setup_summary,Selected: %s · %s · %s,Escolhas: %s · %s · %s
+motivation_leave,Prepare to leave,Preparar-se para partir
+motivation_belong,Care for someone here,Cuidar de alguém daqui
+controls,WASD move · Arrows look · E interact · F attack · Space dodge · Q Power · Esc pause · Tab/Enter menus,WASD mover · Setas olhar · E interagir · F atacar · Espaço esquivar · Q Poder · Esc pausar · Tab/Enter menus
+objective,Objective,Objetivo
+health,Health,Vida
+task_objective,Bring the bell rope to the square,Leve a corda do sino até a praça
+talk_keeper,Speak with Mara about the bell rope,Fale com Mara sobre a corda do sino
+talk_acquaintance,Ask Tovin to carry the rope with you,Peça a Tovin que leve a corda com você
+task_deliver,Carry the rope to the village bell,Leve a corda até o sino da aldeia
+task_pickup,Pick up the rope coil beside the well,Recolha a corda ao lado do poço
+rope_picked,Tovin ties the rope coil to your pack.,Tovin prende a corda à sua mochila.
+request_objective,Hear the visitor's request,Ouça o pedido da visitante
+read_order_objective,Examine the sealed order on the table,Examine a ordem selada sobre a mesa
+hear_leader_objective,Ask Edrin what he will accept,Pergunte a Edrin o que ele aceitaria
+hear_keeper_objective,Ask Mara what she will risk,Pergunte a Mara o que ela arriscaria
+negotiate_objective,Return to Serah; both sides refused the proposed compromise,Volte a Serah; os dois lados recusaram a proposta
+keeper,Mara · record keeper,Mara · guardiã do registro
+acquaintance,Tovin · your close friend,Tovin · seu amigo próximo
+leader,Edrin · village speaker,Edrin · porta-voz da aldeia
+visitor,Serah · imperial archivist,Serah · arquivista imperial
+guardian,Seizure guard,Guarda enviado
+interact_hint,Press E to speak,Pressione E para conversar
+interact_bell,Press E to deliver the rope,Pressione E para entregar a corda
+interact_rope,Press E to pick up the rope,Pressione E para recolher a corda
+interact_order,Press E to read the sealed order,Pressione E para ler a ordem selada
+rope_hint,Press E to deliver the rope,Pressione E para entregar a corda
+record_request_title,The imperial record,O registro imperial
+record_request_body,"Serah needs Mara's ledger to rebuild records lost in a fire. She asks for a loan and presents a sealed order.","Serah precisa do livro de Mara para reconstruir registros perdidos num incêndio. Ela pede o empréstimo e apresenta uma ordem selada."
+request_option_read,Read the magistrate's sealed order,Ler a ordem selada do magistrado
+request_option_answer,Ask Edrin and Mara to answer,Ouvir Edrin e Mara
+order_title,The magistrate's order,A ordem do magistrado
+order_body,"The magistrate's order allows seizure. Edrin rejects a private copy; Mara will not surrender the only ledger. The guard moves to enforce the order.","A ordem do magistrado permite a apreensão. Edrin rejeita uma cópia privada; Mara não entregará o único livro. O guarda avança para cumprir a ordem."
+leader_response_body,"Edrin refuses a witnessed copy. He wants the magistrate to recognize Bellfold's inherited imperial charge in public, and believes a private loan would leave the village with nothing.","Edrin recusa uma cópia testemunhada. Ele quer que o magistrado reconheça publicamente a missão imperial herdada de Bellfold e acredita que um empréstimo particular deixaria a aldeia sem nada."
+keeper_response_body,"Mara will not let the only folio leave without a copy. Its date is disputed, but the village has guarded it for generations; she will not trade that inheritance for a promise of recognition.","Mara não deixará o único fólio partir sem uma cópia. Sua data é contestada, mas a aldeia o protege há gerações; ela não trocará essa herança por uma promessa de reconhecimento."
+request_pending_body,You have read the order. Hear both Edrin and Mara before returning to Serah.,Você leu a ordem. Ouça Edrin e Mara antes de voltar a Serah.
+seizure_title,The order is enforced,A ordem será cumprida
+seizure_body,"The guard was ordered by the magistrate, not Serah. With negotiations rejected, he moves to take the ledger. Protect Mara!","O guarda recebeu ordens do magistrado, não de Serah. Com a negociação recusada, ele avança para levar o livro. Proteja Mara!"
+objective_combat,Defeat the guard,Derrote o guarda
+combat_hint,Attack with F · dodge with Space,Ataque com F · esquive com Espaço
+awakening_title,The air remembers,A memória do ar
+awakening_objective,The guard is down. The stones are moving.,O guarda caiu. As pedras estão se movendo.
+awakening_body,"As the guard's blade falls toward Mara, the stones leap and the blow turns aside. You did not choose the weave. Everyone saw it; no one agrees what it means.","Quando a lâmina do guarda desce contra Mara, as pedras saltam e o golpe se desvia. Você não escolheu o fluxo. Todos viram; ninguém concorda sobre o significado."
+power_objective,Try the Power on the marked stones (Q),Experimente o Poder nas pedras marcadas (Q)
+power_hint,Face the glowing stones and press Q,Olhe para as pedras brilhantes e pressione Q
+trial_complete,"The stones answer. The Power is yours to approach, not command.","As pedras respondem. Você pode tocar o Poder, não comandá-lo."
+decision_objective,Choose who keeps the record and your account,Escolha quem ficará com o registro e seu relato
+decision_title,Who carries the record?,Quem levará o registro?
+decision_stakes,"The ledger is the only surviving copy. Mara shows you its damaged margin: 'When the still bell answers a hand untaught, stone shall refuse its weight. The old road will divide at the keeper's word. At the Last Battle, that hand shall tip the balance, but shall not name the victor.' Its translation and date are disputed. The witnesses know what they saw; silence will not erase the burst of light. Your account can shape trust, not what happened.","O livro é a única cópia sobrevivente. Mara mostra a margem danificada: 'Quando o sino silencioso responder a uma mão sem treino, a pedra recusará seu peso. A estrada antiga se dividirá pela palavra da guardiã. Na Última Batalha, aquela mão inclinará a balança, mas não escolherá o vencedor.' A tradução e a data são contestadas. As testemunhas sabem o que viram; o silêncio não apagará o clarão. Seu relato pode mudar a confiança, não o que aconteceu."
+custody_keeper,Keep it with Mara in the village,Deixe-o com Mara na aldeia
+custody_visitor,Give it to Serah for the border archive,Entregue-o a Serah para o arquivo de fronteira
+testimony_honest,Call it an uncontrolled channeling,Chame de canalização involuntária
+testimony_silent,Refuse to name what happened,Recuse-se a definir o ocorrido
+outcome_keeper_honest,"Mara keeps the ledger. You tell the truth plainly. Tovin stays beside you; Mara opens the locked map room and offers a copy of the disputed passage. Edrin sends a witness with Serah to prevent the record disappearing.","Mara guarda o livro. Você conta a verdade sem rodeios. Tovin fica ao seu lado; Mara abre a sala de mapas e oferece uma cópia do trecho contestado. Edrin envia uma testemunha com Serah para impedir que o registro desapareça."
+outcome_keeper_silent,"Mara keeps the ledger, but your silence unsettles Tovin. The map room remains closed. Serah leaves with only the magistrate's order and a warning that soldiers may return.","Mara guarda o livro, mas seu silêncio inquieta Tovin. A sala de mapas continua fechada. Serah parte só com a ordem do magistrado e o aviso de que soldados podem voltar."
+outcome_visitor_honest,"Serah takes the ledger under a witnessed receipt. Your honest account earns Tovin's trust; Mara gives you a copied page. The village gains a magistrate's hearing, but the original leaves with Serah.","Serah leva o livro com recibo testemunhado. Seu relato sincero conquista a confiança de Tovin; Mara lhe entrega uma página copiada. A aldeia ganha uma audiência com o magistrado, mas o original parte com Serah."
+outcome_visitor_silent,"Serah takes the ledger under a witnessed receipt. You refuse to explain the awakening, and Tovin withdraws. Mara withholds her copy. The village gets a hearing, but no one can control what Serah reports about the light.","Serah leva o livro com recibo testemunhado. Você se recusa a explicar o despertar, e Tovin se afasta. Mara retém sua cópia. A aldeia ganha uma audiência, mas ninguém controla o que Serah contará sobre a luz."
+relationship_friend_trust,Tovin trusts your honest account more,Tovin confia mais no seu relato sincero
+relationship_friend_distrust,Tovin is unsettled by your silence,Tovin fica inquieto com seu silêncio
+access_keeper,Map room opened · passage copied,Sala de mapas aberta · trecho copiado
+access_visitor,Magistrate's hearing secured · original leaves,Audiência garantida · original levado
+ending_title,The road beyond the bell,A estrada além do sino
+ending_reason,"A rider from the south brings word that the roads are closing. Your awakening has already become a story. Tovin will travel with you to learn which parts are true before others decide what it means.","Um cavaleiro do sul traz notícias de que as estradas estão se fechando. Seu despertar já virou história. Tovin viajará com você para descobrir o que é verdade antes que outros decidam o significado."
+ending_continue,Start a new journey,Recomeçar jornada
+pause,Paused,Pausado
+resume,Resume,Continuar
+restart,Restart episode,Reiniciar episódio
+back_to_title,Return to title,Voltar ao início
+defeat_title,You were driven back,Vocês foram derrotados
+retry,Retry encounter,Tentar encontro novamente
+defeat_body,Tovin pulls you out of reach. You can try the encounter again.,Tovin tira você do alcance. Você pode tentar o confronto novamente.
+origin_reaction_foundling,"Mara raised you. Her ledger is part of your home.","Mara criou você. O livro dela faz parte do seu lar."
+origin_reaction_hawkwing,"Edrin invokes your family's claimed heritage as the ledger is threatened.","Edrin invoca a herança reivindicada por sua família quando o livro é ameaçado."
+motivation_reaction_leave,"Tovin knows you planned to leave, but asks you to help Mara first.","Tovin sabe que você planejava partir, mas pede que ajude Mara primeiro."
+motivation_reaction_belong,"Tovin asks you to protect Mara and the people who count on her.","Tovin pede que proteja Mara e as pessoas que dependem dela."
+title_prompt,Find Serah in the square. Use E to hear her request.,Encontre Serah na praça. Use E para ouvir o pedido dela.
+world_label,THE STILLED BELL · FOUR KINGS,O SINO SILENCIOSO · QUATRO REIS
+close,Continue,Continuar
+continue,Continue,Continuar
+protagonist_reaction_female,"Mara notices you take the guard's blow without hesitation: 'You always did stand between danger and the rest of us.'","Mara nota que você se colocou entre o perigo e os outros: 'Você sempre protegeu quem estava ao seu lado.'"
+protagonist_reaction_male,"Mara catches your eye after the stones leap: 'You always did stand between danger and the rest of us.'","Mara encontra seu olhar após as pedras saltarem: 'Você sempre protegeu quem estava ao seu lado.'"
+power,POWER,PODER
+power_locked,Power · locked,Poder · bloqueado
+power_label,POWER,PODER

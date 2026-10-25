@@ -1,13 +1,13 @@
 # Game architecture: village v0 and later campaign
 
-Status: proposed implementation baseline. This document defines the technical shape of the game; `PLAN.md` remains the v0 delivery checklist, and the local `GAME_DIRECTION.md` remains the narrative direction draft. No game code exists yet.
+Status: visual v0 direction. `PLAN.md` tracks the single-scene visual milestone; the local `GAME_DIRECTION.md` remains the narrative direction draft. The earlier playable experiment is reference code and is not the current acceptance target.
 
 ## Decisions
 
 | Area | v0 decision | Later growth path |
 | --- | --- | --- |
 | Engine | Pin Godot 4.7.2 stable, standard build, with typed GDScript. Do not add a JavaScript runtime to gameplay. | Upgrade deliberately after exported-build and test checks; add native extensions only for a measured need. |
-| First platform | macOS desktop export for the current development and playtest host; keyboard and mouse. | Add Windows and Linux presets after the slice works. Keep input actions independent of physical keys. |
+| First platform | macOS desktop export for the current development and playtest host; keyboard only. | Add Windows and Linux presets after the slice works. Keep input actions independent of physical keys. |
 | World | One compact `Village` scene with placeholder geometry and authored encounter positions. | Load additional region scenes through the same screen flow; do not create an open-world streaming system for v0. |
 | State | One in-memory `RunState` owned by a small `GameSession` autoload. | Add versioned disk serialization when saves become a campaign requirement. |
 | Narrative | One explicit village quest director and typed outcome rules. Dialogue content is separate from rules. | Add quest modules per region; generalize shared patterns only after a second quest proves them. |
@@ -20,26 +20,24 @@ Godot's [scene organization guidance](https://docs.godotengine.org/en/stable/tut
 
 ```mermaid
 flowchart TD
-    Main[Main screen flow] --> Setup[Character setup]
-    Main --> Village[Village scene]
-    Main --> Ending[Ending screen]
-    Session[GameSession autoload: RunState] <--> Main
-    Session <--> Director[VillageQuestDirector]
-    Village --> Director
-    Village --> Player[Player and camera]
-    Village --> NPC[NPCs and interactables]
-    Village --> Enemy[One enemy archetype]
-    Director --> Dialogue[Dialogue presenter]
-    Director --> HUD[Objective and combat HUD]
-    Player --> Combat[Health, attack, dodge, Power ability]
-    Enemy --> Combat
+    Main[Main scene] --> World[Authored village scene]
+    Main --> HUD[HUD, dialogue, setup, pause, ending]
+    Main --> Director[VillageQuestDirector]
+    Session[GameSession autoload: RunState] --> Director
+    Main --> Player[Player and third-person camera]
+    Main --> Villagers[Villagers and interactables]
+    Main --> Guard[Single guard encounter]
+    Player --> Combat[Health, attack, dodge, Power]
+    Guard --> Combat
+    Director --> Rules[Pure outcome mapping]
+    Main --> CSV[English and pt_BR catalog]
 ```
 
-- `Main` swaps setup, village, and ending screens. Each screen owns its visual nodes and can be run with a test session. It does not contain quest rules.
-- `GameSession` owns the current `RunState`, starts a fresh run, stores the encounter checkpoint, restores retry, and publishes state changes. It does not inspect village nodes or render UI. This is the only v0 autoload.
-- `VillageQuestDirector` maps local interactions and combat events to the six authored beats. It asks pure rules to validate transitions and calculate the outcome, updates `RunState`, and emits an objective key or scene command. It does not contain translated prose.
-- Actors own movement, perception, attacks, health, and animation cues. They emit events such as `interacted`, `enemy_defeated`, and `guardian_threatened`; they do not advance quest beats directly.
-- Dialogue and HUD display localized keys and send selected option IDs back to the director. They do not write the run state themselves.
+- `Main` currently builds the title setup, procedural village, dialogue, HUD, pause, and ending UI in one scene. It translates interactions and UI choices into calls on the quest director. Split those elements into reusable scenes after the loop is verified.
+- `GameSession` owns the current `RunState` and selected locale. Fresh runs reset session data; retry uses the quest director and reloads the village scene. It does not inspect village geometry.
+- `VillageQuestDirector` validates and advances quest beats, including task prerequisites, awakening, decision, and retry. `VillageQuestRules` maps custody and testimony to the local outcome.
+- Actors own movement, health, attacks, and the Power interaction. Tovin follows during the quest but has no combat AI.
+- The current dialogue presenter is part of `Main`; it displays localized keys and sends choice IDs to the director. UI does not directly advance beats.
 
 Prefer direct references inside a scene and typed signals between its parts. A global event bus would make the single village harder to trace. Cross-scene state passes through `GameSession`.
 
@@ -49,9 +47,9 @@ Prefer direct references inside a scene and typed signals between its parts. A g
 
 The village uses explicit beats:
 
-`PERSONAL_TASK → RECORD_REQUEST → SEIZURE → AWAKENING → CUSTODY_AND_TESTIMONY → CONSEQUENCE → COMPLETE`
+`PERSONAL_TASK → RECORD_REQUEST → SEIZURE → AWAKENING → POWER_TRIAL → DECISION → CONSEQUENCE → COMPLETE`
 
-Only the director can advance a beat. Each transition declares its prerequisites and side effects. A choice is recorded once; revisiting an interaction reads the recorded result. A pure `VillageQuestRules` function maps custody and testimony to a relationship response, a concrete local response, and ending dialogue IDs. It must preserve witnesses' independent knowledge, so a player's silence cannot clear the witnessed awakening.
+The current v0 does not require a route or gameplay state. The earlier quest director and run state remain available for the later playable milestone. The scene exposes authored positions for the protagonist, guard, villagers, archivist, props, and awakening effect without coupling visual staging to input or quest logic.
 
 Before the seizure, `GameSession` takes an encounter checkpoint after the request is resolved. Retry restores that snapshot, reloads the village encounter, and keeps earlier character choices and completed personal-task dialogue. Fresh run creates a new `RunState`. Scene initialization reads the state and is idempotent: it must not replay rewards, repeat the awakening, or duplicate consequences merely because the scene loaded.
 
@@ -62,25 +60,17 @@ The scripted awakening and the later player-controlled ability are separate even
 ```text
 project.godot
 game/
-  main.tscn
+  main.tscn and main.gd
   session/game_session.gd
   session/run_state.gd
-  screens/character_setup.tscn
-  screens/ending.tscn
-  village/village.tscn
+  actors/player.gd
+  actors/guard.gd
+  actors/power_marker.gd
   village/village_quest_director.gd
   village/village_quest_rules.gd
-  actors/player/
-  actors/villager/
-  actors/enemy/
-  systems/combat/
-  systems/interaction/
-  systems/dialogue/
-  systems/power/
-  ui/hud.tscn
-  content/village/dialogue/
   i18n/strings.csv
-tests/
+docs/V0_OPENING.md
+tests/run_rules.gd
 ```
 
 Reusable actor scenes should not contain absolute paths to `Village` or `Main`. `Player` is a `CharacterBody3D` with camera pivot, collision, movement, dodge, basic attack, health, and a limited Power ability as small child scripts/nodes. The sole enemy archetype has its own simple behavior and shares only damage/health contracts that both actors actually need. Interaction targets expose a small typed interaction contract; the player chooses the nearest valid target and the director decides what that interaction means for the quest.
@@ -89,7 +79,7 @@ Dialogue is authored as small Godot text resources (`.tres`) with stable convers
 
 ## Input and camera contract
 
-The first keyboard/mouse bindings are `WASD` movement, mouse orbit, left click basic attack, `Space` dodge, `E` interact, `Q` Power ability after unlocking, and `Esc` pause/back. Set these as Godot input actions so menus, remapping, and later controller support do not depend on hard-coded keys. The camera follows behind the player, rotates with the mouse, avoids wall clipping, and keeps combat target and nearby interaction prompts readable. Lock or release the cursor according to gameplay/menu state. Exact sensitivity, distance, and attack timing are prototype tuning values.
+Controls are deferred for visual v0. The camera is authored for one reference composition and does not need player input. Later gameplay can reuse the earlier keyboard contract.
 
 ## Validation and expansion seams
 
@@ -101,4 +91,4 @@ The first keyboard/mouse bindings are `WASD` movement, mouse orbit, left click b
 
 ## Decisions still owned by opening design
 
-Architecture does not decide the village name/location, chronological anchor, prophecy fragment, visitor's objective, the two custody recipients, or exact outcome dialogue. Those P0 writing decisions in `PLAN.md` must be fixed before quest content is authored. The first macOS build is for local playtesting; any public distribution still needs the fan-work review noted in `GAME_DIRECTION.md`.
+The opening decisions used by the current build are recorded in `docs/V0_OPENING.md`. The first macOS build is for local playtesting; any public distribution still needs the fan-work review noted in `GAME_DIRECTION.md`.
