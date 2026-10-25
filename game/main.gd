@@ -80,7 +80,7 @@ func _build_world() -> void:
 	sun.light_energy = 1.3
 	sun.shadow_enabled = true
 	add_child(sun)
-	_make_box(Vector3(0, -0.25, 0), Vector3(34, 0.5, 34), Color("#8b796c"), true)
+	_make_box(Vector3(0, -0.25, 0), Vector3(34, 0.5, 34), Color("#49494a"), true)
 	_build_square_details()
 	_build_houses()
 	_build_npcs()
@@ -94,15 +94,50 @@ func _build_square_details() -> void:
 	_make_box(Vector3(-9.625, 1.8, 16.5), Vector3(12.75, 3.6, 0.6), Color("#72685f"), true)
 	_make_box(Vector3(9.625, 1.8, 16.5), Vector3(12.75, 3.6, 0.6), Color("#72685f"), true)
 	_make_box(Vector3(0, -0.25, 24), Vector3(6.5, 0.5, 15), Color("#75685b"), true)
-	var paving: Array[Vector3] = [Vector3(-2, 0.015, 0), Vector3(0, 0.02, 0), Vector3(2, 0.015, 0), Vector3(0, 0.02, 2), Vector3(0, 0.02, -2)]
-	for tile: Vector3 in paving:
-		_make_box(tile, Vector3(1.85, 0.06, 1.85), Color("#a5917e"), false)
-	_make_well(Vector3(-5.3, 0, 3.2))
-	_make_banner(Vector3(0, 0, -3.7))
+	_build_paving()
+	_make_well(Vector3(-5.2, 0, 0.7))
+	_make_banner(Vector3(0.8, 0, -3.7))
 	for tree_position: Vector3 in [Vector3(-10, 0, -7), Vector3(10, 0, 8), Vector3(-11, 0, 10), Vector3(12, 0, -9)]:
 		_make_tree(tree_position)
 	for stair_index: int in range(5):
 		_make_box(Vector3(0, stair_index * 0.2, -11 - stair_index * 0.65), Vector3(10, 0.4, 0.9), Color("#7c716d"), true)
+
+func _build_paving() -> void:
+	var palette: Array[Color] = [
+		Color("#424b55"), Color("#5d656d"), Color("#756d66"),
+		Color("#535b62"), Color("#6d605c"), Color("#847261")
+	]
+	var variation: RandomNumberGenerator = RandomNumberGenerator.new()
+	variation.seed = 71942
+	var surface: SurfaceTool = SurfaceTool.new()
+	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
+	for row: int in range(48):
+		var z: float = -16.2 + row * 0.69
+		var x: float = -16.5 + variation.randf_range(-0.3, 0.3)
+		var column: int = 0
+		while x < 16.5:
+			var width: float = variation.randf_range(0.72, 1.55)
+			var depth: float = variation.randf_range(0.60, 0.665)
+			var tone: Color = palette[(row * 11 + column * 7 + row * column) % palette.size()]
+			var corners: PackedVector3Array = PackedVector3Array([
+				Vector3(x, 0.025, z), Vector3(x, 0.025, z + depth),
+				Vector3(x + width, 0.025, z + depth), Vector3(x + width, 0.025, z)
+			])
+			surface.set_color(tone)
+			for index: int in [0, 1, 2, 0, 2, 3]:
+				surface.add_vertex(corners[index])
+			x += width + 0.045
+			column += 1
+	surface.generate_normals()
+	var paving: MeshInstance3D = MeshInstance3D.new()
+	paving.name = "Stone paving"
+	paving.mesh = surface.commit()
+	var material: StandardMaterial3D = StandardMaterial3D.new()
+	material.vertex_color_use_as_albedo = true
+	material.cull_mode = BaseMaterial3D.CULL_DISABLED
+	material.roughness = 1.0
+	paving.material_override = material
+	add_child(paving)
 
 func _build_houses() -> void:
 	_make_house(Vector3(-9, 0, 0), Color("#b97656"), Color("#425262"))
@@ -134,17 +169,54 @@ func _make_house(center: Vector3, wall_color: Color, roof_color: Color) -> void:
 	_make_box(center + Vector3(2.1, 1.5, -2.82), Vector3(0.75, 0.9, 0.08), Color("#373f44"), false)
 
 func _make_well(at: Vector3) -> void:
-	_make_box(at + Vector3(0, 0.35, 0), Vector3(2.3, 0.7, 2.3), Color("#706862"), true)
-	_make_box(at + Vector3(0, 0.8, 0), Vector3(1.4, 0.12, 1.4), Color("#363d40"), false)
-	_make_box(at + Vector3(-1.15, 1.5, 0), Vector3(0.18, 2.3, 0.18), Color("#594b3f"), true)
-	_make_box(at + Vector3(1.15, 1.5, 0), Vector3(0.18, 2.3, 0.18), Color("#594b3f"), true)
-	_make_box(at + Vector3(0, 2.55, 0), Vector3(2.7, 0.2, 0.2), Color("#594b3f"), true)
-	_make_box(at + Vector3(0, 2.85, 0), Vector3(3.1, 0.24, 2.4), Color("#4a5051"), true)
+	var well: StaticBody3D = StaticBody3D.new()
+	well.name = "Covered well"
+	well.position = at
+	well.rotation.y = deg_to_rad(-42.0)
+	well.scale = Vector3.ONE * 0.72
+	add_child(well)
+	_make_box_child(well, Vector3(0, 0.38, 0), Vector3(2.55, 0.76, 2.0), Color("#41484f"))
+	var base_collision: CollisionShape3D = CollisionShape3D.new()
+	var base_shape: BoxShape3D = BoxShape3D.new()
+	base_shape.size = Vector3(2.55, 0.76, 2.0)
+	base_collision.position.y = 0.38
+	base_collision.shape = base_shape
+	well.add_child(base_collision)
+	_make_box_child(well, Vector3(0, 0.79, 0), Vector3(1.95, 0.04, 1.4), Color("#252d32"))
+	for side: int in [-1, 1]:
+		_make_box_child(well, Vector3(side * 1.05, 0.82, 0), Vector3(0.38, 0.23, 2.05), Color("#555a5d"))
+		_make_box_child(well, Vector3(0, 0.82, side * 0.83), Vector3(2.55, 0.23, 0.38), Color("#4e5559"))
+		for end: int in [-1, 1]:
+			var post_position: Vector3 = Vector3(side * 1.37, 2.05, end * 1.12)
+			_make_box_child(well, post_position, Vector3(0.2, 2.8, 0.2), Color("#554035"))
+			var post_collision: CollisionShape3D = CollisionShape3D.new()
+			var post_shape: BoxShape3D = BoxShape3D.new()
+			post_shape.size = Vector3(0.2, 2.8, 0.2)
+			post_collision.position = post_position
+			post_collision.shape = post_shape
+			well.add_child(post_collision)
+			var brace: MeshInstance3D = _make_box_child(well, Vector3(side * 1.08, 3.05, end * 1.12), Vector3(0.16, 0.9, 0.16), Color("#614637"))
+			brace.rotation.z = deg_to_rad(side * -39.0)
+		var slope: MeshInstance3D = _make_box_child(well, Vector3(side * 0.97, 4.1, 0), Vector3(2.2, 0.14, 4.0), Color("#60453d"))
+		slope.rotation.z = deg_to_rad(side * -33.0)
+		var roof_collision: CollisionShape3D = CollisionShape3D.new()
+		var roof_shape: BoxShape3D = BoxShape3D.new()
+		roof_shape.size = Vector3(2.2, 0.14, 4.0)
+		roof_collision.position = slope.position
+		roof_collision.rotation.z = slope.rotation.z
+		roof_collision.shape = roof_shape
+		well.add_child(roof_collision)
+		var fascia: MeshInstance3D = _make_box_child(well, Vector3(side * 0.98, 3.98, 0), Vector3(2.23, 0.12, 4.12), Color("#46372f"))
+		fascia.rotation.z = deg_to_rad(side * -33.0)
+	_make_box_child(well, Vector3(0, 4.72, 0), Vector3(0.19, 0.18, 4.2), Color("#604236"))
+	_make_box_child(well, Vector3(0, 3.1, 0), Vector3(2.9, 0.17, 0.18), Color("#513a30"))
+	_make_cylinder_child(well, Vector3(0, 2.2, 0), Vector2(0.035, 1.7), Color("#9d7951"))
+	_make_cylinder_child(well, Vector3(0, 1.25, 0), Vector2(0.28, 0.42), Color("#453a32"))
 
 func _make_banner(at: Vector3) -> void:
-	_make_box(at + Vector3(0, 2.4, 0), Vector3(0.16, 4.8, 0.16), Color("#544434"), true)
-	_make_box(at + Vector3(0, 4.55, 0), Vector3(2.5, 0.16, 0.16), Color("#544434"), true)
-	_make_box(at + Vector3(0.55, 3.65, 0), Vector3(1.35, 1.75, 0.11), Color("#984e37"), false)
+	_make_box(at + Vector3(0, 2.0, 0), Vector3(0.16, 4.0, 0.16), Color("#544434"), true)
+	_make_box(at + Vector3(0, 3.85, 0), Vector3(2.5, 0.16, 0.16), Color("#544434"), true)
+	_make_box(at + Vector3(0.55, 2.95, 0), Vector3(1.35, 1.75, 0.11), Color("#984e37"), false)
 
 func _make_tree(at: Vector3) -> void:
 	_make_cylinder(at + Vector3(0, 1.4, 0), 0.32, 2.8, Color("#574536"))
@@ -152,10 +224,10 @@ func _make_tree(at: Vector3) -> void:
 	_make_sphere(at + Vector3(0.8, 3.4, 0.2), Vector3(1.65, 1.6, 1.65), Color("#77804e"), 5)
 
 func _build_npcs() -> void:
-	_make_npc("keeper", "keeper", Vector3(-3.4, 0, -0.8), Color("#733a48"))
-	_make_npc("friend", "acquaintance", Vector3(3.2, 0, 1.5), Color("#61724d"))
-	_make_npc("leader", "leader", Vector3(-1.2, 0, -5.8), Color("#394858"))
-	_make_npc("visitor", "visitor", Vector3(4.5, 0, -5.5), Color("#3b5262"))
+	_make_npc("keeper", "keeper", Vector3(-2.3, 0, 5.2), Color("#733a48"))
+	_make_npc("friend", "acquaintance", Vector3(-3.1, 0, 6.5), Color("#61724d"))
+	_make_npc("leader", "leader", Vector3(4.0, 0, 2.4), Color("#8a443a"))
+	_make_npc("visitor", "visitor", Vector3(6.2, 0, 3.7), Color("#3b5262"))
 
 func _build_interaction_objects() -> void:
 	_make_interactable("bell", Vector3(0, 0, 5.4), Color("#c19453"))
@@ -198,17 +270,12 @@ func _build_hud() -> void:
 	var root: Control = Control.new()
 	root.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	hud.add_child(root)
-	var top_card: PanelContainer = _make_panel(root, Vector2(34, 30), Vector2(450, 118))
+	var top_card: PanelContainer = _make_panel(root, Vector2(34, 30), Vector2(330, 75))
 	var top_stack: VBoxContainer = VBoxContainer.new()
 	top_card.add_child(top_stack)
-	var game_label: Label = _label("WORLD_LABEL", 13, STONE_GOLD)
-	top_stack.add_child(game_label)
 	objective_label = _label("", 19, Color("#fff4df"))
 	top_stack.add_child(objective_label)
-	var hint_label: Label = _label("CONTROLS", 12, Color("#c7c0b5"))
-	hint_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	top_stack.add_child(hint_label)
-	var bottom_panel: PanelContainer = _make_panel(root, Vector2(34, 640), Vector2(360, 130))
+	var bottom_panel: PanelContainer = _make_panel(root, Vector2(34, 705), Vector2(360, 75))
 	var bottom_stack: VBoxContainer = VBoxContainer.new()
 	bottom_panel.add_child(bottom_stack)
 	health_label = _label("HEALTH", 18, Color("#fff4df"))
@@ -228,6 +295,7 @@ func _build_hud() -> void:
 	health_bar.add_theme_stylebox_override("fill", fill)
 	bottom_stack.add_child(health_bar)
 	ability_label = _label("POWER_LOCKED", 12, Color("#bbdce5"))
+	ability_label.visible = false
 	bottom_stack.add_child(ability_label)
 	var crosshair: Label = _label("◇", 26, Color("#f2d68e"))
 	crosshair.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
@@ -404,7 +472,7 @@ func _reset_world_for_fresh_run() -> void:
 	_set_blocker_closed(village_gate)
 	keeper_cloak.material_override = _material(Color("#733a48"))
 	friend_cape.material_override = _material(Color("#61724d"))
-	friend_actor.position = Vector3(3.2, 0, 1.5)
+	friend_actor.position = Vector3(-3.1, 0, 6.5)
 	var visitor: Node3D = _find_target("visitor")
 	if visitor != null:
 		visitor.visible = true
@@ -939,6 +1007,7 @@ func _make_npc(target_id: String, label_key: String, at: Vector3, color: Color) 
 	nameplate.font_size = 30
 	nameplate.outline_size = 6
 	nameplate.modulate = Color("#f4e4c8")
+	nameplate.visible = false
 	actor.add_child(nameplate)
 	add_child(actor)
 

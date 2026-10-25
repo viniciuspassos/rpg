@@ -3,7 +3,7 @@ config_version=5
 
 [application]
 config/name="The Stilled Bell: Village v0"
-run/main_scene="res://game/main.tscn"
+run/main_scene="res://game/visual_mvp.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 config/description="A short, bilingual third-person village episode. Unofficial, non-commercial fan work."
 

@@ -20,10 +20,13 @@ var power_unlocked: bool = false
 var camera_pivot: Node3D
 var camera: Camera3D
 var camera_obstruction: RayCast3D
-var camera_offset: Vector3 = Vector3(0.0, 2.4, 6.1)
+var camera_offset: Vector3 = Vector3(0.65, 2.0, 3.8)
 var power_uses: int = 3
 var mantle_material: StandardMaterial3D
 var weapon_rig: Node3D
+var arena_center: Vector2 = Vector2.ZERO
+var arena_radii: Vector2 = Vector2.ZERO
+var fixed_camera: bool = false
 
 func _ready() -> void:
 	_build_character()
@@ -105,15 +108,16 @@ func _build_camera() -> void:
 	camera_pivot.add_child(camera_obstruction)
 	camera = Camera3D.new()
 	camera.position = camera_offset
-	camera.rotation.x = deg_to_rad(-16.0)
+	camera.rotation.x = deg_to_rad(-22.0)
 	camera.current = true
-	camera.fov = 62.0
+	camera.fov = 54.0
 	camera_pivot.add_child(camera)
 
 func _physics_process(delta: float) -> void:
-	camera_pivot.global_position = global_position + Vector3(0, 1.35, 0)
-	camera_pivot.rotate_y(-Input.get_axis("look_left", "look_right") * delta * 1.8)
-	camera_pivot.rotation.x = clampf(camera_pivot.rotation.x - Input.get_axis("look_up", "look_down") * delta * 1.4, deg_to_rad(-48.0), deg_to_rad(12.0))
+	if not fixed_camera:
+		camera_pivot.global_position = global_position + Vector3(0, 1.35, 0)
+		camera_pivot.rotate_y(-Input.get_axis("look_left", "look_right") * delta * 1.8)
+		camera_pivot.rotation.x = clampf(camera_pivot.rotation.x - Input.get_axis("look_up", "look_down") * delta * 1.4, deg_to_rad(-48.0), deg_to_rad(12.0))
 	attack_cooldown = maxf(attack_cooldown - delta, 0.0)
 	power_cooldown = maxf(power_cooldown - delta, 0.0)
 	dodge_time = maxf(dodge_time - delta, 0.0)
@@ -133,13 +137,28 @@ func _physics_process(delta: float) -> void:
 	if direction.length_squared() > 0.01:
 		rotation.y = lerp_angle(rotation.y, atan2(-direction.x, -direction.z), delta * 12.0)
 	move_and_slide()
-	_update_camera_clearance()
+	constrain_to_arena()
+	if not fixed_camera:
+		_update_camera_clearance()
 	if Input.is_action_just_pressed("dodge") and is_on_floor():
 		dodge_time = 0.32
 	if Input.is_action_just_pressed("attack"):
 		_attack()
 	if Input.is_action_just_pressed("power") and power_unlocked and power_uses > 0 and power_cooldown <= 0.0:
 		_use_power()
+
+func constrain_to_arena() -> void:
+	if arena_radii.x <= 0.0 or arena_radii.y <= 0.0:
+		return
+	var offset: Vector2 = Vector2(global_position.x, global_position.z) - arena_center
+	var normalized: Vector2 = Vector2(offset.x / arena_radii.x, offset.y / arena_radii.y)
+	if normalized.length_squared() <= 1.0:
+		return
+	normalized = normalized.normalized()
+	global_position.x = arena_center.x + normalized.x * arena_radii.x
+	global_position.z = arena_center.y + normalized.y * arena_radii.y
+	velocity.x = 0.0
+	velocity.z = 0.0
 
 func _update_camera_clearance() -> void:
 	camera_obstruction.force_raycast_update()

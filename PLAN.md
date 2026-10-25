@@ -1,100 +1,56 @@
-# v0 implementation plan
+# 3D village MVP: one walkable visual scene
 
-Tracking issue: [#3 — Build v0: a visual village scene](https://github.com/viniciuspassos/rpg/issues/3).
+## Goal and reference
 
-## Goal
+Build one tightly bounded walkable ring in Godot 4.7.2. The current reference is the local, intentionally untracked `concepts/v0-awakening-graybox.png`, annotated with the playable region. The fixed camera should resemble that frame. Only the protagonist and central paving need 3D geometry; the well, buildings, figures, magic, and distant paving can stay in a static background plate. This milestone requires movement only.
 
-Deliver one authored 3D village scene based on the local `GAME_DIRECTION.md` direction draft, which is intentionally not tracked in this repository. This v0 is a visual prototype and does not need to be playable. The scene should recreate the composition, modeled characters, warm lighting, architecture, and blue-white awakening effect from `concepts/v0-awakening-graybox.png`. Gameplay, controls, quest flow, combat, localization, and export validation are deferred.
+The current `v0-keyboard-three-minute` branch already has a player controller and earlier gameplay code. The visual MVP runs from `game/visual_mvp.tscn`; the earlier quest scene stays in `game/main.tscn` for reference. Reuse the player movement, with an opt-in elliptical boundary and fixed camera for this scene.
 
-Current baseline: the repository contains a Godot project with a procedural village graybox and an earlier playable experiment. That experiment is reference code, not the v0 acceptance target. The next step is visual production for one scene; no playable loop is required for this milestone.
+## Effort-saving art direction
 
-## Scope
+- Restrict movement to the annotated central floor. No route to the well, stairs, buildings, or surrounding figures is required.
+- Use a fixed camera so the static plate and 3D floor remain aligned. The player can move inside the ring but cannot rotate the view.
+- Use the cleaned reference-derived plate for every noninteractive object. The 3D floor samples that plate from the fixed view, hiding the seam between the walkable floor and background paving.
+- Spend modeling time on one protagonist mesh, clothing, sword, and idle/walk motion. Keep other figures and the awakening baked into the plate.
+- Keep UI out of the comparison frame until the protagonist and walking space match the reference.
 
-- Godot 4 with typed GDScript; open-source tools and no paid services.
-- One compact village scene with stylized modeled characters and environment art matching the local concept image.
-- One player with male/female selection and provisional presentation; include at least one contextual NPC reaction for each selection.
-- Two origin options and two motivation options, selected during initial setup. These affect the opening dialogue, not separate levels or quest chains.
-- Three recurring villagers, one visitor, and one enemy archetype. A close acquaintance accompanies part of the quest and reacts to its outcome.
-- One staged awakening pose and blue-white Power effect; the effect does not need to be interactive.
-- One desktop preview target for visual review. Keyboard controls are deferred.
+## Asset inventory
 
-## 1. Lock the opening design — P0
+| Priority | Deliverable | Minimum production approach |
+| --- | --- | --- |
+| Done | Cleaned background plate | Image edit of the annotated reference; removes the drawn oval, red note, HUD, and foreground protagonist. Saved as `game/art/village_backdrop.png`. |
+| Done | Central floor and boundary | Elliptical 3D mesh and ground collision in `game/visual_mvp.gd`; screen-projected plate color gives a continuous paving image. Player movement is clamped inside the ellipse. |
+| Next | Protagonist | One faceted human mesh with clothing, hair, and sword matching the foreground silhouette; idle and walk animation. |
+| Later, only if needed | Foot contact and UI | Improve the grounding shadow and add a small objective/health overlay after the protagonist comparison passes. |
 
-- [x] Choose the desktop target, record the Godot version, and specify input bindings and camera behavior.
-- [x] Name and locate the village; select a precise event anchor within the established book-period window.
-- [x] Record what has already happened, what news the village knows, and what remains available for later divergence.
-- [x] Write the opening prophecy fragment, its provenance, how the record survived, and its author-facing meaning. Separate fact, uncertainty, and faction interpretation.
-- [x] Define the visitor's concrete objective, who orders the attempted seizure, and why the dispute escalates.
-- [x] Define the three villagers' goals, relationships, and conflicting views of the imperial inheritance.
-- [x] Write two origins and two motivations. Map each to a dialogue variation or task framing change.
-- [x] Write the short route: request, seizure, awakening, Power trial, custody/testimony, and consequence.
-- [x] Specify the two custody recipients and the testimony options, including what witnesses know independently of the player.
-- [x] Write an outcome table mapping each decision to a relationship change and an immediate visible response. Include the companion's reaction and the reason to leave the village.
+The plate was produced with the built-in image generation edit tool from the user's local annotated reference. Its prompt was: preserve the exact village composition, architecture, people, magic, light and paving; remove the black oval, red note, foreground protagonist and HUD; reconstruct exposed paving; add no text or new objects. The original reference is local and ignored by Git, while the cleaned plate is saved in the project for version control. Godot alone is enough for the present scene. Blender becomes useful when shaping and animating the protagonist; keep editable source and export `.glb` if used.
 
-Exit condition: the mission can be walked through on paper from start to both endings, with clear objectives, understandable stakes, and no unexplained escalation. Do not require the full campaign or all prophecy fragments to be written.
+## Production sequence and review gates
 
-## 2. Build the visual scene — P0
+1. **Background and ring.** Use the cleaned plate, fixed camera, a small textured 3D floor, and bounded movement. Gate: the spawn image reproduces the reference scenery without a visible floor seam, and walking to every boundary keeps the player on screen. Current [ring capture](docs/visual-progress/arena.png) records this pass.
+2. **Protagonist.** Replace the capsule with one faceted model. Match the reference silhouette, scale, clothing colors, hair, and sword from the fixed view before proceeding. Gate: compare spawn and walking screenshots side by side; no capsule or box anatomy remains.
+3. **Movement presentation.** Add idle/walk motion and refine grounding if needed. Gate: feet stay visually planted across the whole ring and the plate/3D composite does not show obvious sliding or clipping.
+4. **Optional UI.** Add only the reference HUD elements that improve the final view. Gate: no gameplay systems are required beyond movement.
 
-Depends on the camera, controls, and platform decisions in step 1.
+## Compatibility renderer decision
 
-- [x] Create the Godot project, initial scene, input map, export preset, and minimal run/export instructions.
-- [x] Keep source assets and project configuration under version control; exclude generated/import caches and exported builds.
-- [x] Verify licenses and cost constraints before introducing dependencies or assets; record attribution where needed.
-- [ ] Replace placeholder geometry with authored village meshes, roofs, stairs, market props, banner, well, and stone paving.
-- [ ] Create or source properly licensed stylized human models for the protagonist, guard, villagers, and archivist; rig and pose them in Blender.
-- [ ] Build clothing, hair, weapons, and readable silhouettes for the characters in the reference composition.
-- [ ] Stage the characters in one camera composition matching the concept image.
-- [ ] Add warm sunset lighting, shadows, atmospheric depth, and the blue-white awakening effect.
+**Keep Compatibility for this milestone.** The project already selects `gl_compatibility` in `project.godot`. A local launch of Godot 4.7.2 on Apple M4 Pro completed successfully with `--rendering-method gl_compatibility`; the engine reported `OpenGL API 4.1 Metal ... Compatibility` and exited without a renderer error.
 
-Exit condition: the project opens directly into one camera-ready 3D scene that can be compared with the reference image. No input, combat, quest progression, or restart flow is required.
+The actual fixed-camera composite was run and captured in Compatibility on this machine. It uses a canvas backdrop, a 3D floor mesh, ambient and directional lighting, and the existing player controller. The baked magic needs no renderer effect. Compatibility remains sufficient for this scope.
 
-Visual acceptance for v0: compare a rendered screenshot against `concepts/v0-awakening-graybox.png` at the target resolution. Model and rig game assets in Blender; use ComfyUI for concept variations, texture references, or paintovers where useful. The screenshot is the acceptance artifact, not a playable build.
+This validates startup and the current composite, not the final protagonist model or frame rate. A fixed plate also means there is no background parallax; the camera must remain fixed. If free camera rotation becomes a requirement, the plate would need to be replaced by 3D scenery or multiple layered views.
 
-## 3. Deferred gameplay and story — later milestone
+Godot references: [renderer features](https://docs.godotengine.org/en/4.7/tutorials/rendering/renderers.html), [environment and post-processing](https://docs.godotengine.org/en/4.7/tutorials/3d/environment_and_post_processing.html), [3D scene import](https://docs.godotengine.org/en/4.7/tutorials/assets_pipeline/importing_3d_scenes/available_formats.html).
 
-This work starts after the visual scene is accepted.
+## Incremental visual record
 
-- [x] Choose the smallest editable content format supported by the actual needs; keep dialogue and quest text separate from gameplay logic.
-- [x] Implement initial character choices and their specified dialogue/task variations.
-- [x] Implement dialogue conditions, current objective, quest progression, and decision state.
-- [x] Connect all six opening beats to the playable location and encounter.
-- [x] Make the close acquaintance accompany the relevant segment and react to the decision; omit party management and combat AI.
-- [x] Implement both custody outcomes and testimony reactions without duplicating the whole quest.
-- [x] Show a relationship change and a concrete scene, access, or assistance change before the ending screen.
-- [x] Keep choices consistent for the current playthrough. A fresh run must clear them; retry must restore a coherent encounter state without duplicating consequences.
-
-Exit condition: both endings are reachable, choices have visible effects in the episode, and neither protagonist selection is forced into a permanent allegiance or prophecy interpretation.
-
-## 4. Deferred playable slice — later milestone
-
-Build localization support with the first content in step 3; complete presentation after the quest is connected.
-
-- [ ] Add controls/tutorial prompts, objectives, health, interaction and combat feedback after visual acceptance.
-- [ ] Provide English source text and `pt-BR` translations when playable content is authored.
-- [ ] Add pause, restart, defeat/retry, and ending UI when the playable slice begins.
-- [ ] Export a playable build only in the later milestone.
-
-Exit condition: deferred until the visual scene is accepted and gameplay work is authorized.
-
-## 5. Validate the visual scene — P1
-
-- [ ] Open the scene in Godot and capture the target camera view.
-- [ ] Compare composition, character silhouettes, architecture, palette, lighting, shadows, and Power effect against the reference.
-- [ ] Check that imported meshes, textures, rigs, and licenses load without errors.
-- [ ] Record the accepted screenshot and remaining visual gaps.
+Compare each object in the running game from the same camera view before moving to the next. The earlier [paving](docs/visual-progress/paving.png), [covered well](docs/visual-progress/well.png), and [composition](docs/visual-progress/composition.png) captures document the discarded full-3D approach. The [ring capture](docs/visual-progress/arena.png) is the current spawn view. Movement was visually checked at the left, right, front, and back limits. The next object is the protagonist; its current capsule is intentionally still a placeholder.
 
 ## Definition of done
 
-- The project opens into one camera-ready 3D village scene.
-- Visible characters and key architecture use authored or properly licensed models instead of placeholders.
-- Composition, warm lighting, shadows, character poses, and the blue-white awakening effect are visibly close to the reference image.
-- A comparison screenshot and visual gap list are recorded.
-- Playability, controls, quest flow, localization, combat, and export are explicitly deferred.
+- A player can walk around the bounded ring without leaving the frame or entering the static background.
+- A 16:9 screenshot from the fixed camera matches the reference's composition, color, figures, and magic, with a finished 3D protagonist in the foreground.
+- The visible player and floor load without errors in Compatibility and remain coherent during movement.
+- Source assets, comparison screenshots, and remaining visual gaps are recorded.
 
-## Explicitly deferred
-
-Open world, additional regions, full faction entry or leadership systems, founding a channeler order, Rand's confrontation, the Last Battle, extensive skill trees, crafting, economy, party management, companion combat AI, detailed visual customization, voice acting, final art, and disk save/load. Session state and coherent retry are sufficient for this short slice. Public distribution is a separate milestone subject to the fan-work review already required by the direction document.
-
-## Delivery order
-
-Produce character and environment art in Blender → stage the single scene in Godot → tune lighting, camera, and Power effect → capture and compare the reference screenshot → begin gameplay after visual acceptance.
+An exact pixel match from every camera angle is impossible with one still background, so this MVP intentionally fixes the camera and keeps the walkable area small.
