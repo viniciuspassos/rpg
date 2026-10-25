@@ -9,6 +9,7 @@ signal defeated
 const WALK_SPEED: float = 5.4
 const DODGE_SPEED: float = 10.5
 const GRAVITY: float = 22.0
+const PROTAGONIST_SCENE: PackedScene = preload("res://game/art/protagonist.glb")
 
 var health: int = 100
 var max_health: int = 100
@@ -22,8 +23,12 @@ var camera: Camera3D
 var camera_obstruction: RayCast3D
 var camera_offset: Vector3 = Vector3(0.65, 2.0, 3.8)
 var power_uses: int = 3
-var mantle_material: StandardMaterial3D
+var protagonist_model: Node3D
+var left_leg: Node3D
+var right_leg: Node3D
+var free_arm: Node3D
 var weapon_rig: Node3D
+var walk_time: float = 0.0
 var arena_center: Vector2 = Vector2.ZERO
 var arena_radii: Vector2 = Vector2.ZERO
 var fixed_camera: bool = false
@@ -42,61 +47,15 @@ func _build_character() -> void:
 	collision.shape = capsule
 	collision.position.y = 0.9
 	add_child(collision)
-	var body: MeshInstance3D = MeshInstance3D.new()
-	var mesh: CapsuleMesh = CapsuleMesh.new()
-	mesh.radius = 0.42
-	mesh.height = 1.8
-	body.mesh = mesh
-	body.position.y = 0.9
-	var material: StandardMaterial3D = StandardMaterial3D.new()
-	material.albedo_color = Color("#253442")
-	material.metallic = 0.12
-	body.material_override = material
-	add_child(body)
-	var mantle: MeshInstance3D = MeshInstance3D.new()
-	var mantle_mesh: BoxMesh = BoxMesh.new()
-	mantle_mesh.size = Vector3(0.82, 0.75, 0.24)
-	mantle.mesh = mantle_mesh
-	mantle.position = Vector3(0, 1.05, -0.24)
-	mantle_material = StandardMaterial3D.new()
-	mantle_material.albedo_color = Color("#9b4934")
-	mantle.material_override = mantle_material
-	add_child(mantle)
-	_build_weapon()
+	protagonist_model = PROTAGONIST_SCENE.instantiate() as Node3D
+	protagonist_model.name = "Protagonist"
+	protagonist_model.rotation.y = PI
+	add_child(protagonist_model)
+	left_leg = protagonist_model.find_child("Leg_L", true, false) as Node3D
+	right_leg = protagonist_model.find_child("Leg_R", true, false) as Node3D
+	free_arm = protagonist_model.find_child("Arm_R", true, false) as Node3D
+	weapon_rig = protagonist_model.find_child("Arm_L", true, false) as Node3D
 	set_protagonist_presentation(str(GameSession.state.protagonist))
-
-func _build_weapon() -> void:
-	weapon_rig = Node3D.new()
-	weapon_rig.position = Vector3(0.42, 0.72, -0.12)
-	add_child(weapon_rig)
-	var blade: MeshInstance3D = MeshInstance3D.new()
-	var blade_mesh: BoxMesh = BoxMesh.new()
-	blade_mesh.size = Vector3(0.11, 0.09, 1.15)
-	blade.mesh = blade_mesh
-	blade.position.z = -0.68
-	blade.material_override = _weapon_material(Color("#b8c1c2"), 0.68)
-	weapon_rig.add_child(blade)
-	var guard: MeshInstance3D = MeshInstance3D.new()
-	var guard_mesh: BoxMesh = BoxMesh.new()
-	guard_mesh.size = Vector3(0.42, 0.09, 0.12)
-	guard.mesh = guard_mesh
-	guard.position.z = -0.12
-	guard.material_override = _weapon_material(Color("#b28a4e"), 0.52)
-	weapon_rig.add_child(guard)
-	var grip: MeshInstance3D = MeshInstance3D.new()
-	var grip_mesh: BoxMesh = BoxMesh.new()
-	grip_mesh.size = Vector3(0.12, 0.34, 0.12)
-	grip.mesh = grip_mesh
-	grip.position.z = 0.08
-	grip.material_override = _weapon_material(Color("#45352e"), 0.9)
-	weapon_rig.add_child(grip)
-
-func _weapon_material(color: Color, metallic: float) -> StandardMaterial3D:
-	var material: StandardMaterial3D = StandardMaterial3D.new()
-	material.albedo_color = color
-	material.metallic = metallic
-	material.roughness = 0.3
-	return material
 
 func _build_camera() -> void:
 	camera_pivot = Node3D.new()
@@ -138,6 +97,7 @@ func _physics_process(delta: float) -> void:
 		rotation.y = lerp_angle(rotation.y, atan2(-direction.x, -direction.z), delta * 12.0)
 	move_and_slide()
 	constrain_to_arena()
+	animate_protagonist(delta, Vector2(velocity.x, velocity.z).length() / WALK_SPEED)
 	if not fixed_camera:
 		_update_camera_clearance()
 	if Input.is_action_just_pressed("dodge") and is_on_floor():
@@ -167,8 +127,31 @@ func _update_camera_clearance() -> void:
 	else:
 		camera.position = camera_offset
 
+func animate_protagonist(delta: float, movement: float) -> void:
+	var stride: float = clampf(movement, 0.0, 1.0)
+	walk_time += delta * (8.0 if stride > 0.05 else 2.0)
+	var swing: float = sin(walk_time) * 0.36 * stride
+	left_leg.rotation.x = swing
+	right_leg.rotation.x = -swing
+	free_arm.rotation.x = -swing * 0.55
+	if attack_cooldown <= 0.0:
+		weapon_rig.rotation.x = swing * 0.45
+	protagonist_model.position.y = absf(sin(walk_time)) * 0.025 * stride
+
 func set_protagonist_presentation(protagonist: String) -> void:
-	mantle_material.albedo_color = Color("#9b4934") if protagonist == "female" else Color("#355879")
+	var bun: Node3D = protagonist_model.find_child("low bun", true, false) as Node3D
+	var bun_facet: Node3D = protagonist_model.find_child("bun light facet", true, false) as Node3D
+	if bun != null:
+		bun.visible = protagonist == "female"
+	if bun_facet != null:
+		bun_facet.visible = protagonist == "female"
+	var blue: StandardMaterial3D = StandardMaterial3D.new()
+	blue.albedo_color = Color("#355879")
+	blue.roughness = 0.9
+	for cloak_name: String in ["red shoulder mantle", "cloak tail"]:
+		var cloak: MeshInstance3D = protagonist_model.find_child(cloak_name, true, false) as MeshInstance3D
+		if cloak != null:
+			cloak.material_override = blue if protagonist == "male" else null
 
 func reset_for_fresh_run() -> void:
 	health = max_health
@@ -179,6 +162,12 @@ func reset_for_fresh_run() -> void:
 	power_uses = 3
 	power_unlocked = false
 	invulnerable = false
+	walk_time = 0.0
+	left_leg.rotation.x = 0.0
+	right_leg.rotation.x = 0.0
+	free_arm.rotation.x = 0.0
+	weapon_rig.rotation.x = 0.0
+	protagonist_model.position.y = 0.0
 	health_changed.emit(health, max_health)
 
 func _attack() -> void:

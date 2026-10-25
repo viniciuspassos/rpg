@@ -3,8 +3,8 @@ extends Node3D
 const PlayerScript = preload("res://game/actors/player.gd")
 const KeyboardControls = preload("res://game/keyboard_controls.gd")
 const BACKDROP: Texture2D = preload("res://game/art/village_backdrop.png")
-const ARENA_CENTER: Vector2 = Vector2(0.0, 0.55)
-const ARENA_RADII: Vector2 = Vector2(2.1, 2.55)
+const ARENA_CENTER: Vector2 = Vector2(0.0, 2.05)
+const ARENA_RADII: Vector2 = Vector2(2.1, 0.75)
 
 func _ready() -> void:
 	KeyboardControls.install()
@@ -78,11 +78,12 @@ func _floor_material() -> ShaderMaterial:
 
 func _build_player() -> void:
 	var actor: PlayerActor = PlayerScript.new() as PlayerActor
-	actor.position = Vector3(0.0, 0.1, 2.8)
+	actor.position = Vector3(-0.4, 0.1, 2.6)
 	actor.arena_center = ARENA_CENTER
 	actor.arena_radii = ARENA_RADII
 	actor.fixed_camera = true
 	add_child(actor)
+	actor.protagonist_model.scale = Vector3.ONE * 1.1
 	actor.camera.current = false
 	var shadow: MeshInstance3D = MeshInstance3D.new()
 	var shadow_mesh: PlaneMesh = PlaneMesh.new()

@@ -20,16 +20,17 @@ The current `v0-keyboard-three-minute` branch already has a player controller an
 | --- | --- | --- |
 | Done | Cleaned background plate | Image edit of the annotated reference; removes the drawn oval, red note, HUD, and foreground protagonist. Saved as `game/art/village_backdrop.png`. |
 | Done | Central floor and boundary | Elliptical 3D mesh and ground collision in `game/visual_mvp.gd`; screen-projected plate color gives a continuous paving image. Player movement is clamped inside the ellipse. |
-| Next | Protagonist | One faceted human mesh with clothing, hair, and sword matching the foreground silhouette; idle and walk animation. |
-| Later, only if needed | Foot contact and UI | Improve the grounding shadow and add a small objective/health overlay after the protagonist comparison passes. |
+| In progress | Protagonist | Editable faceted Blender mesh with clothing, hair, sword, and walk motion; imported as a `.glb` in both playable scenes. Silhouette and color are recognizable, but the cloak, boots, and garment folds still differ from the illustration. |
+| In progress | Foot contact | Refine the grounding shadow and foot placement during walking. |
+| Later, only if needed | UI | Add a small objective/health overlay after the protagonist comparison passes. |
 
-The plate was produced with the built-in image generation edit tool from the user's local annotated reference. Its prompt was: preserve the exact village composition, architecture, people, magic, light and paving; remove the black oval, red note, foreground protagonist and HUD; reconstruct exposed paving; add no text or new objects. The original reference is local and ignored by Git, while the cleaned plate is saved in the project for version control. Godot alone is enough for the present scene. Blender becomes useful when shaping and animating the protagonist; keep editable source and export `.glb` if used.
+The plate was produced with the built-in image generation edit tool from the user's local annotated reference. Its prompt was: preserve the exact village composition, architecture, people, magic, light and paving; remove the black oval, red note, foreground protagonist and HUD; reconstruct exposed paving; add no text or new objects. The original reference is local and ignored by Git, while the cleaned plate is saved in the project for version control. The protagonist is authored in Blender with an editable source file and exported to `.glb`; no downloaded generation model or paid service is required.
 
 ## Production sequence and review gates
 
 1. **Background and ring.** Use the cleaned plate, fixed camera, a small textured 3D floor, and bounded movement. Gate: the spawn image reproduces the reference scenery without a visible floor seam, and walking to every boundary keeps the player on screen. Current [ring capture](docs/visual-progress/arena.png) records this pass.
-2. **Protagonist.** Replace the capsule with one faceted model. Match the reference silhouette, scale, clothing colors, hair, and sword from the fixed view before proceeding. Gate: compare spawn and walking screenshots side by side; no capsule or box anatomy remains.
-3. **Movement presentation.** Add idle/walk motion and refine grounding if needed. Gate: feet stay visually planted across the whole ring and the plate/3D composite does not show obvious sliding or clipping.
+2. **Protagonist.** Replace the capsule with one faceted model. Match the reference silhouette, scale, clothing colors, hair, and sword from the fixed view before proceeding. Gate: compare spawn and walking screenshots side by side; no capsule or box anatomy remains. The current model passes integration and color checks, but the visual match remains open.
+3. **Movement presentation.** Add idle/walk motion and refine grounding. Gate: feet stay visually planted across the whole ring and the plate/3D composite does not show obvious sliding or clipping. Walking works, but foot contact still needs visual review.
 4. **Optional UI.** Add only the reference HUD elements that improve the final view. Gate: no gameplay systems are required beyond movement.
 
 ## Compatibility renderer decision
@@ -44,7 +45,7 @@ Godot references: [renderer features](https://docs.godotengine.org/en/4.7/tutori
 
 ## Incremental visual record
 
-Compare each object in the running game from the same camera view before moving to the next. The earlier [paving](docs/visual-progress/paving.png), [covered well](docs/visual-progress/well.png), and [composition](docs/visual-progress/composition.png) captures document the discarded full-3D approach. The [ring capture](docs/visual-progress/arena.png) is the current spawn view. Movement was visually checked at the left, right, front, and back limits. The next object is the protagonist; its current capsule is intentionally still a placeholder.
+Compare each object in the running game from the same camera view before moving to the next. The earlier [paving](docs/visual-progress/paving.png), [covered well](docs/visual-progress/well.png), and [composition](docs/visual-progress/composition.png) captures document the discarded full-3D approach. The [ring capture](docs/visual-progress/arena.png) records the earlier capsule view. The [model review](docs/visual-progress/protagonist-model.png) records the rear three-quarter silhouette, and the [playable capture](docs/visual-progress/protagonist-mvp.png) records the current fixed-camera composition. Walking was checked at the front, back, left, and right edges after narrowing the ring to keep the character on the foreground paving. The illustration remains the visual reference; garment folds and unseen angles are simplified in the low-poly model.
 
 ## Definition of done
 
