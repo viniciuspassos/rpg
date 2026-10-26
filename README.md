@@ -1,6 +1,6 @@
 # The Stilled Bell: Village v0
 
-An unofficial, non-commercial *Wheel of Time* fan game prototype. The current MVP target is one small, walkable 3D village square in Godot, styled after the local `concepts/v0-awakening-graybox.png`. See [PLAN.md](PLAN.md) for the reduced asset and visual production plan. The Godot MCP bridge is an editor-only development add-on and is excluded from exports.
+An unofficial, non-commercial *Wheel of Time* fan game prototype. The current MVP target is one small, walkable 3D village square in Godot, styled after the local `concepts/v0-awakening-graybox.png`. See [PLAN.md](PLAN.md) for the reduced asset and visual production plan, and [the production guidelines](docs/PRODUCTION_GUIDELINES.md) for the art and world pipeline. The Godot MCP bridge is an editor-only development add-on and is excluded from exports.
 
 ## Run
 
