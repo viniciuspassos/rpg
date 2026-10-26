@@ -21,7 +21,13 @@ Before creating a plan or starting any project work:
 - Keep changes minimal, reuse existing code, and avoid unnecessary abstractions.
 - Use strong types; do not introduce `any`. Prefer `unknown` with narrowing or explicit types where applicable, and typed GDScript for gameplay.
 - Keep new functions within cyclomatic complexity 10, nesting depth 3, four parameters, and 80 lines. Parameter and line limits may be relaxed for tests; follow stricter repository rules where configured.
-- Use test-driven development for behavior changes: failing test, minimum implementation, then refactor. Do not delete or weaken tests to make changes pass.
+- Use test-driven development for gameplay and other behavior changes: failing test, minimum implementation, then refactor. Do not delete or weaken tests to make changes pass.
 - Delegate independent work only when useful and authorized. Concurrent writers must use separate working trees and have explicit scope and constraints.
 - Write project documentation, code, comments, commit messages, and issues in English. Support English and Brazilian Portuguese for player-facing content.
 - Follow `PLAN.md` for v0 scope. `GAME_DIRECTION.md` is a local direction draft and may be intentionally excluded from version control; preserve it and do not force-add it without authorization.
+
+## Asset production
+
+- Follow `docs/PRODUCTION_GUIDELINES.md` for world, character, animation, and other visual asset work.
+- Judge asset work by the output in the running game against the chosen reference. Use fixed-view captures and focused visual revisions until the result meets the stated acceptance criteria. Do not require TDD, code tests, or code quality review for asset generation itself; test gameplay behavior and engine integration when those change.
+- Keep asset-generation scripts, Blender working files, temporary renders, and other production inputs local and unversioned. Version only approved game-ready assets and engine files needed to load them. The generation method is an internal production choice, not part of the game runtime.

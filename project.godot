@@ -1,0 +1,43 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="The Stilled Bell: Village v0"
+config/description="A short, bilingual third-person village episode. Unofficial, non-commercial fan work."
+run/main_scene="res://game/visual_mvp.tscn"
+config/features=PackedStringArray("4.7", "GL Compatibility")
+
+[autoload]
+
+GameSession="*res://game/session/game_session.gd"
+
+[display]
+
+window/size/viewport_width=1440
+window/size/viewport_height=810
+window/size/window_width_override=1280
+window/size/window_height_override=720
+window/stretch/mode="canvas_items"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/godot_mcp/plugin.cfg")
+
+[internationalization]
+
+locale/translations=PackedStringArray("res://game/i18n/strings.en.translation", "res://game/i18n/strings.pt_BR.translation")
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
+textures/vram_compression/import_etc2_astc=true
+environment/defaults/default_clear_color=Color(0.17, 0.2, 0.22, 1)
