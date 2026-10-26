@@ -19,8 +19,8 @@ Judge the result in the running Godot scene, at the intended viewport size and f
 
 - Prefer existing repository assets. For a new asset, record its source URL, author, license, permitted game use and redistribution, and any attribution requirement before adding it to the project. “Free to download” alone is insufficient. Respect the project's open-source and no-paid-service constraints.
 - Inspect downloaded archives before extraction for executable files, scripts, plugins, and unexpected paths. Open third-party `.blend` files with auto-execution disabled and inspect embedded scripts, drivers, and linked libraries before enabling anything. Do not run unreviewed add-ons or code from an asset pack.
-- Keep editable sources under `source_assets/`, game-ready exports under `game/art/`, and comparison evidence under `docs/visual-progress/`. Commit only assets that are needed and whose rights are clear; exclude temporary renders, Blender backup files, import caches, and duplicate sources. Keep provenance beside the asset or in the task record.
-- Use Blender for shaping, materials, rigging, and export. Use Godot for the final lighting, collision, camera, movement, and performance decisions. Export through a format Godot imports reliably, normally glTF/GLB, and retain an editable source.
+- Keep generation scripts, Blender working files, reference inputs, and temporary renders local under the ignored `source_assets/` directory. Commit only approved game-ready assets under `game/art/` and engine files needed to load them. Keep provenance and license information in the task record when using third-party content.
+- Use Blender for shaping, materials, rigging, and export. Use Godot for the final lighting, collision, camera, movement, and performance decisions. Export through a format Godot imports reliably, normally glTF/GLB. The production method is not part of the game runtime and does not need to be versioned.
 
 ## Build and review loop
 
@@ -37,11 +37,11 @@ Work in the following order, only for stages relevant to the current milestone:
 
 For each stage:
 
-1. Make the smallest change that can test the visual hypothesis. Keep scripts and Blender stages repeatable, with clear inputs and outputs.
+1. Make the smallest change that can test the visual hypothesis. Choose whatever local generation method efficiently improves the asset; the quality of its code is not an acceptance criterion.
 2. Produce a cheap preview first. Use low sample stills or a simple viewport capture before any expensive render. Estimate long render cost before starting it.
 3. Capture the running game at a fixed spawn view and at relevant movement extremes. Place the result beside the reference at the same framing and size.
 4. Name at most three observable gaps, ordered by visual impact. Correct those gaps before adding new detail. If a pass fails twice without a clear improvement, stop and revise the approach rather than adding complexity.
-5. Save the editable source, exported asset, in-game capture, and short decision record. Advance only when the stage gate is met or the remaining gap is explicitly accepted in `PLAN.md`.
+5. Keep working files locally, save the approved export and in-game capture, and record the visual decision. Advance only when the stage gate is met or the remaining gap is explicitly accepted in `PLAN.md`.
 
 Do not assume that more polygons, dense scatter, high sample counts, or photorealistic Cycles renders improve a real-time scene. Measure the imported scene and use the least detail that holds up from the game camera. Keep collisions, walkable space, and protagonist visibility ahead of decoration.
 
@@ -49,13 +49,13 @@ Do not assume that more polygons, dense scatter, high sample counts, or photorea
 
 Give each task a narrow brief: **target file or scene, reference, one intended change, constraints, and acceptance evidence**. Ask for a comparison capture and a short account of what changed. Prefer a targeted follow-up over replaying the entire design history. Reuse existing code and assets; do not generate a whole world from a broad prompt.
 
-Codex may use scripts for deterministic Blender setup, asset checks, exports, and Godot tests. Review any external script or add-on before execution. Use subagents only for independent, clearly owned work when they reduce total effort; concurrent writers must use separate worktrees. The Claude artifact's named Sonnet handoff is not part of this workflow.
+Codex may use local scripts or Blender tools to generate assets. Review any external script or add-on before execution. Keep generation code unversioned and spend review time on the resulting asset. Use subagents only for independent, clearly owned work when they reduce total effort; concurrent writers must use separate worktrees. The Claude artifact's named Sonnet handoff is not part of this workflow.
 
-For behavior changes, follow repository test-driven practice. For visual changes, the primary evidence is a paired reference and in-game capture, followed by the relevant Godot smoke or scene tests. Report what was observed, what remains visibly different, and whether performance or integration changed. Avoid claiming a visual pass from a headless test alone.
+For gameplay behavior changes, follow repository test-driven practice. For asset generation, validate the visible output through paired reference and in-game captures and refine it until it matches the acceptance criteria. Do not add TDD or code tests for the generation method. Run relevant Godot checks only when engine integration or gameplay behavior changes. Report what was observed, what remains visibly different, and whether performance or integration changed. Avoid claiming a visual pass from a headless test alone.
 
 ## Completion record
 
-A production task is complete when its acceptance view passes, source and export are reproducible, the Godot scene opens and runs, relevant tests pass, asset provenance is recorded, and remaining visual gaps are written down. Update `PLAN.md` only to reflect a verified state or an explicit change of scope.
+A production task is complete when its acceptance view passes, the approved asset loads in Godot, relevant integration checks pass if needed, third-party provenance is recorded, and remaining visual gaps are written down. Update `PLAN.md` only to reflect a verified state or an explicit change of scope.
 
 ## Reference basis
 

@@ -24,7 +24,7 @@ The current `v0-keyboard-three-minute` branch already has a player controller an
 | In progress | Foot contact | Refine the grounding shadow and foot placement during walking. |
 | Later, only if needed | UI | Add a small objective/health overlay after the protagonist comparison passes. |
 
-The plate was produced with the built-in image generation edit tool from the user's local annotated reference. Its prompt was: preserve the exact village composition, architecture, people, magic, light and paving; remove the black oval, red note, foreground protagonist and HUD; reconstruct exposed paving; add no text or new objects. The original reference is local and ignored by Git, while the cleaned plate is saved in the project for version control. The protagonist is authored in Blender with an editable source file and exported to `.glb`; no downloaded generation model or paid service is required.
+The plate was produced with the built-in image generation edit tool from the user's local annotated reference. Its prompt was: preserve the exact village composition, architecture, people, magic, light and paving; remove the black oval, red note, foreground protagonist and HUD; reconstruct exposed paving; add no text or new objects. The original reference is local and ignored by Git, while the cleaned plate is saved in the project for version control. The protagonist is authored in Blender and exported to `.glb`; its generation files remain local and unversioned. No downloaded generation model or paid service is required.
 
 ## Production sequence and review gates
 
@@ -52,6 +52,6 @@ Compare each object in the running game from the same camera view before moving 
 - A player can walk around the bounded ring without leaving the frame or entering the static background.
 - A 16:9 screenshot from the fixed camera matches the reference's composition, color, figures, and magic, with a finished 3D protagonist in the foreground.
 - The visible player and floor load without errors in Compatibility and remain coherent during movement.
-- Source assets, comparison screenshots, and remaining visual gaps are recorded.
+- Approved game-ready assets, comparison screenshots, and remaining visual gaps are recorded.
 
 An exact pixel match from every camera angle is impossible with one still background, so this MVP intentionally fixes the camera and keeps the walkable area small.

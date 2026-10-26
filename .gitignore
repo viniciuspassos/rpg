@@ -3,4 +3,5 @@ node_modules
 concepts
 .godot
 builds
+source_assets/
 .DS_Store
