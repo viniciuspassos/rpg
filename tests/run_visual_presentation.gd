@@ -9,6 +9,7 @@ func _ready() -> void:
 	add_child(scene)
 	var actor: PlayerActor = get_tree().get_first_node_in_group("player") as PlayerActor
 	actor.set_physics_process(false)
+	_test_spawn_inside_arena(actor)
 	var presentation: Node3D = scene.get_node_or_null("IllustratedProtagonist") as Node3D
 	if presentation == null:
 		push_error("The scene needs an illustrated movement presentation.")
@@ -20,6 +21,7 @@ func _ready() -> void:
 	_test_back_walk(presentation, sprite)
 	_test_facing(presentation, sprite)
 	_test_ground_anchor(actor, presentation, sprite)
+	_test_blocked_facing(actor, presentation, sprite)
 	await get_tree().process_frame
 	if not _test_framing(scene, actor, presentation, sprite) or _failed:
 		get_tree().quit(1)
@@ -37,6 +39,11 @@ func _test_walk_poses(presentation: Node3D, sprite: Sprite3D) -> void:
 	presentation.call("update_motion", Vector3.ZERO)
 	_check(sprite.frame_coords.x == 0, "A stopped or blocked actor must return to idle.")
 	_check(sprite.frame_coords.y == 3, "Stopping must retain the last facing.")
+
+func _test_spawn_inside_arena(actor: PlayerActor) -> void:
+	var offset: Vector2 = Vector2(actor.position.x, actor.position.z) - actor.arena_center
+	var normalized: Vector2 = Vector2(offset.x / actor.arena_radii.x, offset.y / actor.arena_radii.y)
+	_check(normalized.length_squared() <= 1.0, "The visual spawn must be inside the walk area without an opening-frame correction.")
 
 func _test_back_walk(presentation: Node3D, sprite: Sprite3D) -> void:
 	presentation.call("update_motion", Vector3.FORWARD * 0.05)
@@ -60,6 +67,13 @@ func _test_ground_anchor(actor: PlayerActor, presentation: Node3D, sprite: Sprit
 	_check(is_equal_approx(presentation.global_position.z, actor.global_position.z + IllustratedProtagonist.VISUAL_DEPTH), "The image must keep its depth offset.")
 	_check(presentation.global_rotation.is_zero_approx(), "Turning must not orbit the image or shadow around the actor.")
 	_check(absf(sprite.position.y - 180.0 * sprite.pixel_size) < 0.001, "The atlas foot baseline must meet the ground.")
+
+func _test_blocked_facing(actor: PlayerActor, presentation: Node3D, sprite: Sprite3D) -> void:
+	presentation.call("update_motion", Vector3(0.05, 0.0, 0.0))
+	actor.velocity = Vector3.ZERO
+	actor.position.z -= 0.03
+	presentation.call("_physics_process", 1.0 / 60.0)
+	_check(sprite.frame_coords == Vector2i(0, 3), "Arena correction must not turn a blocked protagonist away from her last facing.")
 
 func _test_framing(scene: Node3D, actor: PlayerActor, presentation: Node3D, sprite: Sprite3D) -> bool:
 	var camera: Camera3D = scene.get_node("FixedCamera") as Camera3D

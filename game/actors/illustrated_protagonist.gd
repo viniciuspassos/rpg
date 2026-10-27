@@ -26,7 +26,10 @@ func _physics_process(_delta: float) -> void:
 	var displacement: Vector3 = actor.global_position - _previous_position
 	_previous_position = actor.global_position
 	_sync_position()
-	update_motion(displacement)
+	if Vector2(actor.velocity.x, actor.velocity.z).length_squared() < 0.000001:
+		update_motion(Vector3.ZERO)
+	else:
+		update_motion(displacement)
 
 func update_motion(displacement: Vector3) -> void:
 	var movement: Vector2 = Vector2(displacement.x, displacement.z)
