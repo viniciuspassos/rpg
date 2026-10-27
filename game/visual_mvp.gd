@@ -2,6 +2,7 @@ extends Node3D
 
 const PlayerScript = preload("res://game/actors/player.gd")
 const KeyboardControls = preload("res://game/keyboard_controls.gd")
+const VISUAL_PROTAGONIST: Texture2D = preload("res://game/art/protagonist_illustrated.png")
 const BACKDROP: Texture2D = preload("res://game/art/village_backdrop.png")
 const ARENA_CENTER: Vector2 = Vector2(0.0, 2.05)
 const ARENA_RADII: Vector2 = Vector2(2.1, 0.75)
@@ -78,18 +79,25 @@ func _floor_material() -> ShaderMaterial:
 
 func _build_player() -> void:
 	var actor: PlayerActor = PlayerScript.new() as PlayerActor
-	actor.position = Vector3(-0.4, 0.1, 2.6)
+	actor.position = Vector3(-0.4, 0.1, 2.7)
 	actor.arena_center = ARENA_CENTER
 	actor.arena_radii = ARENA_RADII
 	actor.fixed_camera = true
 	add_child(actor)
-	actor.protagonist_model.scale = Vector3.ONE * 1.1
+	actor.protagonist_model.visible = false
+	var visual_model: Sprite3D = Sprite3D.new()
+	visual_model.texture = VISUAL_PROTAGONIST
+	visual_model.pixel_size = 0.0014
+	visual_model.position = Vector3(0.0, 1.075, 0.5)
+	visual_model.shaded = false
+	visual_model.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	actor.add_child(visual_model)
 	actor.camera.current = false
 	var shadow: MeshInstance3D = MeshInstance3D.new()
 	var shadow_mesh: PlaneMesh = PlaneMesh.new()
 	shadow_mesh.size = Vector2(1.55, 0.95)
 	shadow.mesh = shadow_mesh
-	shadow.position.y = 0.035
+	shadow.position = Vector3(0.0, 0.035, 0.5)
 	var shadow_shader: Shader = Shader.new()
 	shadow_shader.code = "shader_type spatial;\nrender_mode unshaded, blend_mix, depth_draw_never, cull_disabled;\nvoid fragment() { ALBEDO = vec3(0.12, 0.08, 0.07); ALPHA = 0.52 * (1.0 - smoothstep(0.12, 0.5, distance(UV, vec2(0.5)))); }"
 	var shadow_material: ShaderMaterial = ShaderMaterial.new()

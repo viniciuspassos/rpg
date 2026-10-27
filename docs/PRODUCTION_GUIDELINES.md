@@ -4,7 +4,7 @@ This is the working pipeline for producing the playable village v0. `PLAN.md` de
 
 ## Production target
 
-Produce one convincing, walkable Godot scene before producing a larger world. The current target is the bounded village square in `game/visual_mvp.tscn`, viewed through its fixed camera. The protagonist and central floor are 3D; the existing background plate supplies the distant village. Preserve this composition unless a reviewed change to `PLAN.md` replaces it. The earlier playable episode in `game/main.tscn` remains a compatibility check, not the visual acceptance target.
+Produce one convincing Godot scene before producing a larger world. The current target is the bounded village square in `game/visual_mvp.tscn`, viewed through its fixed camera. For the current visual-identity pass, a transparent illustrated protagonist matches the existing background plate while the central floor remains 3D. Movement presentation awaits a separate pass, as recorded in `PLAN.md`. The earlier playable episode in `game/main.tscn` remains a compatibility check, not the visual acceptance target.
 
 Judge the result in the running Godot scene, at the intended viewport size and from the player's view. A Blender still is useful for inspecting an asset, but it does not prove that the asset reads well in motion, matches the plate, or runs acceptably in Godot.
 
@@ -30,7 +30,7 @@ Work in the following order, only for stages relevant to the current milestone:
 | --- | --- | --- |
 | Composition | Camera, playable bounds, rough masses | Spawn view matches the chosen reference composition; movement stays on screen. |
 | Ground | Walkable paving and contact surface | No visible seam with the plate; collision and feet agree with the image. |
-| Hero asset | Silhouette, scale, clothing colors, sword | Spawn and walking captures read as the intended protagonist from the game camera. |
+| Hero asset | Silhouette, scale, clothing colors, sword | Spawn capture reads as the intended protagonist from the fixed camera; other positions and walking are reviewed separately. |
 | Motion | Idle, walk, grounding, attack only when in scope | No obvious sliding, clipping, detached equipment, or unreadable action. |
 | World detail | Only essential props, vegetation, and material variation | Added detail improves depth and legibility without obscuring the hero or the route. |
 | Light and atmosphere | Godot scene lighting and restrained effects | Visuals remain coherent with the plate across the playable area and run acceptably. |
