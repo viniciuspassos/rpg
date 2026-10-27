@@ -53,6 +53,10 @@ func _test_walk_poses(presentation: Node3D, sprite: Sprite3D) -> void:
 
 func _test_spawn_inside_arena(actor: PlayerActor) -> void:
 	_check(_arena_contains(actor, Vector2(actor.position.x, actor.position.z)), "The visual spawn must be inside the walk area without an opening-frame correction.")
+	var offset: Vector2 = Vector2(actor.position.x, actor.position.z) - actor.arena_center
+	var reach: Vector2 = actor.arena_radii - Vector2(0.42, 0.42)
+	var clearance: Vector2 = Vector2(offset.x / reach.x, offset.y / reach.y)
+	_check(clearance.length_squared() < 1.0, "The protagonist must spawn clear of the physical arena wall.")
 
 func _test_duel_space(actor: PlayerActor) -> void:
 	_check(_arena_contains(actor, Vector2(-1.2, actor.arena_center.y)), "The left paving must remain available for the duel.")

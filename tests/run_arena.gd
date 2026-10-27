@@ -32,8 +32,8 @@ func _ready() -> void:
 	add_child(visual)
 	var visual_player: PlayerActor = visual.find_child("ArenaPlayer", true, false) as PlayerActor
 	assert(visual_player != null)
-	assert(visual_player.arena_center == Vector2(-0.2, 1.55))
-	assert(visual_player.arena_radii == Vector2(1.9, 1.15))
+	assert(visual_player.arena_center == Vector2(-0.2, 1.75))
+	assert(visual_player.arena_radii == Vector2(1.9, 1.35))
 	assert(visual.find_child("ArenaPaving", true, false) != null)
 	var barrier: StaticBody3D = visual.find_child("ArenaBarrier", true, false) as StaticBody3D
 	assert(barrier != null)
@@ -55,7 +55,7 @@ func _ready() -> void:
 	visitor_collision.shape = visitor_shape
 	visitor.add_child(visitor_collision)
 	visual.add_child(visitor)
-	visitor.global_position = Vector3(0.8, 1.0, 1.55)
+	visitor.global_position = Vector3(0.8, 1.0, 1.75)
 	for step: int in range(20):
 		await get_tree().physics_frame
 		visitor.velocity = Vector3(8.0, 0.0, 0.0)
