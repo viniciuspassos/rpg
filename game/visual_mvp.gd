@@ -3,7 +3,8 @@ extends Node3D
 const PlayerScript = preload("res://game/actors/player.gd")
 const KeyboardControls = preload("res://game/keyboard_controls.gd")
 const IllustratedPresentation = preload("res://game/actors/illustrated_protagonist.gd")
-const BACKDROP: Texture2D = preload("res://game/art/village_duel_backdrop.png")
+const BACKDROP: Texture2D = preload("res://game/art/village_duel_empty.png")
+const OPPONENT: Texture2D = preload("res://game/art/opponent_static.png")
 const ARENA_CENTER: Vector2 = Vector2(0.0, 2.05)
 const ARENA_RADII: Vector2 = Vector2(2.1, 0.75)
 const WALK_CENTER: Vector2 = Vector2(-0.25, 2.05)
@@ -12,6 +13,7 @@ const WALK_RADII: Vector2 = Vector2(1.0, 0.6)
 func _ready() -> void:
 	KeyboardControls.install()
 	_build_backdrop()
+	_build_opponent()
 	_build_arena()
 	_build_player()
 	_build_camera()
@@ -32,13 +34,28 @@ func _build_backdrop() -> void:
 	sun.light_energy = 1.25
 	add_child(sun)
 	var layer: CanvasLayer = CanvasLayer.new()
+	layer.name = "Backdrop"
 	layer.layer = -1
 	add_child(layer)
 	var image: TextureRect = TextureRect.new()
+	image.name = "Plate"
 	image.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	image.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	image.texture = BACKDROP
+	layer.add_child(image)
+
+func _build_opponent() -> void:
+	var layer: CanvasLayer = CanvasLayer.new()
+	layer.name = "Opponent"
+	layer.layer = -1
+	add_child(layer)
+	var image: TextureRect = TextureRect.new()
+	image.name = "StaticPose"
+	image.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	image.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	image.texture = OPPONENT
 	layer.add_child(image)
 
 func _build_arena() -> void:

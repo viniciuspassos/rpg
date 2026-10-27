@@ -7,6 +7,7 @@ func _ready() -> void:
 	get_window().size = Vector2i(1440, 810)
 	var scene: Node3D = VisualScene.instantiate() as Node3D
 	add_child(scene)
+	_test_opponent_layer(scene)
 	var actor: PlayerActor = get_tree().get_first_node_in_group("player") as PlayerActor
 	actor.set_physics_process(false)
 	_test_spawn_inside_arena(actor)
@@ -29,6 +30,15 @@ func _ready() -> void:
 		return
 	print("Illustrated poses, direction, grounding, and arena framing passed.")
 	get_tree().quit()
+
+func _test_opponent_layer(scene: Node3D) -> void:
+	var backdrop: TextureRect = scene.get_node_or_null("Backdrop/Plate") as TextureRect
+	var opponent: TextureRect = scene.get_node_or_null("Opponent/StaticPose") as TextureRect
+	_check(backdrop != null and opponent != null, "The opponent must have a separate image layer.")
+	if backdrop == null or opponent == null:
+		return
+	_check(backdrop.texture.resource_path.ends_with("village_duel_empty.png"), "The background must contain no baked opponent.")
+	_check(opponent.texture.resource_path.ends_with("opponent_static.png"), "The opponent must use an independent transparent asset.")
 
 func _test_walk_poses(presentation: Node3D, sprite: Sprite3D) -> void:
 	presentation.call("update_motion", Vector3(0.05, 0.0, 0.0))

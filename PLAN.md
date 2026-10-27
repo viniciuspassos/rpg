@@ -10,7 +10,7 @@ The project already has a player controller and earlier gameplay code. The visua
 
 - Restrict movement to the central floor left of the opponent. No route to the well, stairs, buildings, or foreground props is required.
 - Use a fixed camera so the static plate and 3D floor remain aligned. The player can move inside the ring but cannot rotate the view.
-- Use the duel plate for the village, fixed magic, and opponent pose. The 3D floor samples that plate from the fixed view, hiding the seam between the walkable floor and background paving.
+- Use the duel plate for the village and fixed magic. Show the opponent as a separate static image layer, ready for later animation. The 3D floor samples the plate from the fixed view, hiding the seam between the walkable floor and background paving.
 - Use a transparent illustrated protagonist for the fixed camera. Keep the experimental 3D model in the earlier playable scene until a matching animated asset is produced.
 - Keep UI out of the comparison frame until the protagonist and walking space match the reference.
 
@@ -19,7 +19,7 @@ The project already has a player controller and earlier gameplay code. The visua
 | Priority | Deliverable | Minimum production approach |
 | --- | --- | --- |
 | Done | Cleaned background plate | Image edit of the annotated reference; removes the drawn oval, red note, HUD, and foreground protagonist. Saved as `game/art/village_backdrop.png`. |
-| In review | Duel plate | A further edit removes the three bystanders and restores the well, paving, and furniture behind them. The opponent and magic remain in `game/art/village_duel_backdrop.png`, shown in the [in-game duel capture](docs/visual-progress/duel-scene-review.png). |
+| Done | Duel plate and static opponent | `game/art/village_duel_empty.png` retains the village and fixed magic without any character. `game/art/opponent_static.png` is a transparent, independent static pose. The earlier combined plate remains as a reference. |
 | Done | Central floor and boundary | Elliptical 3D mesh and ground collision in `game/visual_mvp.gd`; screen-projected plate color gives a continuous paving image. Player movement is clamped inside the ellipse. |
 | In review | Protagonist | The approved raised-hand pose remains the rear idle view. Matching front and side poses and two strides per direction appear in the [idle capture](docs/visual-progress/protagonist-motion-idle.png) and [walk capture](docs/visual-progress/protagonist-motion-walk.png). The earlier 3D model remains in the playable prototype. |
 | In review | Foot contact and framing | The illustrated poses share a foot baseline and contact shadow. The walk ellipse now uses the empty left paving while keeping the protagonist out of the opponent's staging area. Longer movement still needs a player review for the limited frame count and static background perspective. |
@@ -33,7 +33,7 @@ The original plate was produced with the built-in image generation edit tool fro
 2. **Protagonist.** Match the reference silhouette, scale, clothing colors, hair, sword, and reaching pose from the fixed view. Gate: compare the running scene at spawn with the reference. The approved illustrated pose is retained for rear idle; the new spawn capture preserves that direction.
 3. **Movement presentation.** Use view-specific idle and alternating walk poses with a shared ground anchor. The illustrated pass was reviewed in the running Compatibility scene at spawn, at both horizontal bounds, and in a fixed-rate four-direction [movement capture](docs/visual-progress/protagonist-motion-review.mp4). Arena corrections no longer change her facing. The cycle is intentionally simple; player review of sustained movement remains the gate before declaring motion complete.
 4. **Duel staging.** Remove the three bystanders, keep only the opponent in the plate, and give the protagonist room to move on the empty left paving. Gate: the running scene shows exactly the two duel participants and preserves the opponent's position and magic. The [duel capture](docs/visual-progress/duel-scene-review.png) records this pass.
-5. **Opponent motion, when needed.** Extract the opponent from the plate and build a matching view-specific presentation before adding reactions or combat. Keep the current opponent pose static until this becomes the active milestone.
+5. **Opponent separation.** The opponent is now a transparent image layer over the clean duel plate. Keep the pose static in this milestone; reactions and combat animation remain later work.
 6. **Optional UI.** Add only HUD elements that improve the final view after both characters are accepted.
 
 ## Compatibility renderer decision
