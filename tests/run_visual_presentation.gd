@@ -10,6 +10,7 @@ func _ready() -> void:
 	var actor: PlayerActor = get_tree().get_first_node_in_group("player") as PlayerActor
 	actor.set_physics_process(false)
 	_test_spawn_inside_arena(actor)
+	_test_duel_lane(actor)
 	var presentation: Node3D = scene.get_node_or_null("IllustratedProtagonist") as Node3D
 	if presentation == null:
 		push_error("The scene needs an illustrated movement presentation.")
@@ -41,9 +42,16 @@ func _test_walk_poses(presentation: Node3D, sprite: Sprite3D) -> void:
 	_check(sprite.frame_coords.y == 3, "Stopping must retain the last facing.")
 
 func _test_spawn_inside_arena(actor: PlayerActor) -> void:
-	var offset: Vector2 = Vector2(actor.position.x, actor.position.z) - actor.arena_center
+	_check(_arena_contains(actor, Vector2(actor.position.x, actor.position.z)), "The visual spawn must be inside the walk area without an opening-frame correction.")
+
+func _test_duel_lane(actor: PlayerActor) -> void:
+	_check(_arena_contains(actor, Vector2(-1.2, actor.arena_center.y)), "The empty left paving must be available for the duel staging.")
+	_check(not _arena_contains(actor, Vector2(1.0, actor.arena_center.y)), "The protagonist must stay clear of the opponent's staging area.")
+
+func _arena_contains(actor: PlayerActor, point: Vector2) -> bool:
+	var offset: Vector2 = point - actor.arena_center
 	var normalized: Vector2 = Vector2(offset.x / actor.arena_radii.x, offset.y / actor.arena_radii.y)
-	_check(normalized.length_squared() <= 1.0, "The visual spawn must be inside the walk area without an opening-frame correction.")
+	return normalized.length_squared() <= 1.0
 
 func _test_back_walk(presentation: Node3D, sprite: Sprite3D) -> void:
 	presentation.call("update_motion", Vector3.FORWARD * 0.05)
