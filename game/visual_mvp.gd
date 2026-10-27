@@ -3,11 +3,11 @@ extends Node3D
 const PlayerScript = preload("res://game/actors/player.gd")
 const KeyboardControls = preload("res://game/keyboard_controls.gd")
 const IllustratedPresentation = preload("res://game/actors/illustrated_protagonist.gd")
-const BACKDROP: Texture2D = preload("res://game/art/village_backdrop.png")
+const BACKDROP: Texture2D = preload("res://game/art/village_duel_backdrop.png")
 const ARENA_CENTER: Vector2 = Vector2(0.0, 2.05)
 const ARENA_RADII: Vector2 = Vector2(2.1, 0.75)
-const WALK_CENTER: Vector2 = Vector2(0.125, 2.05)
-const WALK_RADII: Vector2 = Vector2(0.625, 0.6)
+const WALK_CENTER: Vector2 = Vector2(-0.25, 2.05)
+const WALK_RADII: Vector2 = Vector2(1.0, 0.6)
 
 func _ready() -> void:
 	KeyboardControls.install()
