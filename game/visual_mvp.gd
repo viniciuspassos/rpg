@@ -2,9 +2,12 @@ extends Node3D
 
 const PlayerScript = preload("res://game/actors/player.gd")
 const KeyboardControls = preload("res://game/keyboard_controls.gd")
+const IllustratedPresentation = preload("res://game/actors/illustrated_protagonist.gd")
 const BACKDROP: Texture2D = preload("res://game/art/village_backdrop.png")
 const ARENA_CENTER: Vector2 = Vector2(0.0, 2.05)
 const ARENA_RADII: Vector2 = Vector2(2.1, 0.75)
+const WALK_CENTER: Vector2 = Vector2(0.125, 2.05)
+const WALK_RADII: Vector2 = Vector2(0.625, 0.6)
 
 func _ready() -> void:
 	KeyboardControls.install()
@@ -78,27 +81,22 @@ func _floor_material() -> ShaderMaterial:
 
 func _build_player() -> void:
 	var actor: PlayerActor = PlayerScript.new() as PlayerActor
-	actor.position = Vector3(-0.4, 0.1, 2.6)
-	actor.arena_center = ARENA_CENTER
-	actor.arena_radii = ARENA_RADII
+	actor.position = Vector3(-0.15, 0.1, 2.58)
+	actor.arena_center = WALK_CENTER
+	actor.arena_radii = WALK_RADII
 	actor.fixed_camera = true
+	actor.walk_speed = 1.15
 	add_child(actor)
-	actor.protagonist_model.scale = Vector3.ONE * 1.1
+	actor.protagonist_model.visible = false
 	actor.camera.current = false
-	var shadow: MeshInstance3D = MeshInstance3D.new()
-	var shadow_mesh: PlaneMesh = PlaneMesh.new()
-	shadow_mesh.size = Vector2(1.3, 0.8)
-	shadow.mesh = shadow_mesh
-	shadow.position.y = 0.02
-	var shadow_shader: Shader = Shader.new()
-	shadow_shader.code = "shader_type spatial;\nrender_mode unshaded, blend_mix, depth_draw_never, cull_disabled;\nvoid fragment() { ALBEDO = vec3(0.12, 0.08, 0.07); ALPHA = 0.35 * (1.0 - smoothstep(0.12, 0.5, distance(UV, vec2(0.5)))); }"
-	var shadow_material: ShaderMaterial = ShaderMaterial.new()
-	shadow_material.shader = shadow_shader
-	shadow.material_override = shadow_material
-	actor.add_child(shadow)
+	var presentation: IllustratedProtagonist = IllustratedPresentation.new()
+	presentation.name = "IllustratedProtagonist"
+	presentation.actor = actor
+	add_child(presentation)
 
 func _build_camera() -> void:
 	var camera: Camera3D = Camera3D.new()
+	camera.name = "FixedCamera"
 	camera.position = Vector3(0.5, 3.35, 5.2)
 	camera.fov = 54.0
 	add_child(camera)
