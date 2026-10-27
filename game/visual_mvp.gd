@@ -87,11 +87,11 @@ func _build_player() -> void:
 	actor.camera.current = false
 	var shadow: MeshInstance3D = MeshInstance3D.new()
 	var shadow_mesh: PlaneMesh = PlaneMesh.new()
-	shadow_mesh.size = Vector2(1.3, 0.8)
+	shadow_mesh.size = Vector2(1.55, 0.95)
 	shadow.mesh = shadow_mesh
-	shadow.position.y = 0.02
+	shadow.position.y = 0.035
 	var shadow_shader: Shader = Shader.new()
-	shadow_shader.code = "shader_type spatial;\nrender_mode unshaded, blend_mix, depth_draw_never, cull_disabled;\nvoid fragment() { ALBEDO = vec3(0.12, 0.08, 0.07); ALPHA = 0.35 * (1.0 - smoothstep(0.12, 0.5, distance(UV, vec2(0.5)))); }"
+	shadow_shader.code = "shader_type spatial;\nrender_mode unshaded, blend_mix, depth_draw_never, cull_disabled;\nvoid fragment() { ALBEDO = vec3(0.12, 0.08, 0.07); ALPHA = 0.52 * (1.0 - smoothstep(0.12, 0.5, distance(UV, vec2(0.5)))); }"
 	var shadow_material: ShaderMaterial = ShaderMaterial.new()
 	shadow_material.shader = shadow_shader
 	shadow.material_override = shadow_material

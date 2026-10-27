@@ -20,8 +20,8 @@ The current `v0-keyboard-three-minute` branch already has a player controller an
 | --- | --- | --- |
 | Done | Cleaned background plate | Image edit of the annotated reference; removes the drawn oval, red note, HUD, and foreground protagonist. Saved as `game/art/village_backdrop.png`. |
 | Done | Central floor and boundary | Elliptical 3D mesh and ground collision in `game/visual_mvp.gd`; screen-projected plate color gives a continuous paving image. Player movement is clamped inside the ellipse. |
-| In progress | Protagonist | Editable faceted Blender mesh with clothing, hair, sword, and walk motion; imported as a `.glb` in both playable scenes. Silhouette and color are recognizable, but the cloak, boots, and garment folds still differ from the illustration. |
-| In progress | Foot contact | Refine the grounding shadow and foot placement during walking. |
+| In progress | Protagonist | The revised `.glb` is integrated in both scenes. Its softer palette, narrower boots, smaller head, and asymmetric mantle are closer to the village plate in the [spawn capture](docs/visual-progress/protagonist-integrated.png). The stance and garment folds still differ from the illustration. |
+| In progress | Foot contact | The visual scene has a broader contact shadow; foot placement during walking still needs review. |
 | Later, only if needed | UI | Add a small objective/health overlay after the protagonist comparison passes. |
 
 The plate was produced with the built-in image generation edit tool from the user's local annotated reference. Its prompt was: preserve the exact village composition, architecture, people, magic, light and paving; remove the black oval, red note, foreground protagonist and HUD; reconstruct exposed paving; add no text or new objects. The original reference is local and ignored by Git, while the cleaned plate is saved in the project for version control. The protagonist is authored in Blender and exported to `.glb`; its generation files remain local and unversioned. No downloaded generation model or paid service is required.
@@ -29,7 +29,7 @@ The plate was produced with the built-in image generation edit tool from the use
 ## Production sequence and review gates
 
 1. **Background and ring.** Use the cleaned plate, fixed camera, a small textured 3D floor, and bounded movement. Gate: the spawn image reproduces the reference scenery without a visible floor seam, and walking to every boundary keeps the player on screen. Current [ring capture](docs/visual-progress/arena.png) records this pass.
-2. **Protagonist.** Replace the capsule with one faceted model. Match the reference silhouette, scale, clothing colors, hair, and sword from the fixed view before proceeding. Gate: compare spawn and walking screenshots side by side; no capsule or box anatomy remains. The current model passes integration and color checks, but the visual match remains open.
+2. **Protagonist.** Replace the capsule with one faceted model. Match the reference silhouette, scale, clothing colors, hair, and sword from the fixed view before proceeding. Gate: compare spawn and walking screenshots side by side; no capsule or box anatomy remains. The current model passes integration and color checks at spawn and a second arena position; the pose and clothing shape remain open.
 3. **Movement presentation.** Add idle/walk motion and refine grounding. Gate: feet stay visually planted across the whole ring and the plate/3D composite does not show obvious sliding or clipping. Walking works, but foot contact still needs visual review.
 4. **Optional UI.** Add only the reference HUD elements that improve the final view. Gate: no gameplay systems are required beyond movement.
 
