@@ -11,7 +11,7 @@ func _ready() -> void:
 	var actor: PlayerActor = get_tree().get_first_node_in_group("player") as PlayerActor
 	actor.set_physics_process(false)
 	_test_spawn_inside_arena(actor)
-	_test_duel_lane(actor)
+	_test_duel_space(actor)
 	var presentation: Node3D = scene.get_node_or_null("IllustratedProtagonist") as Node3D
 	if presentation == null:
 		push_error("The scene needs an illustrated movement presentation.")
@@ -54,9 +54,10 @@ func _test_walk_poses(presentation: Node3D, sprite: Sprite3D) -> void:
 func _test_spawn_inside_arena(actor: PlayerActor) -> void:
 	_check(_arena_contains(actor, Vector2(actor.position.x, actor.position.z)), "The visual spawn must be inside the walk area without an opening-frame correction.")
 
-func _test_duel_lane(actor: PlayerActor) -> void:
-	_check(_arena_contains(actor, Vector2(-1.2, actor.arena_center.y)), "The empty left paving must be available for the duel staging.")
-	_check(not _arena_contains(actor, Vector2(1.0, actor.arena_center.y)), "The protagonist must stay clear of the opponent's staging area.")
+func _test_duel_space(actor: PlayerActor) -> void:
+	_check(_arena_contains(actor, Vector2(-1.2, actor.arena_center.y)), "The left paving must remain available for the duel.")
+	_check(_arena_contains(actor, Vector2(1.0, actor.arena_center.y)), "The protagonist must be able to approach the opponent.")
+	_check(not _arena_contains(actor, Vector2(2.2, actor.arena_center.y)), "The arena must stop before the foreground props.")
 
 func _arena_contains(actor: PlayerActor, point: Vector2) -> bool:
 	var offset: Vector2 = point - actor.arena_center
@@ -103,7 +104,8 @@ func _test_framing(scene: Node3D, actor: PlayerActor, presentation: Node3D, spri
 		return false
 	for sample: int in range(32):
 		var angle: float = TAU * float(sample) / 32.0
-		actor.position = Vector3(actor.arena_center.x + cos(angle) * actor.arena_radii.x, 0.0, actor.arena_center.y + sin(angle) * actor.arena_radii.y)
+		var reach: Vector2 = actor.arena_radii - Vector2(0.42, 0.42)
+		actor.position = Vector3(actor.arena_center.x + cos(angle) * reach.x, 0.0, actor.arena_center.y + sin(angle) * reach.y)
 		presentation.call("_physics_process", 1.0 / 60.0)
 		for pixel: Vector2i in outline:
 			var local: Vector3 = Vector3(float(pixel.x - 200) * sprite.pixel_size, float(200 - pixel.y) * sprite.pixel_size + sprite.position.y, 0.0)

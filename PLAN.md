@@ -8,9 +8,9 @@ The project already has a player controller and earlier gameplay code. The visua
 
 ## Effort-saving art direction
 
-- Restrict movement to the central floor left of the opponent. No route to the well, stairs, buildings, or foreground props is required.
+- Use the central paving around both duel participants as the arena. An invisible 3D collision boundary keeps combatants out of the well, stairs, buildings, and foreground props.
 - Use a fixed camera so the static plate and 3D floor remain aligned. The player can move inside the ring but cannot rotate the view.
-- Use the duel plate for the village and fixed magic. Show the opponent as a separate static image layer, ready for later animation. The 3D floor samples the plate from the fixed view, hiding the seam between the walkable floor and background paving.
+- Use the duel plate for the village and fixed magic. Show the opponent as a separate static image layer, ready for later animation. Scale the existing 3D paving asset across the duel area and sample the plate from the fixed view, hiding the seam between the arena and background paving.
 - Use a transparent illustrated protagonist for the fixed camera. Keep the experimental 3D model in the earlier playable scene until a matching animated asset is produced.
 - Keep UI out of the comparison frame until the protagonist and walking space match the reference.
 
@@ -20,7 +20,7 @@ The project already has a player controller and earlier gameplay code. The visua
 | --- | --- | --- |
 | Done | Cleaned background plate | Image edit of the annotated reference; removes the drawn oval, red note, HUD, and foreground protagonist. Saved as `game/art/village_backdrop.png`. |
 | Done | Duel plate and static opponent | `game/art/village_duel_empty.png` retains the village and fixed magic without any character. `game/art/opponent_static.png` is a transparent, independent static pose. The earlier combined plate remains as a reference. |
-| Done | Central floor and boundary | Elliptical 3D mesh and ground collision in `game/visual_mvp.gd`; screen-projected plate color gives a continuous paving image. Player movement is clamped inside the ellipse. |
+| Done | Duel arena and boundary | `game/art/arena_paving.glb` covers the duel floor with fixed-view paving color. An invisible 3D collision ring contains the protagonist and future 3D combatants. |
 | In review | Protagonist | The approved raised-hand pose remains the rear idle view. Matching front and side poses and two strides per direction appear in the [idle capture](docs/visual-progress/protagonist-motion-idle.png) and [walk capture](docs/visual-progress/protagonist-motion-walk.png). The earlier 3D model remains in the playable prototype. |
 | In review | Foot contact and framing | The illustrated poses share a foot baseline and contact shadow. The walk ellipse now uses the empty left paving while keeping the protagonist out of the opponent's staging area. Longer movement still needs a player review for the limited frame count and static background perspective. |
 | Later, only if needed | UI | Add a small objective/health overlay after the protagonist comparison passes. |
@@ -29,7 +29,7 @@ The original plate was produced with the built-in image generation edit tool fro
 
 ## Production sequence and review gates
 
-1. **Background and ring.** Use the cleaned plate, fixed camera, a small textured 3D floor, and bounded movement. Gate: the spawn image reproduces the reference scenery without a visible floor seam. The [ring capture](docs/visual-progress/arena.png) records this pass; character framing during movement belongs to the later movement pass.
+1. **Background and arena.** Use the duel plate, fixed camera, a textured 3D floor across both combatants, and an invisible collision boundary. The [arena capture](docs/visual-progress/arena-barrier-review.png) has no visible floor seam. Edge captures kept the protagonist on screen and away from the village props; collision checks covered eight directions and a second 3D body. The earlier [ring capture](docs/visual-progress/arena.png) records the smaller predecessor.
 2. **Protagonist.** Match the reference silhouette, scale, clothing colors, hair, sword, and reaching pose from the fixed view. Gate: compare the running scene at spawn with the reference. The approved illustrated pose is retained for rear idle; the new spawn capture preserves that direction.
 3. **Movement presentation.** Use view-specific idle and alternating walk poses with a shared ground anchor. The illustrated pass was reviewed in the running Compatibility scene at spawn, at both horizontal bounds, and in a fixed-rate four-direction [movement capture](docs/visual-progress/protagonist-motion-review.mp4). Arena corrections no longer change her facing. The cycle is intentionally simple; player review of sustained movement remains the gate before declaring motion complete.
 4. **Duel staging.** Remove the three bystanders, keep only the opponent in the plate, and give the protagonist room to move on the empty left paving. Gate: the running scene shows exactly the two duel participants and preserves the opponent's position and magic. The [duel capture](docs/visual-progress/duel-scene-review.png) records this pass.
@@ -48,7 +48,7 @@ Godot references: [renderer features](https://docs.godotengine.org/en/4.7/tutori
 
 ## Incremental visual record
 
-Compare each object in the running game from the same camera view before moving to the next. The earlier [paving](docs/visual-progress/paving.png), [covered well](docs/visual-progress/well.png), and [composition](docs/visual-progress/composition.png) captures document the discarded full-3D approach. The [ring capture](docs/visual-progress/arena.png) records the earlier capsule view. The [model review](docs/visual-progress/protagonist-model.png) and [earlier playable capture](docs/visual-progress/protagonist-mvp.png) record the 3D prototype. The [illustrated candidate](docs/visual-progress/protagonist-illustrated-review.png) records the chosen direction. The [idle](docs/visual-progress/protagonist-motion-idle.png), [walking](docs/visual-progress/protagonist-motion-walk.png), and [four-direction motion](docs/visual-progress/protagonist-motion-review.mp4) captures document the protagonist pass. The [duel capture](docs/visual-progress/duel-scene-review.png) records the simplified cast and wider left staging area.
+Compare each object in the running game from the same camera view before moving to the next. The earlier [paving](docs/visual-progress/paving.png), [covered well](docs/visual-progress/well.png), and [composition](docs/visual-progress/composition.png) captures document the discarded full-3D approach. The [ring capture](docs/visual-progress/arena.png) records the earlier capsule view. The [model review](docs/visual-progress/protagonist-model.png) and [earlier playable capture](docs/visual-progress/protagonist-mvp.png) record the 3D prototype. The [illustrated candidate](docs/visual-progress/protagonist-illustrated-review.png) records the chosen direction. The [idle](docs/visual-progress/protagonist-motion-idle.png), [walking](docs/visual-progress/protagonist-motion-walk.png), and [four-direction motion](docs/visual-progress/protagonist-motion-review.mp4) captures document the protagonist pass. The [duel capture](docs/visual-progress/duel-scene-review.png) records the earlier left staging area; the [arena capture](docs/visual-progress/arena-barrier-review.png) records the enlarged 3D duel space. The opponent remains a fixed image layer, so close-combat reactions and depth ordering need a later visual pass.
 
 ## Definition of done
 
