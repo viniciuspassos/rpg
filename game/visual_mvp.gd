@@ -6,7 +6,8 @@ const IllustratedPresentation = preload("res://game/actors/illustrated_protagoni
 const BACKDROP: Texture2D = preload("res://game/art/village_backdrop.png")
 const ARENA_CENTER: Vector2 = Vector2(0.0, 2.05)
 const ARENA_RADII: Vector2 = Vector2(2.1, 0.75)
-const WALK_RADII: Vector2 = Vector2(1.45, 0.6)
+const WALK_CENTER: Vector2 = Vector2(0.125, 2.05)
+const WALK_RADII: Vector2 = Vector2(0.625, 0.6)
 
 func _ready() -> void:
 	KeyboardControls.install()
@@ -80,8 +81,8 @@ func _floor_material() -> ShaderMaterial:
 
 func _build_player() -> void:
 	var actor: PlayerActor = PlayerScript.new() as PlayerActor
-	actor.position = Vector3(-0.4, 0.1, 2.7)
-	actor.arena_center = ARENA_CENTER
+	actor.position = Vector3(-0.15, 0.1, 2.58)
+	actor.arena_center = WALK_CENTER
 	actor.arena_radii = WALK_RADII
 	actor.fixed_camera = true
 	actor.walk_speed = 1.15
