@@ -4,7 +4,7 @@ An unofficial, non-commercial *Wheel of Time* fan game prototype. The current MV
 
 ## Run
 
-Open this directory in Godot 4.7.2 and press **F5** to run the visual MVP. It starts at `game/visual_mvp.tscn`; move the 3D protagonist with WASD. The camera is fixed and only the central floor is walkable.
+Open this directory in Godot 4.7.2 and press **F5** to run the visual MVP. It starts at `game/visual_mvp.tscn`; move the illustrated protagonist with WASD. The camera is fixed and only the central floor is walkable.
 
 For the earlier playable village episode, open `game/main.tscn` in Godot and run that scene with **F6**. It uses the same 3D protagonist and supports the existing quest, combat, and language choices. Use WASD to move, E to interact, F to attack, Space to dodge, Q for the Power after awakening, and the arrow keys to turn the episode camera.
 
@@ -12,8 +12,8 @@ The first configured export target is macOS. Install the matching Godot export t
 
 ## Current v0
 
-- The current scene combines a reference-derived static backdrop with a small 3D floor and the existing 3D movement controller.
-- The protagonist is imported from `game/art/protagonist.glb`. Blender working files and generation scripts stay local and unversioned under `source_assets/`. The rear-view comparison render and in-game capture are in `docs/visual-progress/`.
+- The current scene combines a reference-derived static backdrop, a small 3D floor, the existing movement controller, and illustrated poses for idle and walking.
+- The visual scene uses `game/art/protagonist_motion.png`, including the approved raised-hand pose at rest and directional walk frames. The earlier playable episode still uses `game/art/protagonist.glb`. Production files stay local and unversioned under `source_assets/`; selected in-game captures are in `docs/visual-progress/`.
 - Combat, quest flow, and localization are deferred until the visual scene is accepted.
 
 The earlier quest and combat route remains in `game/main.tscn` as reference material. Only its movement behavior is required for this milestone.
@@ -32,5 +32,6 @@ The earlier quest and combat route remains in `game/main.tscn` as reference mate
 - `tests/combat.tscn` verifies the short encounter's two-hit guard defeat.
 - `tests/arena.tscn` verifies that movement is clamped to the ring.
 - `tests/protagonist.tscn` verifies the imported model, sword attachment, and walk motion.
+- `tests/visual_presentation.tscn` verifies illustrated pose selection, ground anchoring, and fixed-camera framing.
 
-Run the checks with `godot --headless --path . --script tests/run_rules.gd`, `godot --headless --path . --script tests/run_keyboard.gd`, `godot --headless --path . res://tests/combat.tscn`, `godot --headless --path . res://tests/arena.tscn`, and `godot --headless --path . res://tests/protagonist.tscn`.
+Run the checks with `godot --headless --path . --script tests/run_rules.gd`, `godot --headless --path . --script tests/run_keyboard.gd`, `godot --headless --path . res://tests/combat.tscn`, `godot --headless --path . res://tests/arena.tscn`, `godot --headless --path . res://tests/protagonist.tscn`, and `godot --headless --path . res://tests/visual_presentation.tscn`.

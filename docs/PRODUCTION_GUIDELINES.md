@@ -4,7 +4,7 @@ This is the working pipeline for producing the playable village v0. `PLAN.md` de
 
 ## Production target
 
-Produce one convincing Godot scene before producing a larger world. The current target is the bounded village square in `game/visual_mvp.tscn`, viewed through its fixed camera. For the current visual-identity pass, a transparent illustrated protagonist matches the existing background plate while the central floor remains 3D. Movement presentation awaits a separate pass, as recorded in `PLAN.md`. The earlier playable episode in `game/main.tscn` remains a compatibility check, not the visual acceptance target.
+Produce one convincing Godot scene before producing a larger world. The current target is the bounded village square in `game/visual_mvp.tscn`, viewed through its fixed camera. A transparent illustrated protagonist matches the existing background plate while the central floor remains 3D. Directional idle and walk poses are in review, as recorded in `PLAN.md`. The earlier playable episode in `game/main.tscn` remains a compatibility check, not the visual acceptance target.
 
 Judge the result in the running Godot scene, at the intended viewport size and from the player's view. A Blender still is useful for inspecting an asset, but it does not prove that the asset reads well in motion, matches the plate, or runs acceptably in Godot.
 
