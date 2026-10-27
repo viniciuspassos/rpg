@@ -2,9 +2,9 @@
 
 ## Goal and reference
 
-Build one tightly bounded village composition in Godot 4.7.2. The current reference is the local, intentionally untracked `concepts/v0-awakening-graybox.png`, annotated with the playable region. The fixed camera should resemble that frame. The central paving remains 3D; the foreground protagonist uses a view-specific illustrated sprite so her pose, proportions, and lighting match the background plate. Movement presentation is deferred while the visual identity is reviewed.
+Build one tightly bounded village composition in Godot 4.7.2. The current reference is the local, intentionally untracked `concepts/v0-awakening-graybox.png`, annotated with the playable region. The fixed camera should resemble that frame. The central paving remains 3D; the foreground protagonist uses view-specific illustrated poses so her proportions and lighting match the background plate.
 
-The project already has a player controller and earlier gameplay code. The visual MVP runs from `game/visual_mvp.tscn`; the earlier quest scene stays in `game/main.tscn` for reference. The visual scene reuses the controller and fixed camera, while movement presentation remains outside this visual pass.
+The project already has a player controller and earlier gameplay code. The visual MVP runs from `game/visual_mvp.tscn`; the earlier quest scene stays in `game/main.tscn` for reference. The visual scene reuses the controller and fixed camera with illustrated idle and walk poses.
 
 ## Effort-saving art direction
 
@@ -20,8 +20,8 @@ The project already has a player controller and earlier gameplay code. The visua
 | --- | --- | --- |
 | Done | Cleaned background plate | Image edit of the annotated reference; removes the drawn oval, red note, HUD, and foreground protagonist. Saved as `game/art/village_backdrop.png`. |
 | Done | Central floor and boundary | Elliptical 3D mesh and ground collision in `game/visual_mvp.gd`; screen-projected plate color gives a continuous paving image. Player movement is clamped inside the ellipse. |
-| In review | Protagonist | A transparent illustrated sprite derived from the local concept is placed in the fixed-camera scene. Its pose and rendering are much closer to the plate in the [spawn capture](docs/visual-progress/protagonist-illustrated-review.png). The earlier 3D model remains in the playable prototype. |
-| In progress | Foot contact | The visual scene has a broader contact shadow; animation and foot placement during walking remain deferred. |
+| In review | Protagonist | The approved raised-hand pose remains the rear idle view. Matching front and side poses and two strides per direction appear in the [idle capture](docs/visual-progress/protagonist-motion-idle.png) and [walk capture](docs/visual-progress/protagonist-motion-walk.png). The earlier 3D model remains in the playable prototype. |
+| In review | Foot contact and framing | The illustrated poses share a foot baseline and contact shadow. The fixed camera and smaller walk ellipse keep their opaque silhouettes in frame. Longer movement still needs a player review for the limited frame count and static background perspective. |
 | Later, only if needed | UI | Add a small objective/health overlay after the protagonist comparison passes. |
 
 The plate was produced with the built-in image generation edit tool from the user's local annotated reference. Its prompt was: preserve the exact village composition, architecture, people, magic, light and paving; remove the black oval, red note, foreground protagonist and HUD; reconstruct exposed paving; add no text or new objects. The illustrated protagonist was generated from the same local reference as a transparent foreground cutout, preserving her rear view, costume, sword, reaching hand, and sunset lighting while removing the oval, HUD, magic, and other figures. The original reference is local and ignored by Git; the selected game-ready images are versioned under `game/art/`. Experimental Blender files remain local and unversioned.
@@ -29,8 +29,8 @@ The plate was produced with the built-in image generation edit tool from the use
 ## Production sequence and review gates
 
 1. **Background and ring.** Use the cleaned plate, fixed camera, a small textured 3D floor, and bounded movement. Gate: the spawn image reproduces the reference scenery without a visible floor seam. The [ring capture](docs/visual-progress/arena.png) records this pass; character framing during movement belongs to the later movement pass.
-2. **Protagonist.** Match the reference silhouette, scale, clothing colors, hair, sword, and reaching pose from the fixed view. Gate: compare the running scene at spawn with the reference. The illustrated candidate passes the local spawn comparison and awaits review. A second arena position can crop the sprite, which remains part of the movement presentation pass.
-3. **Movement presentation.** Produce a matching animated 3D character or an appropriate view-specific animation pass before treating movement visuals as complete. Gate: feet stay visually planted across the ring with no obvious sliding or clipping. This stage is deferred.
+2. **Protagonist.** Match the reference silhouette, scale, clothing colors, hair, sword, and reaching pose from the fixed view. Gate: compare the running scene at spawn with the reference. The approved illustrated pose is retained for rear idle; the new spawn capture preserves that direction.
+3. **Movement presentation.** Use view-specific idle and alternating walk poses with a shared ground anchor. The illustrated pass is implemented and checked in the running Compatibility scene at spawn and during walking. The current four-pose cycle is intentionally simple; player review of sustained movement remains the gate before declaring motion complete.
 4. **Optional UI.** Add only the reference HUD elements that improve the final view. Gate: no gameplay systems are required beyond movement.
 
 ## Compatibility renderer decision
@@ -45,13 +45,13 @@ Godot references: [renderer features](https://docs.godotengine.org/en/4.7/tutori
 
 ## Incremental visual record
 
-Compare each object in the running game from the same camera view before moving to the next. The earlier [paving](docs/visual-progress/paving.png), [covered well](docs/visual-progress/well.png), and [composition](docs/visual-progress/composition.png) captures document the discarded full-3D approach. The [ring capture](docs/visual-progress/arena.png) records the earlier capsule view. The [model review](docs/visual-progress/protagonist-model.png) and [earlier playable capture](docs/visual-progress/protagonist-mvp.png) record the 3D prototype. The [illustrated candidate](docs/visual-progress/protagonist-illustrated-review.png) records the current fixed-camera composition. Movement visuals need a separate pass before acceptance.
+Compare each object in the running game from the same camera view before moving to the next. The earlier [paving](docs/visual-progress/paving.png), [covered well](docs/visual-progress/well.png), and [composition](docs/visual-progress/composition.png) captures document the discarded full-3D approach. The [ring capture](docs/visual-progress/arena.png) records the earlier capsule view. The [model review](docs/visual-progress/protagonist-model.png) and [earlier playable capture](docs/visual-progress/protagonist-mvp.png) record the 3D prototype. The [illustrated candidate](docs/visual-progress/protagonist-illustrated-review.png) records the chosen direction. The [current idle](docs/visual-progress/protagonist-motion-idle.png) and [walking](docs/visual-progress/protagonist-motion-walk.png) captures document this movement pass.
 
 ## Definition of done
 
 - A 16:9 screenshot from the fixed camera matches the reference's composition, color, figures, magic, and illustrated foreground protagonist.
 - The visible protagonist and floor load without errors in Compatibility.
-- Movement visuals receive a separate acceptance pass before the walkable MVP is declared complete.
+- The illustrated movement pass receives player review before the walkable MVP is declared complete.
 - Approved game-ready assets, comparison screenshots, and remaining visual gaps are recorded.
 
 An exact pixel match from every camera angle is impossible with one still background, so this MVP intentionally fixes the camera and keeps the walkable area small.

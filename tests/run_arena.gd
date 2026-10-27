@@ -19,5 +19,13 @@ func _ready() -> void:
 	var offset: Vector2 = Vector2(player.position.x, player.position.z) - player.arena_center
 	assert(offset.x * offset.x / 25.0 + offset.y * offset.y / 9.0 <= 1.001)
 	assert(is_equal_approx(player.position.y, 0.1))
+	assert(player.get("walk_speed") == PlayerActor.WALK_SPEED, "The playable episode must retain its existing speed.")
+	player.set("walk_speed", 1.2)
+	player.position = Vector3(0.0, 0.1, 2.0)
+	player.fixed_camera = true
+	Input.action_press("move_right")
+	player._physics_process(1.0 / 60.0)
+	Input.action_release("move_right")
+	assert(is_equal_approx(player.velocity.x, 1.2), "The visual scene must be able to use a walking pace.")
 	print("Arena boundary passed.")
 	get_tree().quit()

@@ -11,6 +11,8 @@ const DODGE_SPEED: float = 10.5
 const GRAVITY: float = 22.0
 const PROTAGONIST_SCENE: PackedScene = preload("res://game/art/protagonist.glb")
 
+@export_range(0.1, 10.0) var walk_speed: float = WALK_SPEED
+
 var health: int = 100
 var max_health: int = 100
 var dodge_time: float = 0.0
@@ -86,7 +88,7 @@ func _physics_process(delta: float) -> void:
 	var direction: Vector3 = camera_basis.x * input_vector.x + camera_basis.z * input_vector.y
 	direction.y = 0.0
 	direction = direction.normalized()
-	var speed: float = DODGE_SPEED if dodge_time > 0.0 else WALK_SPEED
+	var speed: float = DODGE_SPEED if dodge_time > 0.0 else walk_speed
 	velocity.x = direction.x * speed
 	velocity.z = direction.z * speed
 	if not is_on_floor():
@@ -97,7 +99,7 @@ func _physics_process(delta: float) -> void:
 		rotation.y = lerp_angle(rotation.y, atan2(-direction.x, -direction.z), delta * 12.0)
 	move_and_slide()
 	constrain_to_arena()
-	animate_protagonist(delta, Vector2(velocity.x, velocity.z).length() / WALK_SPEED)
+	animate_protagonist(delta, Vector2(velocity.x, velocity.z).length() / maxf(walk_speed, 0.1))
 	if not fixed_camera:
 		_update_camera_clearance()
 	if Input.is_action_just_pressed("dodge") and is_on_floor():
