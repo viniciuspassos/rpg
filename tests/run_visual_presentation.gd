@@ -33,12 +33,20 @@ func _ready() -> void:
 
 func _test_opponent_layer(scene: Node3D) -> void:
 	var backdrop: TextureRect = scene.get_node_or_null("Backdrop/Plate") as TextureRect
-	var opponent: TextureRect = scene.get_node_or_null("Opponent/StaticPose") as TextureRect
-	_check(backdrop != null and opponent != null, "The opponent must have a separate image layer.")
+	var opponent: Sprite3D = scene.get_node_or_null("OpponentStatic") as Sprite3D
+	_check(backdrop != null and opponent != null, "The opponent must occupy a separate 3D depth layer.")
 	if backdrop == null or opponent == null:
 		return
 	_check(backdrop.texture.resource_path.ends_with("village_duel_empty.png"), "The background must contain no baked opponent.")
 	_check(opponent.texture.resource_path.ends_with("opponent_static.png"), "The opponent must use an independent transparent asset.")
+	var camera: Camera3D = scene.get_node("FixedCamera") as Camera3D
+	var projected: Vector2 = camera.unproject_position(opponent.global_position)
+	var source_center: Vector2 = opponent.region_rect.get_center()
+	var source_size: Vector2 = Vector2(opponent.texture.get_size())
+	var viewport_size: Vector2 = get_viewport().get_visible_rect().size
+	var scale: float = maxf(viewport_size.x / source_size.x, viewport_size.y / source_size.y)
+	var target: Vector2 = source_center * scale + (viewport_size - source_size * scale) * 0.5
+	_check(projected.distance_to(target) < 2.0, "The opponent must remain aligned with its reference pixels.")
 
 func _test_walk_poses(presentation: Node3D, sprite: Sprite3D) -> void:
 	presentation.call("update_motion", Vector3(0.05, 0.0, 0.0))

@@ -11,15 +11,19 @@ const ARENA_RADII: Vector2 = Vector2(1.9, 1.35)
 const MODEL_CENTER_Z: float = 2.05
 const MODEL_RADII: Vector2 = Vector2(2.1, 0.75)
 const BARRIER_SEGMENTS: int = 48
+# Coordinates from the transparent source image keep the pose registered to the fixed plate.
+const OPPONENT_RECT: Rect2 = Rect2(994.0, 261.0, 211.0, 321.0)
+const OPPONENT_FOOT_PIXEL: Vector2 = Vector2(1188.0, 580.0)
+const OPPONENT_FOOT_HEIGHT: float = 1.0
 
 func _ready() -> void:
 	KeyboardControls.install()
 	_build_backdrop()
-	_build_opponent()
 	_build_arena()
 	_build_barrier()
 	_build_player()
 	_build_camera()
+	_build_opponent()
 
 func _build_backdrop() -> void:
 	var environment: WorldEnvironment = WorldEnvironment.new()
@@ -49,17 +53,28 @@ func _build_backdrop() -> void:
 	layer.add_child(image)
 
 func _build_opponent() -> void:
-	var layer: CanvasLayer = CanvasLayer.new()
-	layer.name = "Opponent"
-	layer.layer = -1
-	add_child(layer)
-	var image: TextureRect = TextureRect.new()
-	image.name = "StaticPose"
-	image.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	image.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-	image.texture = OPPONENT
-	layer.add_child(image)
+	var camera: Camera3D = get_node("FixedCamera") as Camera3D
+	var foot_screen: Vector2 = _opponent_screen_pixel(OPPONENT_FOOT_PIXEL)
+	var ray_origin: Vector3 = camera.project_ray_origin(foot_screen)
+	var ray_direction: Vector3 = camera.project_ray_normal(foot_screen)
+	var foot_position: Vector3 = ray_origin + ray_direction * ((OPPONENT_FOOT_HEIGHT - ray_origin.y) / ray_direction.y)
+	var depth: float = -camera.to_local(foot_position).z
+	var opponent: Sprite3D = Sprite3D.new()
+	opponent.name = "OpponentStatic"
+	opponent.texture = OPPONENT
+	opponent.region_enabled = true
+	opponent.region_rect = OPPONENT_RECT
+	opponent.pixel_size = 2.0 * depth * tan(deg_to_rad(camera.fov) * 0.5) / float(OPPONENT.get_height())
+	opponent.shaded = false
+	opponent.alpha_cut = SpriteBase3D.ALPHA_CUT_DISCARD
+	opponent.global_transform = Transform3D(camera.global_basis, camera.project_position(_opponent_screen_pixel(OPPONENT_RECT.get_center()), depth))
+	add_child(opponent)
+
+func _opponent_screen_pixel(source: Vector2) -> Vector2:
+	var size: Vector2 = get_viewport().get_visible_rect().size
+	var texture_size: Vector2 = OPPONENT.get_size()
+	var scale: float = maxf(size.x / texture_size.x, size.y / texture_size.y)
+	return source * scale + (size - texture_size * scale) * 0.5
 
 func _build_arena() -> void:
 	var ground: StaticBody3D = StaticBody3D.new()
@@ -110,7 +125,7 @@ func _floor_material() -> ShaderMaterial:
 func _build_player() -> void:
 	var actor: PlayerActor = PlayerScript.new() as PlayerActor
 	actor.name = "ArenaPlayer"
-	actor.position = Vector3(-0.15, 0.1, 2.58)
+	actor.position = Vector3(-0.3, 0.1, 2.45)
 	actor.arena_center = ARENA_CENTER
 	actor.arena_radii = ARENA_RADII
 	actor.fixed_camera = true
