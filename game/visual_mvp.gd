@@ -5,6 +5,8 @@ const KeyboardControls = preload("res://game/keyboard_controls.gd")
 const IllustratedPresentation = preload("res://game/actors/illustrated_protagonist.gd")
 const ArenaPaving: PackedScene = preload("res://game/art/arena_paving.glb")
 const BACKDROP: Texture2D = preload("res://game/art/village_duel_empty.png")
+const CLEAN_BACKDROP: Texture2D = preload("res://game/art/village_environment_empty.png")
+const PAVING_ALBEDO: Texture2D = preload("res://game/art/arena_paving_albedo.png")
 const OPPONENT: Texture2D = preload("res://game/art/opponent_static.png")
 const ARENA_CENTER: Vector2 = Vector2(-0.2, 1.75)
 const ARENA_RADII: Vector2 = Vector2(1.9, 1.35)
@@ -91,10 +93,10 @@ func _build_arena() -> void:
 	paving.scale = Vector3(ARENA_RADII.x / MODEL_RADII.x, 1.0, ARENA_RADII.y / MODEL_RADII.y)
 	paving.position = Vector3(ARENA_CENTER.x, 0.0, ARENA_CENTER.y - MODEL_CENTER_Z * paving.scale.z)
 	ground.add_child(paving)
-	var material: ShaderMaterial = _floor_material()
+	var floor_material: ShaderMaterial = _floor_material()
 	for child: Node in paving.find_children("*", "MeshInstance3D", true, false):
 		var floor_mesh: MeshInstance3D = child as MeshInstance3D
-		floor_mesh.material_override = material
+		floor_mesh.material_override = floor_material
 
 func _build_barrier() -> void:
 	var barrier: StaticBody3D = StaticBody3D.new()
@@ -116,10 +118,36 @@ func _build_barrier() -> void:
 
 func _floor_material() -> ShaderMaterial:
 	var shader: Shader = Shader.new()
-	shader.code = "shader_type spatial;\nrender_mode unshaded, cull_disabled;\nuniform sampler2D plate : source_color, filter_linear;\nvoid fragment() { ALBEDO = texture(plate, SCREEN_UV).rgb; }"
+	# The plate still contains fixed magic; fade the UV color and light into it at the rim.
+	shader.code = """
+shader_type spatial;
+render_mode cull_disabled, specular_disabled;
+uniform sampler2D paving : source_color, filter_linear;
+uniform sampler2D plate : source_color, filter_linear;
+uniform sampler2D clean_plate : source_color, filter_linear;
+varying vec3 relief_normal;
+void vertex() {
+	relief_normal = NORMAL;
+}
+void fragment() {
+	vec3 reference = texture(plate, SCREEN_UV).rgb;
+	vec3 magic = reference - texture(clean_plate, SCREEN_UV).rgb;
+	vec3 stone = clamp(texture(paving, UV).rgb + magic, vec3(0.0), vec3(1.0));
+	float rim = length(UV * 2.0 - 1.0);
+	float fade = 1.0 - smoothstep(0.55, 1.0, rim);
+	vec3 color = mix(reference, stone, 0.18 * fade);
+	vec3 sun = normalize(vec3(-0.45, 0.85, 0.25));
+	float relief = (dot(normalize(relief_normal), sun) - sun.y) * 0.65;
+	ALBEDO = color * 0.05 * fade;
+	EMISSION = color * (1.0 - 0.05 * fade) * (1.0 + relief * fade);
+	ROUGHNESS = 1.0;
+}
+"""
 	var material: ShaderMaterial = ShaderMaterial.new()
 	material.shader = shader
+	material.set_shader_parameter("paving", PAVING_ALBEDO)
 	material.set_shader_parameter("plate", BACKDROP)
+	material.set_shader_parameter("clean_plate", CLEAN_BACKDROP)
 	return material
 
 func _build_player() -> void:
