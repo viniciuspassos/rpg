@@ -4,6 +4,7 @@ const PlayerScript = preload("res://game/actors/player.gd")
 const KeyboardControls = preload("res://game/keyboard_controls.gd")
 const IllustratedPresentation = preload("res://game/actors/illustrated_protagonist.gd")
 const ArenaPaving: PackedScene = preload("res://game/art/arena_paving.glb")
+const ArenaEdgeDetails: PackedScene = preload("res://game/art/arena_edge_details.glb")
 const BACKDROP: Texture2D = preload("res://game/art/village_duel_empty.png")
 const CLEAN_BACKDROP: Texture2D = preload("res://game/art/village_environment_empty.png")
 const PAVING_ALBEDO: Texture2D = preload("res://game/art/arena_paving_albedo.png")
@@ -22,6 +23,7 @@ func _ready() -> void:
 	KeyboardControls.install()
 	_build_backdrop()
 	_build_arena()
+	_build_edge_details()
 	_build_barrier()
 	_build_player()
 	_build_camera()
@@ -97,6 +99,11 @@ func _build_arena() -> void:
 	for child: Node in paving.find_children("*", "MeshInstance3D", true, false):
 		var floor_mesh: MeshInstance3D = child as MeshInstance3D
 		floor_mesh.material_override = floor_material
+
+func _build_edge_details() -> void:
+	var details: Node3D = ArenaEdgeDetails.instantiate() as Node3D
+	details.name = "ArenaEdgeDetails"
+	add_child(details)
 
 func _build_barrier() -> void:
 	var barrier: StaticBody3D = StaticBody3D.new()
