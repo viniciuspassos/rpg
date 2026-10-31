@@ -50,6 +50,12 @@ The stones visible to the left in the clean capture are geometry from `arena_edg
 5. **Opponent separation.** The opponent now uses the existing transparent image as a camera-aligned 3D sprite over the clean duel plate. Its depth is independent of the background. Keep the pose static in this milestone; close overlap with the protagonist still needs replacement art or motion, and reactions remain later work.
 6. **Optional UI.** Add only HUD elements that improve the final view after both characters are accepted.
 
+## Opponent reference pack hand-off (2026-10-31)
+
+At the user's explicit request, the built-in image generation tool produced a local 2D reference pack for later modular 3D work. `source_assets/opponent/index.html` displays 19 PNGs: two full-character references, ten isolated inputs across seven approved part groups, and seven front/back/profile review sheets. Exact prompts and assembly notes are saved alongside them. The inputs and production helpers remain ignored by Git. Three subagents generated head/tunic, limbs, and equipment in separate worktrees; the selected images were copied into the main workspace.
+
+Visual review checked complete silhouettes, distinct views, handedness, clothing and equipment consistency. The user approved the delivered images on 2026-10-31 and confirmed that production will proceed with them, including the proposed face and the supplied sword. The isolated sword's blade-to-grip ratio differs from the initial overview; retain that observation for assembly, without treating it as a blocker to the approved reference pack. Next production stage: generate and assemble the approved parts in 3D. No model generation, rigging, runtime integration, gameplay changes, or local ComfyUI generation job was started; the in-game acceptance gate remains pending.
+
 ## Compatibility renderer decision
 
 **Keep Compatibility for this milestone.** The project already selects `gl_compatibility` in `project.godot`. A local launch of Godot 4.7.2 on Apple M4 Pro completed successfully with `--rendering-method gl_compatibility`; the engine reported `OpenGL API 4.1 Metal ... Compatibility` and exited without a renderer error.
