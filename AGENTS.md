@@ -32,3 +32,10 @@ Before creating a plan or starting any project work:
 - Follow `docs/PRODUCTION_GUIDELINES.md` for world, character, animation, and other visual asset work.
 - Judge asset work by the output in the running game against the chosen reference. Use fixed-view captures and focused visual revisions until the result meets the stated acceptance criteria. Do not require TDD, code tests, or code quality review for asset generation itself; test gameplay behavior and engine integration when those change.
 - Keep asset-generation scripts, Blender working files, temporary renders, and other production inputs local and unversioned. Version only approved game-ready assets and engine files needed to load them. The generation method is an internal production choice, not part of the game runtime.
+- Before generating or changing any character or model, read "Character and model generation" and "Scene continuity" in `docs/PRODUCTION_GUIDELINES.md`. These rules come from repeated failures on the protagonist:
+  - When the user asks for a plan or says not to generate yet, list the outputs, locations, tool, and cost, then stop. Asset tasks exclude gameplay code, tests, and wiring unless requested.
+  - Characters are stylized 3D models: one consistent reference set, generated part by part with ComfyUI image-to-3D and assembled in Blender, on the shared Mixamo humanoid skeleton. Library animations come first; Codex or Claude Code adjusts them and makes game-specific clips through the Blender MCP. Do not generate separate 2D pose images per direction, and do not script organic characters from primitives.
+  - Check handedness and equipment side against the reference. Bake no glow, shadow, or background into a character.
+  - Inspect the first intermediate output, such as the saved per-view crops, before letting a long generation continue. Stop and report after two failed attempts.
+  - Use only free local ComfyUI templates. Never use partner or API nodes such as Tripo, and never approve a credit spend.
+  - Change only the target asset. Record decisions, remaining gaps, and a hand-off in `PLAN.md` or the issue, so either Claude Code or Codex can continue.
