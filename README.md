@@ -13,7 +13,7 @@ The first configured export target is macOS. Install the matching Godot export t
 ## Current v0
 
 - The current visual scene is a fixed-camera duel with only the protagonist and opponent visible. It combines a reference-derived backdrop, a small 3D floor, the existing movement controller, and illustrated poses for idle and walking.
-- The magic remains in `game/art/village_duel_empty.png`; the opponent is a separate, static transparent image in `game/art/opponent_static.png`. The earlier playable episode in `game/main.tscn` still contains its original cast and gameplay.
+- The village background is `game/art/village_duel_clean.png`; magic is a separate transparent layer in `game/art/duel_magic_layer.png`, and the opponent is a separate static image in `game/art/opponent_static.png`. The earlier playable episode in `game/main.tscn` still contains its original cast and gameplay.
 - The visual scene uses `game/art/protagonist_motion.png`, including the approved raised-hand pose at rest and directional walk frames. The earlier playable episode still uses `game/art/protagonist.glb`. Production files stay local and unversioned under `source_assets/`; selected in-game captures are in `docs/visual-progress/`.
 - Combat, quest flow, and localization are deferred until the visual scene is accepted.
 

@@ -33,11 +33,13 @@ func _ready() -> void:
 
 func _test_opponent_layer(scene: Node3D) -> void:
 	var backdrop: TextureRect = scene.get_node_or_null("Backdrop/Plate") as TextureRect
+	var magic: TextureRect = scene.get_node_or_null("Backdrop/MagicBehindArena") as TextureRect
 	var opponent: Sprite3D = scene.get_node_or_null("OpponentStatic") as Sprite3D
-	_check(backdrop != null and opponent != null, "The opponent must occupy a separate 3D depth layer.")
-	if backdrop == null or opponent == null:
+	_check(backdrop != null and magic != null and opponent != null, "The village, magic, and opponent must occupy separate layers.")
+	if backdrop == null or magic == null or opponent == null:
 		return
-	_check(backdrop.texture.resource_path.ends_with("village_duel_empty.png"), "The background must contain no baked opponent.")
+	_check(backdrop.texture.resource_path.ends_with("village_duel_clean.png"), "The village background must contain no baked combat effects.")
+	_check(magic.texture.resource_path.ends_with("duel_magic_layer.png"), "The magic must use an independent transparent asset.")
 	_check(opponent.texture.resource_path.ends_with("opponent_static.png"), "The opponent must use an independent transparent asset.")
 	var camera: Camera3D = scene.get_node("FixedCamera") as Camera3D
 	var projected: Vector2 = camera.unproject_position(opponent.global_position)

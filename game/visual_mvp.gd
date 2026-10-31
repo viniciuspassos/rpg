@@ -5,8 +5,8 @@ const KeyboardControls = preload("res://game/keyboard_controls.gd")
 const IllustratedPresentation = preload("res://game/actors/illustrated_protagonist.gd")
 const ArenaPaving: PackedScene = preload("res://game/art/arena_paving.glb")
 const ArenaEdgeDetails: PackedScene = preload("res://game/art/arena_edge_details.glb")
-const BACKDROP: Texture2D = preload("res://game/art/village_duel_empty.png")
-const CLEAN_BACKDROP: Texture2D = preload("res://game/art/village_environment_empty.png")
+const BACKDROP: Texture2D = preload("res://game/art/village_duel_clean.png")
+const MAGIC: Texture2D = preload("res://game/art/duel_magic_layer.png")
 const PAVING_ALBEDO: Texture2D = preload("res://game/art/arena_paving_albedo.png")
 const OPPONENT: Texture2D = preload("res://game/art/opponent_static.png")
 const ARENA_CENTER: Vector2 = Vector2(-0.2, 1.75)
@@ -14,6 +14,8 @@ const ARENA_RADII: Vector2 = Vector2(1.9, 1.35)
 const MODEL_CENTER_Z: float = 2.05
 const MODEL_RADII: Vector2 = Vector2(2.1, 0.75)
 const BARRIER_SEGMENTS: int = 48
+const MAGIC_SOURCE_RECT: Rect2 = Rect2(610.0, 190.0, 752.4, 423.45)
+const MAGIC_OPACITY: float = 0.68
 # Coordinates from the transparent source image keep the pose registered to the fixed plate.
 const OPPONENT_RECT: Rect2 = Rect2(994.0, 261.0, 211.0, 321.0)
 const OPPONENT_FOOT_PIXEL: Vector2 = Vector2(1188.0, 580.0)
@@ -55,6 +57,23 @@ func _build_backdrop() -> void:
 	image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	image.texture = BACKDROP
 	layer.add_child(image)
+	var magic: TextureRect = TextureRect.new()
+	magic.name = "MagicBehindArena"
+	var magic_rect: Rect2 = _source_screen_rect(MAGIC_SOURCE_RECT)
+	magic.position = magic_rect.position
+	magic.size = magic_rect.size
+	magic.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	magic.stretch_mode = TextureRect.STRETCH_SCALE
+	magic.texture = MAGIC
+	magic.modulate.a = MAGIC_OPACITY
+	layer.add_child(magic)
+
+func _source_screen_rect(source_rect: Rect2) -> Rect2:
+	var size: Vector2 = get_viewport().get_visible_rect().size
+	var source_size: Vector2 = BACKDROP.get_size()
+	var scale: float = maxf(size.x / source_size.x, size.y / source_size.y)
+	var offset: Vector2 = (size - source_size * scale) * 0.5
+	return Rect2(source_rect.position * scale + offset, source_rect.size * scale)
 
 func _build_opponent() -> void:
 	var camera: Camera3D = get_node("FixedCamera") as Camera3D
@@ -125,28 +144,35 @@ func _build_barrier() -> void:
 
 func _floor_material() -> ShaderMaterial:
 	var shader: Shader = Shader.new()
-	# The plate still contains fixed magic; fade the UV color and light into it at the rim.
+	# The UV floor covers the painted center; its edge fades into the static village.
 	shader.code = """
 shader_type spatial;
 render_mode cull_disabled, specular_disabled;
 uniform sampler2D paving : source_color, filter_linear;
 uniform sampler2D plate : source_color, filter_linear;
-uniform sampler2D clean_plate : source_color, filter_linear;
+uniform sampler2D magic : source_color, filter_linear, repeat_disable;
+uniform vec2 magic_uv_origin;
+uniform vec2 magic_uv_size;
+uniform float magic_opacity;
 varying vec3 relief_normal;
 void vertex() {
 	relief_normal = NORMAL;
 }
 void fragment() {
 	vec3 reference = texture(plate, SCREEN_UV).rgb;
-	vec3 magic = reference - texture(clean_plate, SCREEN_UV).rgb;
-	vec3 stone = clamp(texture(paving, UV).rgb + magic, vec3(0.0), vec3(1.0));
+	vec3 stone = texture(paving, UV).rgb;
 	float rim = length(UV * 2.0 - 1.0);
 	float fade = 1.0 - smoothstep(0.55, 1.0, rim);
-	vec3 color = mix(reference, stone, 0.18 * fade);
+	vec3 color = mix(reference, stone, fade);
+	vec2 effect_uv = (SCREEN_UV - magic_uv_origin) / magic_uv_size;
+	if (effect_uv.x >= 0.0 && effect_uv.x <= 1.0 && effect_uv.y >= 0.0 && effect_uv.y <= 1.0) {
+		vec4 effect = texture(magic, effect_uv);
+		color = mix(color, effect.rgb, effect.a * magic_opacity);
+	}
 	vec3 sun = normalize(vec3(-0.45, 0.85, 0.25));
 	float relief = (dot(normalize(relief_normal), sun) - sun.y) * 0.65;
-	ALBEDO = color * 0.05 * fade;
-	EMISSION = color * (1.0 - 0.05 * fade) * (1.0 + relief * fade);
+	ALBEDO = color * 0.08 * fade;
+	EMISSION = color * (1.0 - 0.08 * fade) * (1.0 + relief * fade);
 	ROUGHNESS = 1.0;
 }
 """
@@ -154,7 +180,12 @@ void fragment() {
 	material.shader = shader
 	material.set_shader_parameter("paving", PAVING_ALBEDO)
 	material.set_shader_parameter("plate", BACKDROP)
-	material.set_shader_parameter("clean_plate", CLEAN_BACKDROP)
+	material.set_shader_parameter("magic", MAGIC)
+	var magic_rect: Rect2 = _source_screen_rect(MAGIC_SOURCE_RECT)
+	var viewport_size: Vector2 = get_viewport().get_visible_rect().size
+	material.set_shader_parameter("magic_uv_origin", magic_rect.position / viewport_size)
+	material.set_shader_parameter("magic_uv_size", magic_rect.size / viewport_size)
+	material.set_shader_parameter("magic_opacity", MAGIC_OPACITY)
 	return material
 
 func _build_player() -> void:
