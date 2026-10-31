@@ -67,6 +67,12 @@ func _test_floor_layer(scene: Node3D) -> void:
 		var material: ShaderMaterial = mesh.material_override as ShaderMaterial
 		var rim: Texture2D = material.get_shader_parameter("floor_rim") as Texture2D
 		_check(rim != null and rim.resource_path.ends_with("arena_paving_rim.png"), "The floor rim must remain independent from the floor-free village plate.")
+		var arrays: Array = mesh.mesh.surface_get_arrays(0)
+		var colors: PackedColorArray = arrays[Mesh.ARRAY_COLOR] if arrays[Mesh.ARRAY_COLOR] is PackedColorArray else PackedColorArray()
+		_check(not colors.is_empty(), "The paving material needs joint-occlusion vertex data.")
+		var shadow: Node3D = scene.get_node("IllustratedProtagonist/ContactShadow") as Node3D
+		var floor_top: float = mesh.to_global(mesh.get_aabb().end).y
+		_check(floor_top < shadow.global_position.y, "The paving must stay below the protagonist's ground anchor and contact shadow.")
 
 func _test_walk_poses(presentation: Node3D, sprite: Sprite3D) -> void:
 	presentation.call("update_motion", Vector3(0.05, 0.0, 0.0))
