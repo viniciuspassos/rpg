@@ -15,7 +15,7 @@ Before creating a plan or starting any project work:
 
 ## Engineering practices
 
-- Prefer relevant installed MCP tools. For supported GitHub operations, use the GitHub MCP.
+- For every interaction with GitHub, use the Codex GitHub plugin when it supports the operation. Use another method only when the plugin is unavailable or lacks the needed capability.
 - Prefix every shell command with `rtk`, including each command in a chain.
 - Inspect existing code and the issue tracker before implementation. Keep unrelated changes out of commits.
 - Keep changes minimal, reuse existing code, and avoid unnecessary abstractions.
