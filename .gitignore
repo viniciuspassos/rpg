@@ -9,3 +9,6 @@ source_assets/
 GAME_DIRECTION.md
 *.blend[0-9]
 .DS_Store
+docs/GAME_DESIGN.md
+.claude/worktrees/
+.claude/settings.local.json

@@ -1,0 +1,6 @@
+# Binary assets: never diff or merge as text.
+*.png binary
+*.jpg binary
+*.glb binary
+*.mp4 binary
+*.zip binary
