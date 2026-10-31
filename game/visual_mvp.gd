@@ -3,20 +3,31 @@ extends Node3D
 const PlayerScript = preload("res://game/actors/player.gd")
 const KeyboardControls = preload("res://game/keyboard_controls.gd")
 const IllustratedPresentation = preload("res://game/actors/illustrated_protagonist.gd")
+const ArenaPaving: PackedScene = preload("res://game/art/arena_paving.glb")
+const ArenaEdgeDetails: PackedScene = preload("res://game/art/arena_edge_details.glb")
 const BACKDROP: Texture2D = preload("res://game/art/village_duel_empty.png")
+const CLEAN_BACKDROP: Texture2D = preload("res://game/art/village_environment_empty.png")
+const PAVING_ALBEDO: Texture2D = preload("res://game/art/arena_paving_albedo.png")
 const OPPONENT: Texture2D = preload("res://game/art/opponent_static.png")
-const ARENA_CENTER: Vector2 = Vector2(0.0, 2.05)
-const ARENA_RADII: Vector2 = Vector2(2.1, 0.75)
-const WALK_CENTER: Vector2 = Vector2(-0.25, 2.05)
-const WALK_RADII: Vector2 = Vector2(1.0, 0.6)
+const ARENA_CENTER: Vector2 = Vector2(-0.2, 1.75)
+const ARENA_RADII: Vector2 = Vector2(1.9, 1.35)
+const MODEL_CENTER_Z: float = 2.05
+const MODEL_RADII: Vector2 = Vector2(2.1, 0.75)
+const BARRIER_SEGMENTS: int = 48
+# Coordinates from the transparent source image keep the pose registered to the fixed plate.
+const OPPONENT_RECT: Rect2 = Rect2(994.0, 261.0, 211.0, 321.0)
+const OPPONENT_FOOT_PIXEL: Vector2 = Vector2(1188.0, 580.0)
+const OPPONENT_FOOT_HEIGHT: float = 1.0
 
 func _ready() -> void:
 	KeyboardControls.install()
 	_build_backdrop()
-	_build_opponent()
 	_build_arena()
+	_build_edge_details()
+	_build_barrier()
 	_build_player()
 	_build_camera()
+	_build_opponent()
 
 func _build_backdrop() -> void:
 	var environment: WorldEnvironment = WorldEnvironment.new()
@@ -46,21 +57,32 @@ func _build_backdrop() -> void:
 	layer.add_child(image)
 
 func _build_opponent() -> void:
-	var layer: CanvasLayer = CanvasLayer.new()
-	layer.name = "Opponent"
-	layer.layer = -1
-	add_child(layer)
-	var image: TextureRect = TextureRect.new()
-	image.name = "StaticPose"
-	image.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	image.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
-	image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
-	image.texture = OPPONENT
-	layer.add_child(image)
+	var camera: Camera3D = get_node("FixedCamera") as Camera3D
+	var foot_screen: Vector2 = _opponent_screen_pixel(OPPONENT_FOOT_PIXEL)
+	var ray_origin: Vector3 = camera.project_ray_origin(foot_screen)
+	var ray_direction: Vector3 = camera.project_ray_normal(foot_screen)
+	var foot_position: Vector3 = ray_origin + ray_direction * ((OPPONENT_FOOT_HEIGHT - ray_origin.y) / ray_direction.y)
+	var depth: float = -camera.to_local(foot_position).z
+	var opponent: Sprite3D = Sprite3D.new()
+	opponent.name = "OpponentStatic"
+	opponent.texture = OPPONENT
+	opponent.region_enabled = true
+	opponent.region_rect = OPPONENT_RECT
+	opponent.pixel_size = 2.0 * depth * tan(deg_to_rad(camera.fov) * 0.5) / float(OPPONENT.get_height())
+	opponent.shaded = false
+	opponent.alpha_cut = SpriteBase3D.ALPHA_CUT_DISCARD
+	opponent.global_transform = Transform3D(camera.global_basis, camera.project_position(_opponent_screen_pixel(OPPONENT_RECT.get_center()), depth))
+	add_child(opponent)
+
+func _opponent_screen_pixel(source: Vector2) -> Vector2:
+	var size: Vector2 = get_viewport().get_visible_rect().size
+	var texture_size: Vector2 = OPPONENT.get_size()
+	var scale: float = maxf(size.x / texture_size.x, size.y / texture_size.y)
+	return source * scale + (size - texture_size * scale) * 0.5
 
 func _build_arena() -> void:
 	var ground: StaticBody3D = StaticBody3D.new()
-	ground.name = "Small playable ring"
+	ground.name = "ArenaGround"
 	add_child(ground)
 	var shape: BoxShape3D = BoxShape3D.new()
 	shape.size = Vector3(ARENA_RADII.x * 2.0 + 1.0, 0.2, ARENA_RADII.y * 2.0 + 1.0)
@@ -68,39 +90,79 @@ func _build_arena() -> void:
 	collision.shape = shape
 	collision.position = Vector3(ARENA_CENTER.x, -0.1, ARENA_CENTER.y)
 	ground.add_child(collision)
-	var floor_mesh: MeshInstance3D = MeshInstance3D.new()
-	floor_mesh.name = "Reference-matched paving"
-	floor_mesh.mesh = _arena_mesh()
-	floor_mesh.material_override = _floor_material()
-	ground.add_child(floor_mesh)
+	var paving: Node3D = ArenaPaving.instantiate() as Node3D
+	paving.name = "ArenaPaving"
+	paving.scale = Vector3(ARENA_RADII.x / MODEL_RADII.x, 1.0, ARENA_RADII.y / MODEL_RADII.y)
+	paving.position = Vector3(ARENA_CENTER.x, 0.0, ARENA_CENTER.y - MODEL_CENTER_Z * paving.scale.z)
+	ground.add_child(paving)
+	var floor_material: ShaderMaterial = _floor_material()
+	for child: Node in paving.find_children("*", "MeshInstance3D", true, false):
+		var floor_mesh: MeshInstance3D = child as MeshInstance3D
+		floor_mesh.material_override = floor_material
 
-func _arena_mesh() -> ArrayMesh:
-	var surface: SurfaceTool = SurfaceTool.new()
-	surface.begin(Mesh.PRIMITIVE_TRIANGLES)
-	for segment: int in range(64):
-		var first: float = TAU * float(segment) / 64.0
-		var second: float = TAU * float(segment + 1) / 64.0
-		for vertex: Vector3 in [
-			Vector3(ARENA_CENTER.x, 0.01, ARENA_CENTER.y),
-			Vector3(ARENA_CENTER.x + cos(first) * ARENA_RADII.x, 0.01, ARENA_CENTER.y + sin(first) * ARENA_RADII.y),
-			Vector3(ARENA_CENTER.x + cos(second) * ARENA_RADII.x, 0.01, ARENA_CENTER.y + sin(second) * ARENA_RADII.y)
-		]:
-			surface.add_vertex(vertex)
-	return surface.commit()
+func _build_edge_details() -> void:
+	var details: Node3D = ArenaEdgeDetails.instantiate() as Node3D
+	details.name = "ArenaEdgeDetails"
+	add_child(details)
+
+func _build_barrier() -> void:
+	var barrier: StaticBody3D = StaticBody3D.new()
+	barrier.name = "ArenaBarrier"
+	add_child(barrier)
+	for segment: int in range(BARRIER_SEGMENTS):
+		var first: float = TAU * float(segment) / float(BARRIER_SEGMENTS)
+		var second: float = TAU * float(segment + 1) / float(BARRIER_SEGMENTS)
+		var start: Vector2 = ARENA_CENTER + Vector2(cos(first) * ARENA_RADII.x, sin(first) * ARENA_RADII.y)
+		var end: Vector2 = ARENA_CENTER + Vector2(cos(second) * ARENA_RADII.x, sin(second) * ARENA_RADII.y)
+		var edge: Vector2 = end - start
+		var shape: BoxShape3D = BoxShape3D.new()
+		shape.size = Vector3(edge.length() + 0.08, 2.2, 0.14)
+		var collision: CollisionShape3D = CollisionShape3D.new()
+		collision.shape = shape
+		collision.position = Vector3((start.x + end.x) * 0.5, 1.1, (start.y + end.y) * 0.5)
+		collision.rotation.y = -edge.angle()
+		barrier.add_child(collision)
 
 func _floor_material() -> ShaderMaterial:
 	var shader: Shader = Shader.new()
-	shader.code = "shader_type spatial;\nrender_mode unshaded, cull_disabled;\nuniform sampler2D plate : source_color, filter_linear;\nvoid fragment() { ALBEDO = texture(plate, SCREEN_UV).rgb; }"
+	# The plate still contains fixed magic; fade the UV color and light into it at the rim.
+	shader.code = """
+shader_type spatial;
+render_mode cull_disabled, specular_disabled;
+uniform sampler2D paving : source_color, filter_linear;
+uniform sampler2D plate : source_color, filter_linear;
+uniform sampler2D clean_plate : source_color, filter_linear;
+varying vec3 relief_normal;
+void vertex() {
+	relief_normal = NORMAL;
+}
+void fragment() {
+	vec3 reference = texture(plate, SCREEN_UV).rgb;
+	vec3 magic = reference - texture(clean_plate, SCREEN_UV).rgb;
+	vec3 stone = clamp(texture(paving, UV).rgb + magic, vec3(0.0), vec3(1.0));
+	float rim = length(UV * 2.0 - 1.0);
+	float fade = 1.0 - smoothstep(0.55, 1.0, rim);
+	vec3 color = mix(reference, stone, 0.18 * fade);
+	vec3 sun = normalize(vec3(-0.45, 0.85, 0.25));
+	float relief = (dot(normalize(relief_normal), sun) - sun.y) * 0.65;
+	ALBEDO = color * 0.05 * fade;
+	EMISSION = color * (1.0 - 0.05 * fade) * (1.0 + relief * fade);
+	ROUGHNESS = 1.0;
+}
+"""
 	var material: ShaderMaterial = ShaderMaterial.new()
 	material.shader = shader
+	material.set_shader_parameter("paving", PAVING_ALBEDO)
 	material.set_shader_parameter("plate", BACKDROP)
+	material.set_shader_parameter("clean_plate", CLEAN_BACKDROP)
 	return material
 
 func _build_player() -> void:
 	var actor: PlayerActor = PlayerScript.new() as PlayerActor
-	actor.position = Vector3(-0.15, 0.1, 2.58)
-	actor.arena_center = WALK_CENTER
-	actor.arena_radii = WALK_RADII
+	actor.name = "ArenaPlayer"
+	actor.position = Vector3(-0.3, 0.1, 2.45)
+	actor.arena_center = ARENA_CENTER
+	actor.arena_radii = ARENA_RADII
 	actor.fixed_camera = true
 	actor.walk_speed = 1.15
 	add_child(actor)

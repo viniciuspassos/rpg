@@ -2,6 +2,7 @@ extends Node
 
 const PlayerScript = preload("res://game/actors/player.gd")
 const KeyboardControls = preload("res://game/keyboard_controls.gd")
+const VisualScene: PackedScene = preload("res://game/visual_mvp.tscn")
 
 func _ready() -> void:
 	KeyboardControls.install()
@@ -27,5 +28,68 @@ func _ready() -> void:
 	player._physics_process(1.0 / 60.0)
 	Input.action_release("move_right")
 	assert(is_equal_approx(player.velocity.x, 1.2), "The visual scene must be able to use a walking pace.")
+	player.queue_free()
+	await get_tree().physics_frame
+	var visual: Node3D = VisualScene.instantiate() as Node3D
+	add_child(visual)
+	var visual_player: PlayerActor = visual.find_child("ArenaPlayer", true, false) as PlayerActor
+	assert(visual_player != null)
+	assert(visual_player.arena_center == Vector2(-0.2, 1.75))
+	assert(visual_player.arena_radii == Vector2(1.9, 1.35))
+	assert(visual.find_child("ArenaPaving", true, false) != null)
+	var barrier: StaticBody3D = visual.find_child("ArenaBarrier", true, false) as StaticBody3D
+	assert(barrier != null)
+	assert(barrier.get_child_count() >= 32)
+	await get_tree().physics_frame
+	for step: int in range(8):
+		var angle: float = TAU * float(step) / 8.0
+		var direction: Vector2 = Vector2(cos(angle), sin(angle))
+		var origin: Vector2 = visual_player.arena_center + direction * 0.4
+		var destination: Vector2 = visual_player.arena_center + direction * 3.0
+		var query: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(Vector3(origin.x, 1.0, origin.y), Vector3(destination.x, 1.0, destination.y))
+		query.exclude = [visual_player.get_rid()]
+		var hit: Dictionary = visual.get_world_3d().direct_space_state.intersect_ray(query)
+		assert(hit.get("collider") == barrier, "The arena barrier must close every side at standing height.")
+	var visitor: CharacterBody3D = CharacterBody3D.new()
+	var visitor_collision: CollisionShape3D = CollisionShape3D.new()
+	var visitor_shape: CapsuleShape3D = CapsuleShape3D.new()
+	visitor_shape.radius = 0.2
+	visitor_shape.height = 0.8
+	visitor_collision.shape = visitor_shape
+	visitor.add_child(visitor_collision)
+	visual.add_child(visitor)
+	visitor.global_position = Vector3(0.8, 1.0, 1.75)
+	for step: int in range(20):
+		await get_tree().physics_frame
+		visitor.velocity = Vector3(8.0, 0.0, 0.0)
+		visitor.move_and_slide()
+	assert(visitor.global_position.x < 1.6, "A 3D combatant must not cross the barrier.")
+	visitor.queue_free()
+	await get_tree().physics_frame
+	var spawn: Vector3 = visual_player.global_position
+	Input.action_press("move_right")
+	for step: int in range(45):
+		await get_tree().physics_frame
+	Input.action_release("move_right")
+	assert(visual_player.global_position.x > spawn.x + 0.5, "The opening position must allow a clear lateral step.")
+	visual_player.global_position = spawn
+	visual_player.velocity = Vector3.ZERO
+	await get_tree().physics_frame
+	Input.action_press("move_forward")
+	for step: int in range(35):
+		await get_tree().physics_frame
+	Input.action_release("move_forward")
+	assert(visual_player.global_position.z < 2.1, "The protagonist must advance into the duel area.")
+	var starting_x: float = visual_player.global_position.x
+	Input.action_press("move_right")
+	for step: int in range(45):
+		await get_tree().physics_frame
+	Input.action_release("move_right")
+	assert(visual_player.global_position.x > starting_x + 0.5, "The protagonist must cross the central arena under player input.")
+	Input.action_press("move_right")
+	for step: int in range(150):
+		await get_tree().physics_frame
+	Input.action_release("move_right")
+	assert(visual_player.global_position.x < 1.5, "The protagonist must stop at the arena wall.")
 	print("Arena boundary passed.")
 	get_tree().quit()
