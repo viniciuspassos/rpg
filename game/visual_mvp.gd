@@ -7,6 +7,7 @@ const ArenaPaving: PackedScene = preload("res://game/art/arena_paving.glb")
 const ArenaEdgeDetails: PackedScene = preload("res://game/art/arena_edge_details.glb")
 const BACKDROP: Texture2D = preload("res://game/art/village_duel_clean.png")
 const MAGIC: Texture2D = preload("res://game/art/duel_magic_layer.png")
+const MagicPartitionShader: Shader = preload("res://game/art/duel_magic_partition.gdshader")
 const PAVING_ALBEDO: Texture2D = preload("res://game/art/arena_paving_albedo.png")
 const OPPONENT: Texture2D = preload("res://game/art/opponent_static.png")
 const ARENA_CENTER: Vector2 = Vector2(-0.2, 1.75)
@@ -15,7 +16,9 @@ const MODEL_CENTER_Z: float = 2.05
 const MODEL_RADII: Vector2 = Vector2(2.1, 0.75)
 const BARRIER_SEGMENTS: int = 48
 const MAGIC_SOURCE_RECT: Rect2 = Rect2(610.0, 190.0, 752.4, 423.45)
-const MAGIC_OPACITY: float = 0.68
+const MAGIC_ATMOSPHERE_OPACITY: float = 0.62
+const MAGIC_FRAGMENTS_OPACITY: float = 0.68
+const MAGIC_ENERGY_OPACITY: float = 0.52
 # Coordinates from the transparent source image keep the pose registered to the fixed plate.
 const OPPONENT_RECT: Rect2 = Rect2(994.0, 261.0, 211.0, 321.0)
 const OPPONENT_FOOT_PIXEL: Vector2 = Vector2(1188.0, 580.0)
@@ -57,15 +60,24 @@ func _build_backdrop() -> void:
 	image.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
 	image.texture = BACKDROP
 	layer.add_child(image)
+	_add_magic_pass(layer, "MagicAtmosphere", 0, MAGIC_ATMOSPHERE_OPACITY)
+	_add_magic_pass(layer, "MagicFragments", 1, MAGIC_FRAGMENTS_OPACITY)
+	_add_magic_pass(layer, "MagicEnergy", 2, MAGIC_ENERGY_OPACITY)
+
+func _add_magic_pass(layer: CanvasLayer, node_name: String, pass_index: int, opacity: float) -> void:
 	var magic: TextureRect = TextureRect.new()
-	magic.name = "MagicBehindArena"
+	magic.name = node_name
 	var magic_rect: Rect2 = _source_screen_rect(MAGIC_SOURCE_RECT)
 	magic.position = magic_rect.position
 	magic.size = magic_rect.size
 	magic.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	magic.stretch_mode = TextureRect.STRETCH_SCALE
 	magic.texture = MAGIC
-	magic.modulate.a = MAGIC_OPACITY
+	var material: ShaderMaterial = ShaderMaterial.new()
+	material.shader = MagicPartitionShader
+	material.set_shader_parameter("pass_index", pass_index)
+	material.set_shader_parameter("opacity", opacity)
+	magic.material = material
 	layer.add_child(magic)
 
 func _source_screen_rect(source_rect: Rect2) -> Rect2:
@@ -153,7 +165,9 @@ uniform sampler2D plate : source_color, filter_linear;
 uniform sampler2D magic : source_color, filter_linear, repeat_disable;
 uniform vec2 magic_uv_origin;
 uniform vec2 magic_uv_size;
-uniform float magic_opacity;
+uniform float magic_atmosphere_opacity;
+uniform float magic_fragments_opacity;
+uniform float magic_energy_opacity;
 varying vec3 relief_normal;
 void vertex() {
 	relief_normal = NORMAL;
@@ -167,7 +181,14 @@ void fragment() {
 	vec2 effect_uv = (SCREEN_UV - magic_uv_origin) / magic_uv_size;
 	if (effect_uv.x >= 0.0 && effect_uv.x <= 1.0 && effect_uv.y >= 0.0 && effect_uv.y <= 1.0) {
 		vec4 effect = texture(magic, effect_uv);
-		color = mix(color, effect.rgb, effect.a * magic_opacity);
+		float energy = smoothstep(0.04, 0.16, effect.b - effect.r);
+		float debris = (1.0 - energy) * smoothstep(0.55, 0.9, effect.a);
+		float dust = 1.0 - energy - debris;
+		float gray = dot(effect.rgb, vec3(0.299, 0.587, 0.114));
+		vec3 energy_color = mix(effect.rgb, vec3(gray), 0.35);
+		color = mix(color, effect.rgb, effect.a * dust * magic_atmosphere_opacity);
+		color = mix(color, effect.rgb, effect.a * debris * magic_fragments_opacity);
+		color = mix(color, energy_color, effect.a * energy * magic_energy_opacity);
 	}
 	vec3 sun = normalize(vec3(-0.45, 0.85, 0.25));
 	float relief = (dot(normalize(relief_normal), sun) - sun.y) * 0.65;
@@ -185,7 +206,9 @@ void fragment() {
 	var viewport_size: Vector2 = get_viewport().get_visible_rect().size
 	material.set_shader_parameter("magic_uv_origin", magic_rect.position / viewport_size)
 	material.set_shader_parameter("magic_uv_size", magic_rect.size / viewport_size)
-	material.set_shader_parameter("magic_opacity", MAGIC_OPACITY)
+	material.set_shader_parameter("magic_atmosphere_opacity", MAGIC_ATMOSPHERE_OPACITY)
+	material.set_shader_parameter("magic_fragments_opacity", MAGIC_FRAGMENTS_OPACITY)
+	material.set_shader_parameter("magic_energy_opacity", MAGIC_ENERGY_OPACITY)
 	return material
 
 func _build_player() -> void:
