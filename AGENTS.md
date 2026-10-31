@@ -25,6 +25,7 @@ Before creating a plan or starting any project work:
 - Delegate independent work only when useful and authorized. Concurrent writers must use separate working trees and have explicit scope and constraints.
 - Write project documentation, code, comments, commit messages, and issues in English. Support English and Brazilian Portuguese for player-facing content.
 - Follow `PLAN.md` for v0 scope. `GAME_DIRECTION.md` is a local direction draft and may be intentionally excluded from version control; preserve it and do not force-add it without authorization.
+- When creating a pull request, use `.github/PULL_REQUEST_TEMPLATE.md` as its body. Fill every section with the actual change and validation evidence; mark sections that do not apply rather than leaving placeholders.
 
 ## Asset production
 
