@@ -9,6 +9,7 @@ const BACKDROP: Texture2D = preload("res://game/art/village_duel_clean.png")
 const MAGIC: Texture2D = preload("res://game/art/duel_magic_layer.png")
 const MagicPartitionShader: Shader = preload("res://game/art/duel_magic_partition.gdshader")
 const PAVING_ALBEDO: Texture2D = preload("res://game/art/arena_paving_albedo.png")
+const PAVING_RIM: Texture2D = preload("res://game/art/arena_paving_rim.png")
 const OPPONENT: Texture2D = preload("res://game/art/opponent_static.png")
 const ARENA_CENTER: Vector2 = Vector2(-0.2, 1.75)
 const ARENA_RADII: Vector2 = Vector2(1.9, 1.35)
@@ -156,12 +157,12 @@ func _build_barrier() -> void:
 
 func _floor_material() -> ShaderMaterial:
 	var shader: Shader = Shader.new()
-	# The UV floor covers the painted center; its edge fades into the static village.
+	# The UV floor blends into its own camera-matched rim over the neutralized plate.
 	shader.code = """
 shader_type spatial;
 render_mode cull_disabled, specular_disabled;
 uniform sampler2D paving : source_color, filter_linear;
-uniform sampler2D plate : source_color, filter_linear;
+uniform sampler2D floor_rim : source_color, filter_linear;
 uniform sampler2D magic : source_color, filter_linear, repeat_disable;
 uniform vec2 magic_uv_origin;
 uniform vec2 magic_uv_size;
@@ -173,7 +174,7 @@ void vertex() {
 	relief_normal = NORMAL;
 }
 void fragment() {
-	vec3 reference = texture(plate, SCREEN_UV).rgb;
+	vec3 reference = texture(floor_rim, SCREEN_UV).rgb;
 	vec3 stone = texture(paving, UV).rgb;
 	float rim = length(UV * 2.0 - 1.0);
 	float fade = 1.0 - smoothstep(0.55, 1.0, rim);
@@ -200,7 +201,7 @@ void fragment() {
 	var material: ShaderMaterial = ShaderMaterial.new()
 	material.shader = shader
 	material.set_shader_parameter("paving", PAVING_ALBEDO)
-	material.set_shader_parameter("plate", BACKDROP)
+	material.set_shader_parameter("floor_rim", PAVING_RIM)
 	material.set_shader_parameter("magic", MAGIC)
 	var magic_rect: Rect2 = _source_screen_rect(MAGIC_SOURCE_RECT)
 	var viewport_size: Vector2 = get_viewport().get_visible_rect().size
