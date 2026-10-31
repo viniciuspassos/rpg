@@ -8,6 +8,7 @@ func _ready() -> void:
 	var scene: Node3D = VisualScene.instantiate() as Node3D
 	add_child(scene)
 	_test_opponent_layer(scene)
+	_test_floor_layer(scene)
 	var actor: PlayerActor = get_tree().get_first_node_in_group("player") as PlayerActor
 	actor.set_physics_process(false)
 	_test_spawn_inside_arena(actor)
@@ -56,6 +57,16 @@ func _test_opponent_layer(scene: Node3D) -> void:
 	var scale: float = maxf(viewport_size.x / source_size.x, viewport_size.y / source_size.y)
 	var target: Vector2 = source_center * scale + (viewport_size - source_size * scale) * 0.5
 	_check(projected.distance_to(target) < 2.0, "The opponent must remain aligned with its reference pixels.")
+
+func _test_floor_layer(scene: Node3D) -> void:
+	var paving: Node3D = scene.get_node("ArenaGround/ArenaPaving") as Node3D
+	var meshes: Array[Node] = paving.find_children("*", "MeshInstance3D", true, false)
+	_check(not meshes.is_empty(), "The arena needs its own floor geometry.")
+	for node: Node in meshes:
+		var mesh: MeshInstance3D = node as MeshInstance3D
+		var material: ShaderMaterial = mesh.material_override as ShaderMaterial
+		var rim: Texture2D = material.get_shader_parameter("floor_rim") as Texture2D
+		_check(rim != null and rim.resource_path.ends_with("arena_paving_rim.png"), "The floor rim must remain independent from the floor-free village plate.")
 
 func _test_walk_poses(presentation: Node3D, sprite: Sprite3D) -> void:
 	presentation.call("update_motion", Vector3(0.05, 0.0, 0.0))
