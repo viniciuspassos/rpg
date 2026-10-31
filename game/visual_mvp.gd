@@ -171,11 +171,11 @@ uniform float magic_fragments_opacity;
 uniform float magic_energy_opacity;
 varying vec3 relief_normal;
 void vertex() {
-	relief_normal = NORMAL;
+	relief_normal = normalize(MODEL_NORMAL_MATRIX * NORMAL);
 }
 void fragment() {
 	vec3 reference = texture(floor_rim, SCREEN_UV).rgb;
-	vec3 stone = texture(paving, UV).rgb;
+	vec3 stone = texture(paving, UV).rgb * COLOR.rgb;
 	float rim = length(UV * 2.0 - 1.0);
 	float fade = 1.0 - smoothstep(0.55, 1.0, rim);
 	vec3 color = mix(reference, stone, fade);
@@ -192,7 +192,7 @@ void fragment() {
 		color = mix(color, energy_color, effect.a * energy * magic_energy_opacity);
 	}
 	vec3 sun = normalize(vec3(-0.45, 0.85, 0.25));
-	float relief = (dot(normalize(relief_normal), sun) - sun.y) * 0.65;
+	float relief = (dot(normalize(relief_normal), sun) - sun.y) * 0.55;
 	ALBEDO = color * 0.08 * fade;
 	EMISSION = color * (1.0 - 0.08 * fade) * (1.0 + relief * fade);
 	ROUGHNESS = 1.0;
