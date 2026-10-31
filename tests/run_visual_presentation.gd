@@ -34,10 +34,19 @@ func _ready() -> void:
 func _test_opponent_layer(scene: Node3D) -> void:
 	var backdrop: TextureRect = scene.get_node_or_null("Backdrop/Plate") as TextureRect
 	var opponent: Sprite3D = scene.get_node_or_null("OpponentStatic") as Sprite3D
-	_check(backdrop != null and opponent != null, "The opponent must occupy a separate 3D depth layer.")
+	_check(backdrop != null and opponent != null, "The village and opponent must occupy separate layers.")
 	if backdrop == null or opponent == null:
 		return
-	_check(backdrop.texture.resource_path.ends_with("village_duel_empty.png"), "The background must contain no baked opponent.")
+	_check(backdrop.texture.resource_path.ends_with("village_duel_clean.png"), "The village background must contain no baked combat effects.")
+	var pass_names: Array[String] = ["MagicAtmosphere", "MagicFragments", "MagicEnergy"]
+	for pass_index: int in range(pass_names.size()):
+		var magic: TextureRect = scene.get_node_or_null("Backdrop/" + pass_names[pass_index]) as TextureRect
+		_check(magic != null, "The magic needs a separate " + pass_names[pass_index] + " pass.")
+		if magic == null:
+			continue
+		_check(magic.texture.resource_path.ends_with("duel_magic_layer.png"), "Each magic pass must use the transparent effect source.")
+		var material: ShaderMaterial = magic.material as ShaderMaterial
+		_check(material != null and material.get_shader_parameter("pass_index") == pass_index, "Magic passes must have independent material masks.")
 	_check(opponent.texture.resource_path.ends_with("opponent_static.png"), "The opponent must use an independent transparent asset.")
 	var camera: Camera3D = scene.get_node("FixedCamera") as Camera3D
 	var projected: Vector2 = camera.unproject_position(opponent.global_position)
