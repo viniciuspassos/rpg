@@ -56,7 +56,22 @@ The user decided that the village duel is a battle scene of the real game, so th
 
 Production: free local ComfyUI TRELLIS.2 shape-only generation of the head, torso, legs and sword parts from the protagonist turnaround, plus a hand-modelled cape. Then ComfyUI's "solid" remesh, and Blender assembly, decimation and palette projection. The weights are MIT (Comfy-Org TRELLIS.2, DINOv3 conversion, BiRefNet). No paid or partner nodes were used. Local generation needed the `mps_int_sort_fix` ComfyUI custom node: on PyTorch 2.12.1 MPS, integer `torch.sort` values above 2**24 are rounded through float32, and TRELLIS.2 meshes otherwise lose about 99.8% of their faces. Inputs, scripts and working files stay under ignored `source_assets/protagonist/`.
 
-Remaining gaps: the cape front reads as a short mantle rather than a bunched scarf; some colour borders are blocky; the right hand is mitten-like. Next steps: rig on the Mixamo skeleton with Mixamo or AccuRig (a free user account is needed), add two or three cape bones, then library animations, Godot import with an animation test scene, and the fixed-camera duel gate.
+Remaining gaps: the cape front reads as a short mantle rather than a bunched scarf; some colour borders are blocky; the right hand is mitten-like. Next steps: rig on the Mixamo skeleton (done locally on 2026-11-01, see the next section), add two or three cape bones, then library animations, Godot import with an animation test scene, and the fixed-camera duel gate.
+
+## Protagonist rig hand-off (2026-11-01)
+
+The protagonist now has a Mixamo skeleton, locally. `source_assets/protagonist/rig/protagonist_rigged_tpose.blend` holds a 33-bone `mixamorig:` armature and the Body skinned to it: 7,795 vertices, 28 vertex groups, no unweighted vertex, and a rest pose that reproduces the unrigged mesh to 0.000 cm. Cape, Sword and Pouch are in the file but not attached. Nothing under `game/` changed: `game/art/protagonist_lowpoly.glb` is still the unrigged asset, and the rigged file is not approved for versioning yet.
+
+What was done, in order:
+
+1. **Arms regenerated in T-pose.** Arms that hang at the sides and are fused to the skirt could not be posed with automatic weights (the skirt flared with them), so the arms became separate generated parts, as the guidelines ask. One arm (the right one, the only one with a clean view in `01-front.png`) was cut from the concept by colour, rotated 75.6 degrees to horizontal, and generated with the same local TRELLIS.2 workflow as the torso: about 5 minutes per run, `spends_credits: false`. The second run fixed a jagged cuff and claw fingers that the first run copied from the input. The left arm is the mirror of the right one, so the left hand is open and does not grip the sword yet. The old arms were cut from the torso.
+2. **Mixamo rejected the assembled Body three times** with `ERROR occured on rig: Unknown error while generating motion`. The message is only in the `/characters/<id>/monitor` response; the page silently returns to the marker screen. The auto-rigger needs one connected, closed shell, and the Body has six loose islands and open hems. A T-pose alone did not fix it.
+3. **Closed proxy.** A copy of the Body with a neck cylinder and a pelvis cylinder went through ComfyUI's "solid" remesh: 12,000 triangles, one island, no open edge. Mixamo rigged it on the first try (Standard skeleton, markers on chin, wrists, elbows, knees and groin).
+4. **Weights copied to the real Body** by nearest face. The downloaded proxy matched the uploaded one to 0.00 cm, so the skeleton needed no fitting.
+
+Checks: the local captures in `source_assets/protagonist/rig/review/` show a test pose (arms down, forward step) and a harsh pose (arms raised forward, deep squat). Shoulders, elbows, hips and knees hold without tearing. This is a Blender check, not a Godot or in-game one. Scripts and the proxy are next to it under `source_assets/protagonist/rig/` and `source_assets/protagonist/arms/`.
+
+Remaining gaps: the left hand is open, with no sword grip; the hands are mitten-like and Mixamo only placed an index-finger chain on each hand (33 bones, not 65); the 5 cm gap between head and torso shows without the cape mantle; Cape, Sword and Pouch are not attached; the new arms and the rig still need the user's visual approval. Next steps: cape bones; sword grip and attachment, made in a posed state; pouch; library animations from Mixamo, kept local; record Mixamo's and Adobe's terms before versioning any exported asset; Godot import with an animation test scene. No local job is running; ComfyUI was stopped.
 
 ## Opponent reference pack hand-off (2026-10-31)
 
