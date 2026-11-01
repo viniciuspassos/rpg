@@ -30,6 +30,8 @@ Before creating a plan or starting any project work:
 ## Asset production
 
 - Follow `docs/PRODUCTION_GUIDELINES.md` for world, character, animation, and other visual asset work.
+- For Claude Code, route asset production through the `art-director` agent (`.claude/agents/art-director.md`). It only orchestrates: it briefs worker subagents, sets their model and effort, and reviews each delivery visually against the reference in a Gauntlet loop.
+- For Codex, the same agent lives in `.codex/agents/art-director.toml` with OpenAI model names and reasoning efforts. Its instructions mirror the Claude version; when you change one, change the other.
 - Judge asset work by the output in the running game against the chosen reference. Use fixed-view captures and focused visual revisions until the result meets the stated acceptance criteria. Do not require TDD, code tests, or code quality review for asset generation itself; test gameplay behavior and engine integration when those change.
 - Keep asset-generation scripts, Blender working files, temporary renders, and other production inputs local and unversioned. Version only approved game-ready assets and engine files needed to load them. The generation method is an internal production choice, not part of the game runtime.
 - Before generating or changing any character or model, read "Character and model generation" and "Scene continuity" in `docs/PRODUCTION_GUIDELINES.md`. These rules come from repeated failures on the protagonist:
