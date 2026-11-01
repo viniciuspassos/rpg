@@ -50,6 +50,14 @@ The stones visible to the left in the clean capture are geometry from `arena_edg
 5. **Opponent separation.** The opponent now uses the existing transparent image as a camera-aligned 3D sprite over the clean duel plate. Its depth is independent of the background. Keep the pose static in this milestone; close overlap with the protagonist still needs replacement art or motion, and reactions remain later work.
 6. **Optional UI.** Add only HUD elements that improve the final view after both characters are accepted.
 
+## Low-poly 3D protagonist hand-off (2026-10-31)
+
+The user decided that the village duel is a battle scene of the real game, so the protagonist moves from per-pose 2D illustrations to one rigged 3D model. `game/art/protagonist_lowpoly.glb` is the assembled, unrigged model. It has four objects: Body, Cape, Sword and Pouch. It totals 14,984 triangles, stands 1.95 tall with its feet at the origin, and faces glTF +Z, the same convention as `protagonist.glb`. It uses matte palette materials with no baked lighting. It is not referenced by any scene yet. The [review capture](docs/visual-progress/protagonist-lowpoly-review.png) shows the concept front, front, three-quarter, concept back, back, game-camera and side views.
+
+Production: free local ComfyUI TRELLIS.2 shape-only generation of the head, torso, legs and sword parts from the protagonist turnaround, plus a hand-modelled cape. Then ComfyUI's "solid" remesh, and Blender assembly, decimation and palette projection. The weights are MIT (Comfy-Org TRELLIS.2, DINOv3 conversion, BiRefNet). No paid or partner nodes were used. Local generation needed the `mps_int_sort_fix` ComfyUI custom node: on PyTorch 2.12.1 MPS, integer `torch.sort` values above 2**24 are rounded through float32, and TRELLIS.2 meshes otherwise lose about 99.8% of their faces. Inputs, scripts and working files stay under ignored `source_assets/protagonist/`.
+
+Remaining gaps: the cape front reads as a short mantle rather than a bunched scarf; some colour borders are blocky; the right hand is mitten-like. Next steps: rig on the Mixamo skeleton with Mixamo or AccuRig (a free user account is needed), add two or three cape bones, then library animations, Godot import with an animation test scene, and the fixed-camera duel gate.
+
 ## Opponent reference pack hand-off (2026-10-31)
 
 At the user's explicit request, the built-in image generation tool produced a local 2D reference pack for later modular 3D work. `source_assets/opponent/index.html` displays 19 PNGs: two full-character references, ten isolated inputs across seven approved part groups, and seven front/back/profile review sheets. Exact prompts and assembly notes are saved alongside them. The inputs and production helpers remain ignored by Git. Three subagents generated head/tunic, limbs, and equipment in separate worktrees; the selected images were copied into the main workspace.
