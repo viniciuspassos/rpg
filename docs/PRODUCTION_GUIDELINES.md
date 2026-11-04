@@ -79,7 +79,7 @@ The canon comes from the turnaround in `source_assets/protagonist/concepts/` and
 - Hair: brown, tied in a low bun at the back.
 - Clothing: cream short sleeves, dark navy tunic with a tan front panel, brown belt with a pouch on her left hip, brown trousers, and tall brown boots with folded cuffs.
 - Sword: a straight blade held low in her left hand. In the rear game view the sword is on the image's left; her right hand is free to cast the Power.
-- Cape: a red scarf-cape over the shoulders. In the game reference and `02-back.png` its tail hangs on her right side, but `01-front.png` shows it on her left. **This conflict is unresolved.** Correct the front view to match the game reference, or have the user choose, before the next image-to-3D run. Contradictory views give the generator two different characters.
+- Cape: a red scarf-cape over the shoulders, with its tail hanging on her right side. On 2026-11-01 the user resolved the side conflict by asking for the easier option: the game reference, `02-back.png`, and the assembled Cape object already use her right side, so the existing cape stays as it is. `01-front.png` and `05-front-three-quarter.png` still show the tail on her left. Exclude or correct the cape in those two views before using them as image-to-3D input; contradictory views give the generator two different characters.
 
 ### Local ComfyUI image-to-3D checklist
 
