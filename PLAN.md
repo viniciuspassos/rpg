@@ -31,7 +31,7 @@ The completed arena rows describe a functional visual baseline, not final asset 
 1. **Shaded 3D paving (accepted for v0).** The arena now uses continuous relief aligned with the existing UV art's joints, restrained joint occlusion, and normals corrected for the mesh's nonuniform scale. The original color texture and camera-matched rim remain separate from the neutralized background accepted in [#13](https://github.com/viniciuspassos/rpg/issues/13). The floor detail, clean view, and composed spawn show more readable stone depth without a replacement grid or abrupt boundary transition. [#14](https://github.com/viniciuspassos/rpg/issues/14) is accepted on the fixed-view and movement evidence recorded below.
 2. **Arena-edge details (in review).** A small GLB now places faceted stones, broken timber, and a wooden bucket on empty painted paving beyond the left arena boundary. Existing static foreground props cover the right side, so a candidate right-hand cluster was removed after it appeared in front of a painted crate. The spawn capture and left-limit capture show no duplicate object or hidden combatant. A real-input route still reached the center and both barriers; the new details have no collision and do not narrow it. Review their scale and color before accepting this visual gate.
 3. **Independent magic assets (in review).** The clean plate and UV floor have no painted effect. Three shader passes from one transparent source now control warm atmosphere, opaque fragments with papers, and cool energy separately; the energy is less saturated in the fixed-view composite. Isolated captures show that the masks still mix some dust with fragments and retain blue haze around the energy. Produce cleaner separate glow, dust, paper, and debris assets to meet [#16](https://github.com/viniciuspassos/rpg/issues/16) before independent motion. Gate: the effect reads at spawn and across the arena without duplicate baked elements or loss of character visibility. This is visual asset work, not ability gameplay.
-4. **Two-combatant presentation pack.** Approach chosen on 2026-10-31: stylized low-poly 3D for both combatants. They share one skeleton and one set of animations; meshes are generated with the local ComfyUI and finished in Blender (see "Character and model generation" in `docs/PRODUCTION_GUIDELINES.md`). The illustrated sprites remain in the scene until the 3D protagonist passes the fixed-camera gate. Illustrated-pose refinement in [#21](https://github.com/viniciuspassos/rpg/issues/21) and [#22](https://github.com/viniciuspassos/rpg/issues/22) is paused until then. Hand-off state: see "Protagonist rig hand-off (2026-11-04)" below. The rigged v3 protagonist waits for the user's approval. The cape side was decided on 2026-11-01: the tail hangs on her right. Complete the poses and supporting assets needed for readable idle, movement, attack, impact, and Power presentation, replacing the opponent's single fixed pose. Gate: both silhouettes remain clear at close range, hold their ground contact, and match the reference across the walkable area. No villagers, visitor, or companion assets belong to this scene.
+4. **Two-combatant presentation pack.** Approach chosen on 2026-10-31: stylized low-poly 3D for both combatants. They share one skeleton and one set of animations; meshes are generated with the local ComfyUI and finished in Blender (see "Character and model generation" in `docs/PRODUCTION_GUIDELINES.md`). The illustrated sprites remain in the scene until the 3D protagonist passes the fixed-camera gate. Illustrated-pose refinement in [#21](https://github.com/viniciuspassos/rpg/issues/21) and [#22](https://github.com/viniciuspassos/rpg/issues/22) is paused until then. Hand-off state: see "Protagonist rig hand-off (2026-11-04)" below. On 2026-11-04 the user moved forward from the rigged v3 protagonist to rig v4. The protagonist has no cape in this version. Complete the poses and supporting assets needed for readable idle, movement, attack, impact, and Power presentation, replacing the opponent's single fixed pose. Gate: both silhouettes remain clear at close range, hold their ground contact, and match the reference across the walkable area. No villagers, visitor, or companion assets belong to this scene.
 
 Keep generation scripts, Blender working files, and temporary renders local and unversioned. Version only approved game-ready assets, engine files needed to load them, and selected in-game captures. Start gameplay mechanics after these four visual gates pass or a remaining gap is explicitly accepted here.
 
@@ -79,7 +79,7 @@ The rigged protagonist is ready for the user's review. Only local files changed:
     - 18,944 triangles, 1.95 m tall, feet at z = 0, facing glTF +Z.
     - Cape, Sword and Pouch unchanged and hidden.
     - In the comparison sheets (`rig/v3/final/review/sheets/`), v3 is clearly better than v2 in all five views, at rest, posed and in the stress pose. An independent critic agreed.
-- **Cape.** The user decided on 2026-11-01 that the tail hangs on her right. The existing Cape object is kept.
+- **Cape.** The user removed the cape from this version of the protagonist on 2026-11-04, so the Cape object is no longer used. The earlier side decision (tail on her right, 2026-11-01) applies only if a cape returns.
 - **Remaining gaps:**
   - In the deep-squat stress pose, the thighs cut the front skirt panels and the tan flap, and the back panel bunches. Two weights-only fixes failed. Fixing it needs two or three skirt bones (a skeleton change), or the user can accept it.
   - The tunic ends at the top of the thigh; the concept and the game reference show it reaching mid-thigh. Lengthening it without skirt bones would increase clipping in walking.
@@ -92,11 +92,14 @@ The rigged protagonist is ready for the user's review. Only local files changed:
     - the belt reads rust-orange because it shares the Pouch's material.
   - Reference note: from behind, the game reference shows tan below the belt, while the canon puts the tan panel on her left front.
 - **Next steps:**
-  1. The user reviews v3, and decides on the skirt bones and the tunic length.
-  2. Cape bones and the cape, sword and pouch attachment, with the sword grip on the open left hand.
-  3. Library animations.
-  4. Godot import with the humanoid `BoneMap`. Check `meshes/generate_lods` there. Add an animation test scene.
-  5. The fixed-camera duel gate.
+  1. Rig v4. On 2026-11-04 the user moved forward from v3, removed the cape, and accepted the coordinator's suggestions for the open decisions. Rig v4:
+     - removes the Cape object;
+     - adds two or three skirt bones;
+     - lengthens the tunic to mid-thigh, together with those bones. If that fails twice, the current length stays;
+     - attaches the sword with a grip in her left hand, and the pouch on her left hip.
+  2. Library animations. Mixamo needs the user's free Adobe account.
+  3. Godot import with the humanoid `BoneMap`. Check `meshes/generate_lods` there. Add an animation test scene.
+  4. The fixed-camera duel gate.
 - **Files and records.** Everything is under the ignored `source_assets/protagonist/rig/v3/`. The records are `OBJECTIVE_CARD.md`, `BRIEF_LOG.md`, `REVIEWS.md` and `final/logs/progress.md`. To rebuild, run `final/scripts/run_pipeline.py`, then `stage4_bind.py`, then `w5b_underarm_only.py`. No local job is running.
 
 ## Opponent reference pack hand-off (2026-10-31)
