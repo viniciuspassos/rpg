@@ -4,7 +4,7 @@ An unofficial, non-commercial *Wheel of Time* fan game prototype. The current ta
 
 ## Run
 
-Open this directory in Godot 4.7.2 and press **F5**. Until the new scene (`game/levels/bellfold_dawn.tscn`, stage 1 in `PLAN.md`) exists, the main scene is still the superseded fixed-camera visual MVP in `game/visual_mvp.tscn`; move the illustrated protagonist with WASD.
+Open this directory in Godot 4.7.2 and press **F5**. The main scene is the stage 1 graybox of the linear dawn scene, `game/levels/bellfold_dawn.tscn`: WASD to move, Space to dodge, and the arrow keys to turn and tilt the camera. Follow the road through the village gate to the square, then out by the south passage to the end gate. The superseded fixed-camera visual MVP is still in `game/visual_mvp.tscn` (run it with **F6**). The project renders with Forward+ (see `PLAN.md`).
 
 For the earlier playable village episode, open `game/main.tscn` in Godot and run that scene with **F6**. It uses the same 3D protagonist and supports the existing quest, combat, and language choices. Use WASD to move, E to interact, F to attack, Space to dodge, Q for the Power after awakening, and the arrow keys to turn the episode camera.
 
@@ -18,6 +18,7 @@ The first configured export target is macOS. Install the matching Godot export t
 
 ## Project map
 
+- `game/levels/bellfold_dawn.tscn` and `.gd` hold the linear v0 scene: graybox route, boundaries, beat triggers, and runtime player spawn.
 - `game/main.gd` builds the village, interface, and authored episode flow.
 - `game/visual_mvp.gd` builds the superseded fixed-camera ring scene and static backdrop.
 - `game/session/` stores typed in-memory run state and fresh-run reset.
@@ -31,5 +32,7 @@ The first configured export target is macOS. Install the matching Godot export t
 - `tests/arena.tscn` verifies that movement is clamped to the ring.
 - `tests/protagonist.tscn` verifies the imported model, sword attachment, and walk motion.
 - `tests/visual_presentation.tscn` verifies illustrated pose selection, ground anchoring, and fixed-camera framing.
+- `tests/bellfold_route.tscn` walks the dawn scene end to end and checks beat order, boundaries, and camera clearance (the stage 1 gate).
+- `tests/capture_bellfold_views.tscn` saves the gate captures and measures frame rate; it needs a window (see the header of `tests/run_capture_bellfold_views.gd`).
 
-Run the checks with `godot --headless --path . --script tests/run_rules.gd`, `godot --headless --path . --script tests/run_keyboard.gd`, `godot --headless --path . res://tests/combat.tscn`, `godot --headless --path . res://tests/arena.tscn`, `godot --headless --path . res://tests/protagonist.tscn`, and `godot --headless --path . res://tests/visual_presentation.tscn`.
+Run the checks with `godot --headless --path . --script tests/run_rules.gd`, `godot --headless --path . --script tests/run_keyboard.gd`, `godot --headless --path . res://tests/combat.tscn`, `godot --headless --path . res://tests/arena.tscn`, `godot --headless --path . res://tests/protagonist.tscn`, `godot --headless --path . res://tests/visual_presentation.tscn`, and `godot --headless --path . res://tests/bellfold_route.tscn`. On a fresh clone, run `godot --headless --path . --import` once first so the script classes are registered.

@@ -9,6 +9,9 @@ signal defeated
 const WALK_SPEED: float = 5.4
 const DODGE_SPEED: float = 10.5
 const GRAVITY: float = 22.0
+## Radius of the sphere swept from the pivot to the camera. A single ray let the
+## camera sit a few centimetres from walls and eaves at corners (stage 1 graybox).
+const CAMERA_PROBE_RADIUS: float = 0.2
 const PROTAGONIST_SCENE: PackedScene = preload("res://game/art/protagonist.glb")
 
 @export_range(0.1, 10.0) var walk_speed: float = WALK_SPEED
@@ -22,7 +25,7 @@ var invulnerable: bool = false
 var power_unlocked: bool = false
 var camera_pivot: Node3D
 var camera: Camera3D
-var camera_obstruction: RayCast3D
+var camera_obstruction: ShapeCast3D
 var camera_offset: Vector3 = Vector3(0.65, 2.0, 3.8)
 var power_uses: int = 3
 var protagonist_model: Node3D
@@ -63,8 +66,13 @@ func _build_camera() -> void:
 	camera_pivot = Node3D.new()
 	get_parent().add_child(camera_pivot)
 	camera_pivot.global_position = global_position + Vector3(0, 1.35, 0)
-	camera_obstruction = RayCast3D.new()
+	camera_obstruction = ShapeCast3D.new()
+	var probe: SphereShape3D = SphereShape3D.new()
+	probe.radius = CAMERA_PROBE_RADIUS
+	camera_obstruction.shape = probe
 	camera_obstruction.target_position = camera_offset
+	camera_obstruction.max_results = 1
+	camera_obstruction.enabled = false
 	camera_obstruction.add_exception(self)
 	camera_pivot.add_child(camera_obstruction)
 	camera = Camera3D.new()
@@ -123,9 +131,9 @@ func constrain_to_arena() -> void:
 	velocity.z = 0.0
 
 func _update_camera_clearance() -> void:
-	camera_obstruction.force_raycast_update()
+	camera_obstruction.force_shapecast_update()
 	if camera_obstruction.is_colliding():
-		camera.global_position = camera_obstruction.get_collision_point() + camera_obstruction.get_collision_normal() * 0.15
+		camera.position = camera_offset * camera_obstruction.get_closest_collision_safe_fraction()
 	else:
 		camera.position = camera_offset
 
