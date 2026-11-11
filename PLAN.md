@@ -1,149 +1,82 @@
-# Village MVP: one fixed-camera visual scene
+# Bellfold v0: one linear third-person scene
 
-## Goal and reference
+## Decision record (2026-11-11)
 
-Build one tightly bounded village duel composition in Godot 4.7.2. The current reference is the local, intentionally untracked `concepts/v0-awakening-graybox.png`, annotated with the playable region. The fixed camera should resemble that frame. Only the protagonist and her opponent appear in the visual MVP; there are no villagers or other bystanders in this scene. The central paving remains 3D; the foreground protagonist uses view-specific illustrated poses so her proportions and lighting match the background plate.
+The user changed the milestone and the production pipeline on 2026-11-11:
 
-The project already has a player controller and earlier gameplay code. The visual MVP runs from `game/visual_mvp.tscn`; the earlier quest scene stays in `game/main.tscn` for reference. The visual scene reuses the controller and fixed camera with illustrated idle and walk poses.
+- **Scope.** One playable, linear scene in the style of a modern action-adventure: it feels like a large world through vistas and set pieces, but the player follows one authored path. No open world.
+- **Camera.** Third-person, over the shoulder, player-controlled. It replaces the fixed camera and the painted background plate of the earlier visual MVP.
+- **Engine.** Stay on Godot 4.7.2. Unreal was considered and rejected: the target look is stylized and painterly, not photoreal, and Godot's text-based scenes, scripts, and shaders let Claude Code or Codex do most of the work directly.
+- **Pipeline.** ComfyUI is dropped. The user does not need to open Blender. An external image model produces static images only (concepts, tileable textures, distant matte paintings). Agents do everything else: layout, code, shaders, procedural geometry, VFX, lighting, kitbashing, integration, and captures. See `docs/PRODUCTION_GUIDELINES.md`.
+- **Characters.** Start from free CC0 base characters with a skeleton and animations, adapted to the reference palette. The protagonist uses Quaternius's *Ultimate Modular Women* "Medieval" model ([comparison](docs/visual-progress/base-character-comparison.png)). A better or custom protagonist can replace the mesh later on the same skeleton, without gameplay changes.
 
-## Effort-saving art direction
+Superseded, kept for reference: the fixed-camera duel in `game/visual_mvp.tscn` with its plates, illustrated sprites, and magic layer; the ComfyUI and Blender protagonist (rig v3, local under `source_assets/protagonist/`); and the opponent reference pack. Their full history, hand-offs, and acceptance records are in git history up to commit `e905491`. Do not continue that work unless the user reopens it.
 
-- Use the central paving around both duel participants as the arena. An invisible 3D collision boundary keeps combatants out of the well, stairs, buildings, and foreground props.
-- Use a fixed camera so the static plate and 3D floor remain aligned. The player can move inside the ring but cannot rotate the view.
-- Use a clean static village plate with a neutralized arena center behind the 3D floor, with the magic in an independent transparent layer. Show the opponent with the existing transparent art on a camera-aligned 3D sprite, ready for later animation. The floor has its own UV color and camera-matched rim texture; it does not sample the background plate.
-- Use a transparent illustrated protagonist for the fixed camera. Keep the experimental 3D model in the earlier playable scene until a matching animated asset is produced.
-- Keep UI out of the comparison frame until the protagonist and walking space match the reference.
+## Scene outline
 
-## Asset inventory
+A short episode, about 5 to 10 minutes of play, drawn from the references in `references/` and the story in `docs/V0_OPENING.md`.
 
-| Priority | Deliverable | Minimum production approach |
+| Beat | Place | Play | Main reference |
+| --- | --- | --- | --- |
+| 1. Dawn road | Road into Bellfold, valley vista, bell frame at the village edge | Walk and camera tutorial; first vista; one gate that hides the edge of the level | `O sino imóvel ao amanhecer-9.png` |
+| 2. Village square | Square with the bell, well, stairs, houses | Meet Mara and see the ledger; short dialogue; objective | `Paleta e interface da praça-7.png`, `Mara, guardiã do velho livro-3.png` |
+| 3. Duel | Central paving of the square | Melee fight against the guard: attack, dodge, block | `Duelo ao amanhecer em Bellfold-5.png` |
+| 4. Awakening | Same square | Scripted set piece: stones lift, the bell rings, the Power reacts | `O despertar das pedras-4.png`, `O despertar do sino de bronze-10.png` |
+| 5. Consequence | Square, toward the road out | Short closing beat with Mara and the ledger; end card | `Livro fiscal com fólio remendado-6.png`, `Pergaminho oficial selado-8.png` |
+
+Cast for v0: the protagonist, the guard, and Mara. Serah and other villagers are optional and come only after the gates below pass. The narrative and outcome rules in `docs/V0_OPENING.md` stay valid; the full custody and testimony choices can stay in the existing quest director and be trimmed for this scene if needed.
+
+How the scene fakes a large world:
+
+- One path with gentle branches that rejoin. Cliffs, walls, fences, and houses form the boundaries instead of invisible walls wherever possible.
+- Distant hills, sky, and far villages are matte paintings or low-detail cards, lit to match.
+- Narrow passages and gates separate beats and hide anything not yet needed.
+- The camera is controlled near set pieces so the player looks at the vista or the action.
+
+## Production stages and gates
+
+Each stage ends with a capture from the running game, beside the relevant reference, at 1280×720 or higher. Stop and report after two failed passes at the same gate.
+
+| # | Stage | Output | Gate | Rough estimate |
+| --- | --- | --- | --- | --- |
+| 0 | Plan and docs | This plan, updated guidelines and agent instructions | User approves the direction | Done |
+| 1 | Graybox | New scene `game/levels/bellfold_dawn.tscn` built from boxes and CSG: road, square, boundaries, beat triggers. Third-person controller and camera reused from `game/actors/player.gd`. Renderer decision (see below) | The whole route is playable start to end, the camera never clips or loses the player, every boundary holds, and the vistas are framed | 2 to 3 sessions |
+| 2 | Characters | Protagonist, guard, and Mara from CC0 bases, recolored to the palette, with cape, sword, and hair or hood adapted. Godot import with a humanoid `BoneMap`, an `AnimationTree`, and an animation test scene | Each character reads correctly from the gameplay camera; idle, walk, run, attack, hit, dodge, and death play without sliding or detached equipment | 2 to 3 sessions |
+| 3 | Look | Stylized shading, dawn sun, sky, fog, color grading; first painted textures from the image model | A capture of the square at spawn matches the palette and light of `Paleta e interface da praça-7.png` | 2 sessions |
+| 4 | Environment kit | Houses, walls, fences, bell frame, well, stairs, props from CC0 packs plus procedural pieces (paving, walls, stones); matte paintings for the far background | Each beat's capture reads like its reference in composition and density, at a stable frame rate on the user's Mac | 3 to 4 sessions |
+| 5 | Combat and set piece | Duel tuning, hit feedback, the stone and bell awakening with particles and camera work | The duel is readable and fair in a play test; the awakening reads like its references | 3 to 4 sessions |
+| 6 | Polish | Minimal HUD, dialogue in English and pt-BR, audio placeholders, end card, macOS export | The user plays the full scene in an exported build | 1 to 2 sessions |
+
+The estimates are rough and count focused agent sessions, not calendar time. The biggest risks are character quality and combat feel; the gates are ordered so both are visible early.
+
+## Open decisions
+
+- **Renderer.** The project uses Compatibility. Compatibility lacks volumetric fog, SSAO, SDFGI, and some post-processing that help the dawn atmosphere. Recommendation: test Forward+ during stage 1 on the user's Mac and switch if it runs well; record the result here.
+- **Protagonist head.** The Medieval base has a hood and short hair; the canon has a low bun. Choose in stage 2 between the hood in the canon red, or a hair mesh from the same pack.
+- **Sword hand.** The base holds the sword in her right hand; the canon puts it in her left. Attaching the sword to the left hand bone is the default; check that attack clips still read.
+- **Animation coverage.** The modular pack has about 24 clips. Block, side dodges, and combos must come from Quaternius's Universal Animation Library or Mixamo through Godot retargeting. Confirm in stage 2 that the base skeleton maps cleanly to `SkeletonProfileHumanoid`.
+
+## Asset sources
+
+Record source URL, author, license, and attribution needs for every third-party asset before it is committed (see the guidelines).
+
+| Need | First choice | License |
 | --- | --- | --- |
-| Done | Cleaned background plate | Image edit of the annotated reference; removes the drawn oval, red note, HUD, and foreground protagonist. Saved as `game/art/village_backdrop.png`. |
-| Done | Clean duel plate and static opponent | `game/art/village_duel_clean.png` has no combat magic or character, and its replaceable arena center contains only a smooth neutral base. `game/art/arena_paving_rim.png` belongs to the floor and preserves its boundary transition independently of the plate. `game/art/opponent_static.png` remains a separate 3D pose. The earlier plate with baked magic remains only as a reference asset. |
-| In review | Independent static magic | `game/art/duel_magic_layer.png` holds the effect on transparency. Three separately controlled shader passes draw atmosphere, opaque fragments with papers, and cool energy. The composed and clean captures show that all magic can be removed without exposing painted effects in the floor or village. The masks are approximate and are not yet independent motion assets. |
-| Done | Duel arena and boundary | `game/art/arena_paving.glb` supplies joint-aligned stone relief, UV color, and restrained joint occlusion. The floor stays below the illustrated foot anchor. An invisible 3D collision ring contains the protagonist and future 3D combatants. |
-| In review | Protagonist | The approved raised-hand pose remains the rear idle view. Matching front and side poses and two strides per direction appear in the idle capture and walk capture. The earlier 3D model remains in the playable prototype. |
-| In review | Foot contact and framing | The illustrated poses share a foot baseline and contact shadow. The revised spawn allows movement toward the center and directly to the right. A real-input route reached the center, approached the opponent, stopped at the wall, and returned without leaving the frame. Close overlap with the fixed opponent pose, limited walk frames, and the static background perspective still need player review. |
-| Later, only if needed | UI | Add a small objective/health overlay after the protagonist comparison passes. |
-
-The completed arena rows describe a functional visual baseline, not final asset approval. Before gameplay mechanics, produce and visually review these remaining assets in order:
-
-1. **Shaded 3D paving (accepted for v0).** The arena now uses continuous relief aligned with the existing UV art's joints, restrained joint occlusion, and normals corrected for the mesh's nonuniform scale. The original color texture and camera-matched rim remain separate from the neutralized background accepted in [#13](https://github.com/viniciuspassos/rpg/issues/13). The floor detail, clean view, and composed spawn show more readable stone depth without a replacement grid or abrupt boundary transition. [#14](https://github.com/viniciuspassos/rpg/issues/14) is accepted on the fixed-view and movement evidence recorded below.
-2. **Arena-edge details (in review).** A small GLB now places faceted stones, broken timber, and a wooden bucket on empty painted paving beyond the left arena boundary. Existing static foreground props cover the right side, so a candidate right-hand cluster was removed after it appeared in front of a painted crate. The spawn capture and left-limit capture show no duplicate object or hidden combatant. A real-input route still reached the center and both barriers; the new details have no collision and do not narrow it. Review their scale and color before accepting this visual gate.
-3. **Independent magic assets (in review).** The clean plate and UV floor have no painted effect. Three shader passes from one transparent source now control warm atmosphere, opaque fragments with papers, and cool energy separately; the energy is less saturated in the fixed-view composite. Isolated captures show that the masks still mix some dust with fragments and retain blue haze around the energy. Produce cleaner separate glow, dust, paper, and debris assets to meet [#16](https://github.com/viniciuspassos/rpg/issues/16) before independent motion. Gate: the effect reads at spawn and across the arena without duplicate baked elements or loss of character visibility. This is visual asset work, not ability gameplay.
-4. **Two-combatant presentation pack.** Approach chosen on 2026-10-31: stylized low-poly 3D for both combatants. They share one skeleton and one set of animations; meshes are generated with the local ComfyUI and finished in Blender (see "Character and model generation" in `docs/PRODUCTION_GUIDELINES.md`). The illustrated sprites remain in the scene until the 3D protagonist passes the fixed-camera gate. Illustrated-pose refinement in [#21](https://github.com/viniciuspassos/rpg/issues/21) and [#22](https://github.com/viniciuspassos/rpg/issues/22) is paused until then. Hand-off state: see "Protagonist rig hand-off (2026-11-04)" below. The rigged v3 protagonist waits for the user's approval. The cape side was decided on 2026-11-01: the tail hangs on her right. Complete the poses and supporting assets needed for readable idle, movement, attack, impact, and Power presentation, replacing the opponent's single fixed pose. Gate: both silhouettes remain clear at close range, hold their ground contact, and match the reference across the walkable area. No villagers, visitor, or companion assets belong to this scene.
-
-Keep generation scripts, Blender working files, and temporary renders local and unversioned. Version only approved game-ready assets, engine files needed to load them, and selected in-game captures. Start gameplay mechanics after these four visual gates pass or a remaining gap is explicitly accepted here.
-
-The paving relief and albedo were derived from the project's own clean village plate; no third-party asset was added. The original plate was produced with the built-in image generation edit tool from the user's local annotated reference. Its prompt was: preserve the exact village composition, architecture, people, magic, light and paving; remove the black oval, red note, foreground protagonist and HUD; reconstruct exposed paving; add no text or new objects. The first duel edit removed the three bystanders; a later pass separated the opponent into a transparent layer over the empty duel plate. The illustrated protagonist was generated from the same local reference as a transparent foreground cutout. The original reference is local and ignored by Git; the selected game-ready images are versioned under `game/art/`. Experimental production files remain local and unversioned.
-
-The edge-detail GLB was modeled locally without third-party assets. The clean duel plate and transparent magic layer were edited with the built-in image generation tool using the existing duel and clean village plates as references; their production inputs remain unversioned.
-
-The stones visible to the left in the clean capture are geometry from `arena_edge_details.glb`, not pixels baked into the clean plate or floor texture. The current three-pass magic composite was reviewed in Godot Compatibility at 1280×720; the clean and composed images use the same camera and actor pose.
-
-## Production sequence and review gates
-
-1. **Background and arena.** Use the duel plate, fixed camera, a textured 3D floor across both combatants, and an invisible collision boundary. The [arena capture](docs/visual-progress/arena-barrier-review.png) has no visible floor seam. The movement capture shows the protagonist inside the arena after real input. A route from spawn crossed the center, reached the right wall, and returned. Edge captures kept her on screen and away from the village props; collision checks covered eight directions and a second 3D body. The earlier ring capture records the smaller predecessor.
-2. **Protagonist.** Match the reference silhouette, scale, clothing colors, hair, sword, and reaching pose from the fixed view. Gate: compare the running scene at spawn with the reference. The approved illustrated pose is retained for rear idle; the new spawn capture preserves that direction.
-3. **Movement presentation.** Use view-specific idle and alternating walk poses with a shared ground anchor. The illustrated pass was reviewed in the running Compatibility scene at spawn, at both horizontal bounds, and in a fixed-rate four-direction movement capture. Arena corrections no longer change her facing. The cycle is intentionally simple; player review of sustained movement remains the gate before declaring motion complete.
-4. **Duel staging.** Remove the three bystanders, keep the opponent separate from the plate, and give the protagonist room to move through the central paving. Gate: the running scene shows exactly the two duel participants and preserves the opponent's screen position and magic. The duel capture records the earlier left-side pass.
-5. **Opponent separation.** The opponent now uses the existing transparent image as a camera-aligned 3D sprite over the clean duel plate. Its depth is independent of the background. Keep the pose static in this milestone; close overlap with the protagonist still needs replacement art or motion, and reactions remain later work.
-6. **Optional UI.** Add only HUD elements that improve the final view after both characters are accepted.
-
-## Low-poly 3D protagonist hand-off (2026-10-31)
-
-The user decided that the village duel is a battle scene of the real game, so the protagonist moves from per-pose 2D illustrations to one rigged 3D model. `game/art/protagonist_lowpoly.glb` is the assembled, unrigged model. It has four objects: Body, Cape, Sword and Pouch. It totals 14,984 triangles, stands 1.95 tall with its feet at the origin, and faces glTF +Z, the same convention as `protagonist.glb`. It uses matte palette materials with no baked lighting. It is not referenced by any scene yet. The [review capture](docs/visual-progress/protagonist-lowpoly-review.png) shows the concept front, front, three-quarter, concept back, back, game-camera and side views.
-
-Production: free local ComfyUI TRELLIS.2 shape-only generation of the head, torso, legs and sword parts from the protagonist turnaround, plus a hand-modelled cape. Then ComfyUI's "solid" remesh, and Blender assembly, decimation and palette projection. The weights are MIT (Comfy-Org TRELLIS.2, DINOv3 conversion, BiRefNet). No paid or partner nodes were used. Local generation needed the `mps_int_sort_fix` ComfyUI custom node: on PyTorch 2.12.1 MPS, integer `torch.sort` values above 2**24 are rounded through float32, and TRELLIS.2 meshes otherwise lose about 99.8% of their faces. Inputs, scripts and working files stay under ignored `source_assets/protagonist/`.
-
-Remaining gaps: the cape front reads as a short mantle rather than a bunched scarf; some colour borders are blocky; the right hand is mitten-like. Next steps: rig on the Mixamo skeleton with Mixamo or AccuRig (a free user account is needed), add two or three cape bones, then library animations, Godot import with an animation test scene, and the fixed-camera duel gate.
-
-## Protagonist rig hand-off (2026-11-04)
-
-The rigged protagonist is ready for the user's review. Only local files changed: nothing was exported to `game/art/`, and no scene references the rig. The next step waits for the user's approval of this model. The review uses fixed Blender views, including the game camera. The running game becomes the acceptance view after the Godot import.
-
-- **Rig v1** (`source_assets/protagonist/rig/protagonist_rigged_tpose.blend`, 2026-11-01): Mixamo auto-rigged the assembled body through a closed proxy, on the 33-bone `mixamorig:` skeleton with a T-pose rest. Its head floats above the torso. It is kept as the baseline.
-- **Rig v2** (`rig/v2/final/protagonist_rigged_tpose_v2.blend`, 2026-11-01): the same skeleton, with a repaired neck and nape and rule-based weights. The user found the model badly deformed, and it was not approved.
-- **Rig v3** (`rig/v3/final/protagonist_rigged_tpose_v3.blend`; the same body without the rig is `body_tpose_v3.blend`):
-  - **Why the body changed.** v2's deformation came from two bad 2D inputs.
-    - The torso input had the cape removed by pixel smearing, and image-to-3D turned it into a mantle over the shoulders.
-    - The arm came from a separate hanging-arm image rotated to horizontal. It produced a cone sleeve, a twig forearm and a claw hand.
-  - **What v3 changed.**
-    - The torso and both arms were regenerated together in one free local TRELLIS.2 run. The input was a clean composite of `01-front.png`: her right side mirrored, the cape, sword and pouch excluded, and the shoulders repainted. This replaces the separately generated T-pose arm and the smeared torso input. The head and legs are reused from the assembled model.
-    - The body was assembled in an A-pose, skinned with the arms posed down, and baked to the original T-pose rest.
-    - Joints were fitted to the new mesh: neck base at the collar, head joint at the jaw line, and shoulders, elbows and wrists on the mesh. All bone directions and rolls are unchanged, so Mixamo clips still apply. Every move is listed in `rig/v3/final/logs/joint_moves.txt`.
-    - The neck now bends between collar and head: no visible neck vertex below 166 cm is weighted only to the head.
-    - A neck-weight leak into the belly and tan flap was fixed, and the underside of the upper arms was recoloured to the cream sleeve.
-  - **Verified.**
-    - Rig check against v2: 33 bones with the same names and parents, no unweighted vertex, at most four influences, weights summing to 1, no wrong-side weight, 0.0004 mm rest deviation, no actions.
-    - 18,944 triangles, 1.95 m tall, feet at z = 0, facing glTF +Z.
-    - Cape, Sword and Pouch unchanged and hidden.
-    - In the comparison sheets (`rig/v3/final/review/sheets/`), v3 is clearly better than v2 in all five views, at rest, posed and in the stress pose. An independent critic agreed.
-- **Cape.** The user decided on 2026-11-01 that the tail hangs on her right. The existing Cape object is kept.
-- **Remaining gaps:**
-  - In the deep-squat stress pose, the thighs cut the front skirt panels and the tan flap, and the back panel bunches. Two weights-only fixes failed. Fixing it needs two or three skirt bones (a skeleton change), or the user can accept it.
-  - The tunic ends at the top of the thigh; the concept and the game reference show it reaching mid-thigh. Lengthening it without skirt bones would increase clipping in walking.
-  - The tan flap sticks out up to 1.5 cm in profile. Two fixes failed.
-  - The sleeve hem sits at the elbow, with no rolled cuff, and the forearms are slimmer than in the concept.
-  - The hands are rigid mittens: the index-finger bones carry no weight. Seen end-on they read as claws, and the left hand is open rather than gripping.
-  - Other gaps:
-    - the right boot's ankle reads as a kink at the game camera (inherited leg mesh);
-    - small facets on the neck;
-    - the belt reads rust-orange because it shares the Pouch's material.
-  - Reference note: from behind, the game reference shows tan below the belt, while the canon puts the tan panel on her left front.
-- **Next steps:**
-  1. The user reviews v3, and decides on the skirt bones and the tunic length.
-  2. Cape bones and the cape, sword and pouch attachment, with the sword grip on the open left hand.
-  3. Library animations.
-  4. Godot import with the humanoid `BoneMap`. Check `meshes/generate_lods` there. Add an animation test scene.
-  5. The fixed-camera duel gate.
-- **Files and records.** Everything is under the ignored `source_assets/protagonist/rig/v3/`. The records are `OBJECTIVE_CARD.md`, `BRIEF_LOG.md`, `REVIEWS.md` and `final/logs/progress.md`. To rebuild, run `final/scripts/run_pipeline.py`, then `stage4_bind.py`, then `w5b_underarm_only.py`. No local job is running.
-
-## Opponent reference pack hand-off (2026-10-31)
-
-At the user's explicit request, the built-in image generation tool produced a local 2D reference pack for later modular 3D work. `source_assets/opponent/index.html` displays 19 PNGs: two full-character references, ten isolated inputs across seven approved part groups, and seven front/back/profile review sheets. Exact prompts and assembly notes are saved alongside them. The inputs and production helpers remain ignored by Git. Three subagents generated head/tunic, limbs, and equipment in separate worktrees; the selected images were copied into the main workspace.
-
-Visual review checked complete silhouettes, distinct views, handedness, clothing and equipment consistency. The user approved the delivered images on 2026-10-31 and confirmed that production will proceed with them, including the proposed face and the supplied sword. The isolated sword's blade-to-grip ratio differs from the initial overview; retain that observation for assembly, without treating it as a blocker to the approved reference pack. Next production stage: generate and assemble the approved parts in 3D. No model generation, rigging, runtime integration, gameplay changes, or local ComfyUI generation job was started; the in-game acceptance gate remains pending.
-
-## Compatibility renderer decision
-
-**Keep Compatibility for this milestone.** The project already selects `gl_compatibility` in `project.godot`. A local launch of Godot 4.7.2 on Apple M4 Pro completed successfully with `--rendering-method gl_compatibility`; the engine reported `OpenGL API 4.1 Metal ... Compatibility` and exited without a renderer error.
-
-The actual fixed-camera composite was run and captured in Compatibility on this machine. It uses a canvas backdrop, a 3D floor mesh, ambient and directional lighting, and the existing player controller. The separate static magic layer needs no real-time particle renderer. Compatibility remains sufficient for this scope.
-
-This validates startup and the current composite, not the final protagonist model or frame rate. A fixed plate also means there is no background parallax; the camera must remain fixed. If free camera rotation becomes a requirement, the plate would need to be replaced by 3D scenery or multiple layered views.
-
-Godot references: [renderer features](https://docs.godotengine.org/en/4.7/tutorials/rendering/renderers.html), [environment and post-processing](https://docs.godotengine.org/en/4.7/tutorials/3d/environment_and_post_processing.html), [3D scene import](https://docs.godotengine.org/en/4.7/tutorials/assets_pipeline/importing_3d_scenes/available_formats.html).
-
-## Incremental visual record
-
-### Readable paving acceptance (#14)
-
-The floor retains the original UV paving art, warm palette, fixed camera, arena footprint, flat collision surface, and barrier. Its revised GLB follows the existing joints with a continuous shallow relief and vertex-based joint occlusion. Geometry remains between 0.002 and 0.022 units high, below the protagonist's 0.025 foot/shadow anchor. Normal shading now accounts for the arena's nonuniform scale. Four-sample MSAA smooths the fine relief edges and the existing 3D silhouettes. The background, rim texture, magic, edge props, and character assets are unchanged.
-
-Reviewed Godot 4.7.2 Compatibility at 1280×720 against the local annotated reference and #13's visual baseline. The selected detail, clean, spawn, left limit, right limit, stride, and passing pose captures show the same paving layout with clearer depth/joints, a gradual rim transition, and retained ground contact. Movement input reached the same horizontal limits as #13 (x = -1.605844 and 1.205717 at z = 1.75), plus the far and near limits. No floor clipping, exposed neutral background, doubled joint grid, or village composition shift was observed. Sprite pose/contact refinement and opponent overlap remain #21 and #22.
-
-The integration check first failed on missing joint-occlusion vertex data; the final visual-presentation and arena boundary tests passed. The earlier `game/main.tscn` also completed a graphical startup check after the MSAA setting change. The export contains one mesh with 27,601 vertices and 54,912 triangles before import LOD, occupies 1,434,772 bytes, and adds no draw pass or runtime texture. A short local process-frame timing sample completed on Apple M4 Pro; it does not establish GPU frame time or performance on other hardware. The denser mesh and 4× MSAA increase rendering work.
-
-The approved relief was derived locally from the project's own paving albedo and exported through Blender; no third-party art was added. Blender working files, analysis data, capture scripts, and rejected previews remain local under ignored `source_assets/`. The accepted decision is to deepen the existing joints while preserving the reference's paving pattern.
-
-### Floor-free plate acceptance (#13)
-
-The selected plate neutralizes only the projected arena interior with a smooth warm base; paving outside the replaceable area remains part of the village. The well, stairs, buildings, sky, props, lighting, and fixed camera are unchanged. All source pixels outside the floor projection were verified identical to the previous plate. The floor-owned `arena_paving_rim.png` retains the original camera-matched paving only around the mesh footprint, on transparency, so no background texture is sampled by the floor shader. The mesh, UV albedo, collision bounds, characters, and magic assets are unchanged.
-
-Godot 4.7.2 Compatibility captures at 1280×720 show the neutral center with floor, effects, and actors hidden, restored floor without magic, and composed spawn. A same-run before/after spawn comparison produced zero differing pixels. Four movement-input routes reached the left, right, far, and near barriers without exposing the neutral center, a seam, or a changed village silhouette. The visual-presentation integration test and arena collision test passed. The plate separation is accepted; floor relief (#14), edge props (#15), effect separation (#16), protagonist contact/poses (#21), and opponent pose (#22) retain their existing review status. No frame-rate benchmark was performed; this change adds one rim texture and no new draw pass.
-
-Production used the built-in image generation edit tool, then restricted its neutral ground to the inset mesh projection so the surrounding original pixels remain exact. No third-party asset was added. Local generation inputs, masks, and capture scripts remain unversioned under `source_assets/`. Final edit prompt:
-
-> Use case: precise-object-edit. Edit target: the supplied clean static village background for a fixed-camera game. Remove ALL detailed paving stones, tile joints, cracks, and cast prop shadows from the open ground below the well and the stairs, throughout the broad central and lower plaza. Replace that ground with a completely smooth neutral warm tan base, a very subtle broad lighting gradient only, with absolutely no lines, stone patterns, texture, pebbles, or objects. This is a neutralized background under an independent 3D arena floor, not a new dirt terrain design. Preserve the exact composition, camera, well, its stone steps and base, buildings, sky, stairs, crates, barrels, foreground props, architecture, color and light. No characters, magic, dust, papers, debris, writing or new objects. Keep the image framing and dimensions. The smooth ground should cover the open plaza all the way to its foreground edges; preserve prop silhouettes.
-
-Compare each object in the running game from the same camera view before moving to the next. The earlier paving, covered well, and [composition](docs/visual-progress/composition.png) captures document the discarded full-3D approach. The ring capture records the earlier capsule view. The model review and [earlier playable capture](docs/visual-progress/protagonist-mvp.png) record the 3D prototype. The illustrated candidate records the chosen direction. The idle, walking, and four-direction motion captures document the protagonist pass. The duel capture records the earlier left staging area; the [arena capture](docs/visual-progress/arena-barrier-review.png) and movement capture record the enlarged 3D duel space. The opponent remains a static pose, so close overlap and combat reactions still need a later visual pass.
+| Characters | Quaternius Ultimate Modular Women and Men (quaternius.com) | CC0 |
+| Animations | Quaternius Universal Animation Library; Mixamo as a fallback | CC0; Mixamo terms (free Adobe account, use in games allowed, no redistribution of raw files) |
+| Medieval village pieces and props | Quaternius and KayKit medieval packs, Kenney | CC0 |
+| Textures and HDRIs | Painted tileable textures from the image model; Poly Haven only where a photo texture is repainted or stylized | Own output; CC0 |
+| Distant vistas, concepts, UI art | External image model | Own output; record tool and prompt |
 
 ## Definition of done
 
-- A 16:9 screenshot from the fixed camera matches the reference's composition, color, magic, and illustrated foreground protagonist while showing only the opponent as another character.
-- The visible protagonist and floor load without errors in Compatibility.
-- The illustrated movement pass receives player review before the walkable MVP is declared complete.
-- Approved game-ready assets, comparison screenshots, and remaining visual gaps are recorded.
+- The scene runs from start to end in Godot 4.7.2 with keyboard input, without errors.
+- Each beat has an accepted capture beside its reference in `docs/visual-progress/`.
+- The duel and the awakening pass a play test by the user.
+- Player-facing text exists in English and pt-BR.
+- Every third-party asset's provenance and license is recorded, and remaining gaps are written here.
+- A macOS export of the scene launches.
 
-An exact pixel match from every camera angle is impossible with one still background, so this MVP intentionally fixes the camera and keeps the walkable area small.
+## Status and hand-off
+
+- 2026-11-11: direction and pipeline changed as recorded above. The base-character comparison was rendered from the CC0 models (re-hosted copies used for the preview only; download the originals from quaternius.com and kaylousberg.com before integration). No game files changed. Next: stage 1, graybox.
