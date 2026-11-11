@@ -53,4 +53,4 @@ The testimony changes trust and dialogue; it cannot change the witnessed event. 
 
 ## Runtime choices
 
-Godot 4.7.2 standard build; macOS desktop is the first preview target. The visual prototype uses an authored fixed camera, typed GDScript, Blender-produced scene assets, and Godot's imported scene resources. No gameplay controls or runtime quest dependencies are required for this milestone.
+Godot 4.7.2 standard build; macOS desktop is the first preview target. The v0 scene is linear and third-person, with typed GDScript, keyboard controls, and Godot-imported GLB assets. The scene outline in `PLAN.md` stages these beats; the full choice and outcome contract above can be trimmed for v0 if the scene needs it.

@@ -1,6 +1,6 @@
 # Game architecture: village v0 and later campaign
 
-Status: visual v0 direction. `PLAN.md` tracks the single-scene visual milestone; the local `GAME_DIRECTION.md` remains the narrative direction draft. The earlier playable experiment is reference code and is not the current acceptance target.
+Status: v0 is one linear third-person scene (decision of 2026-11-11). `PLAN.md` tracks its stages; the local `GAME_DIRECTION.md` remains the narrative direction draft. The earlier playable episode in `game/main.tscn` provides the controller, camera, combat, and quest code that the new scene reuses; the fixed-camera visual MVP is superseded.
 
 ## Decisions
 
@@ -8,11 +8,11 @@ Status: visual v0 direction. `PLAN.md` tracks the single-scene visual milestone;
 | --- | --- | --- |
 | Engine | Pin Godot 4.7.2 stable, standard build, with typed GDScript. Do not add a JavaScript runtime to gameplay. | Upgrade deliberately after exported-build and test checks; add native extensions only for a measured need. |
 | First platform | macOS desktop export for the current development and playtest host; keyboard only. | Add Windows and Linux presets after the slice works. Keep input actions independent of physical keys. |
-| World | One compact `Village` scene with placeholder geometry and authored encounter positions. | Load additional region scenes through the same screen flow; do not create an open-world streaming system for v0. |
+| World | One linear scene (`game/levels/bellfold_dawn.tscn`): an authored route through gated areas, with vistas made of matte paintings and low-detail cards. | Load additional region scenes through the same screen flow; do not create an open-world streaming system for v0. |
 | State | One in-memory `RunState` owned by a small `GameSession` autoload. | Add versioned disk serialization when saves become a campaign requirement. |
 | Narrative | One explicit village quest director and typed outcome rules. Dialogue content is separate from rules. | Add quest modules per region; generalize shared patterns only after a second quest proves them. |
 | Localization | Stable text keys in Godot-imported CSV with `en` and `pt_BR` columns (the project's player-facing locale is `pt-BR`). | Keep keys stable if content later moves to PO/gettext or a narrative tool. |
-| Dependencies | Godot built-ins and repository-owned content only. | Evaluate licenses, cost, and maintenance before adopting plugins or services. |
+| Dependencies | Godot built-ins, repository-owned content, and CC0 or game-licensed art packs with recorded provenance. No runtime plugins. | Evaluate licenses, cost, and maintenance before adopting plugins or services. |
 
 Godot's [scene organization guidance](https://docs.godotengine.org/en/stable/tutorials/best_practices/scene_organization.html) supports self-contained reusable scenes, and its [autoload guidance](https://docs.godotengine.org/en/stable/tutorials/scripting/singletons_autoload.html) supports state shared across scene changes. The chosen version is an [official stable release](https://godotengine.org/download/archive/).
 
@@ -79,7 +79,7 @@ Dialogue is authored as small Godot text resources (`.tres`) with stable convers
 
 ## Input and camera contract
 
-Controls are deferred for visual v0. The camera is authored for one reference composition and does not need player input. Later gameplay can reuse the earlier keyboard contract.
+Keyboard input, reusing the earlier episode's actions (WASD to move, E to interact, F to attack, Space to dodge, Q for the Power). The camera is a third-person, over-the-shoulder rig attached to the player, with collision against level geometry so it never passes through walls. Set pieces may take temporary control of the camera and must hand it back smoothly. Keep input actions independent of physical keys so a gamepad can be added later.
 
 ## Validation and expansion seams
 

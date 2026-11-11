@@ -1,10 +1,10 @@
 # The Stilled Bell: Village v0
 
-An unofficial, non-commercial *Wheel of Time* fan game prototype. The current MVP target is one small, walkable 3D village square in Godot, styled after the local `concepts/v0-awakening-graybox.png`. See [PLAN.md](PLAN.md) for the reduced asset and visual production plan, and [the production guidelines](docs/PRODUCTION_GUIDELINES.md) for the art and world pipeline. The Godot MCP bridge is an editor-only development add-on and is excluded from exports.
+An unofficial, non-commercial *Wheel of Time* fan game prototype. The current target is one short, linear, third-person scene in Godot: a dawn road into Bellfold, the village square, a duel, and the awakening, styled after the images in `references/`. See [PLAN.md](PLAN.md) for the scene outline, stages, and decisions, and [the production guidelines](docs/PRODUCTION_GUIDELINES.md) for the art and world pipeline. The Godot MCP bridge is an editor-only development add-on and is excluded from exports.
 
 ## Run
 
-Open this directory in Godot 4.7.2 and press **F5** to run the visual MVP. It starts at `game/visual_mvp.tscn`; move the illustrated protagonist with WASD. The camera is fixed and only the central floor is walkable.
+Open this directory in Godot 4.7.2 and press **F5**. Until the new scene (`game/levels/bellfold_dawn.tscn`, stage 1 in `PLAN.md`) exists, the main scene is still the superseded fixed-camera visual MVP in `game/visual_mvp.tscn`; move the illustrated protagonist with WASD.
 
 For the earlier playable village episode, open `game/main.tscn` in Godot and run that scene with **F6**. It uses the same 3D protagonist and supports the existing quest, combat, and language choices. Use WASD to move, E to interact, F to attack, Space to dodge, Q for the Power after awakening, and the arrow keys to turn the episode camera.
 
@@ -12,17 +12,14 @@ The first configured export target is macOS. Install the matching Godot export t
 
 ## Current v0
 
-- The current visual scene is a fixed-camera duel with only the protagonist and opponent visible. It combines a reference-derived backdrop, a small 3D floor, the existing movement controller, and illustrated poses for idle and walking.
-- The village background is `game/art/village_duel_clean.png`; the transparent magic source `game/art/duel_magic_layer.png` is shown through three separately controlled shader passes, and the opponent is a separate static image in `game/art/opponent_static.png`. The earlier playable episode in `game/main.tscn` still contains its original cast and gameplay.
-- The visual scene uses `game/art/protagonist_motion.png`, including the approved raised-hand pose at rest and directional walk frames. The earlier playable episode still uses `game/art/protagonist.glb`. Production files stay local and unversioned under `source_assets/`; three milestone captures are kept in `docs/visual-progress/`, and earlier review captures remain only in the repository history.
-- Combat, quest flow, and localization are deferred until the visual scene is accepted.
-
-The earlier quest and combat route remains in `game/main.tscn` as reference material. Only its movement behavior is required for this milestone.
+- On 2026-11-11 the milestone changed to one linear third-person scene, produced without ComfyUI: CC0 base characters adapted to the palette, agent-built levels, shaders, and effects, and static images from an external image model. See `PLAN.md` and `docs/PRODUCTION_GUIDELINES.md`.
+- The fixed-camera duel in `game/visual_mvp.tscn` and its painted plates and illustrated sprites are superseded and kept only as reference until the new scene replaces them.
+- The earlier playable episode in `game/main.tscn` has the third-person controller, camera, combat, quest flow, and localization that the new scene will reuse.
 
 ## Project map
 
 - `game/main.gd` builds the village, interface, and authored episode flow.
-- `game/visual_mvp.gd` builds the fixed-camera ring scene and static backdrop.
+- `game/visual_mvp.gd` builds the superseded fixed-camera ring scene and static backdrop.
 - `game/session/` stores typed in-memory run state and fresh-run reset.
 - `game/actors/` contains player, guard, and Power target behaviors.
 - `game/village/village_quest_rules.gd` maps custody and testimony to outcomes.
