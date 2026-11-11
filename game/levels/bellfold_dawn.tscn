@@ -1,0 +1,678 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://game/levels/bellfold_dawn.gd" id="1_level"]
+
+[sub_resource type="ProceduralSkyMaterial" id="sky_material"]
+sky_top_color = Color(0.4, 0.43, 0.66, 1)
+sky_horizon_color = Color(0.95, 0.68, 0.53, 1)
+ground_bottom_color = Color(0.27, 0.25, 0.3, 1)
+ground_horizon_color = Color(0.82, 0.63, 0.55, 1)
+sun_angle_max = 20.0
+
+[sub_resource type="Sky" id="sky"]
+sky_material = SubResource("sky_material")
+
+[sub_resource type="Environment" id="environment"]
+background_mode = 2
+sky = SubResource("sky")
+ambient_light_source = 3
+ambient_light_energy = 0.7
+tonemap_mode = 2
+fog_enabled = true
+fog_light_color = Color(0.86, 0.7, 0.66, 1)
+fog_density = 0.004
+fog_sky_affect = 0.25
+
+[sub_resource type="StandardMaterial3D" id="mat_road"]
+albedo_color = Color(0.55, 0.46, 0.38, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="mat_paving"]
+albedo_color = Color(0.6, 0.53, 0.47, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="mat_stone"]
+albedo_color = Color(0.55, 0.52, 0.48, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="mat_upland"]
+albedo_color = Color(0.3, 0.34, 0.22, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="mat_wood"]
+albedo_color = Color(0.42, 0.29, 0.19, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="mat_plaster"]
+albedo_color = Color(0.85, 0.79, 0.66, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="mat_roof"]
+albedo_color = Color(0.48, 0.29, 0.21, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="mat_bronze"]
+albedo_color = Color(0.55, 0.42, 0.23, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="mat_mara"]
+albedo_color = Color(0.2, 0.3, 0.45, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="mat_guard"]
+albedo_color = Color(0.36, 0.28, 0.2, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="mat_valley"]
+albedo_color = Color(0.35, 0.42, 0.32, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="mat_duel_mark"]
+albedo_color = Color(0.5, 0.43, 0.38, 1)
+roughness = 1.0
+
+[sub_resource type="StandardMaterial3D" id="mat_hills"]
+albedo_color = Color(0.45, 0.42, 0.56, 1)
+roughness = 1.0
+
+[sub_resource type="BoxShape3D" id="shape_1"]
+size = Vector3(6, 3, 8)
+
+[sub_resource type="BoxShape3D" id="shape_2"]
+size = Vector3(4, 3, 3)
+
+[sub_resource type="BoxShape3D" id="shape_3"]
+size = Vector3(6, 3, 6)
+
+[sub_resource type="BoxShape3D" id="shape_4"]
+size = Vector3(3, 3, 5)
+
+[sub_resource type="BoxShape3D" id="shape_5"]
+size = Vector3(4, 3, 4)
+
+[sub_resource type="BoxShape3D" id="shape_6"]
+size = Vector3(8, 3, 4)
+
+[node name="BellfoldDawn" type="Node3D"]
+script = ExtResource("1_level")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("environment")
+
+[node name="Sun" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0, -0.2588, 0.9659, 0, 0.9659, 0.2588, -1, 0, 0, 0, 20, 0)
+light_color = Color(1, 0.8, 0.6, 1)
+light_energy = 1.3
+shadow_enabled = true
+directional_shadow_max_distance = 90.0
+
+[node name="SpawnPoint" type="Marker3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
+
+[node name="Geometry" type="Node3D" parent="."]
+
+[node name="Ground" type="CSGCombiner3D" parent="Geometry"]
+use_collision = true
+
+[node name="DawnRoad" type="CSGBox3D" parent="Geometry/Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, -12)
+size = Vector3(6, 1, 36)
+material = SubResource("mat_road")
+
+[node name="OverlookBay" type="CSGBox3D" parent="Geometry/Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, -0.5, -37)
+size = Vector3(14, 1, 14)
+material = SubResource("mat_road")
+
+[node name="RoadToGate" type="CSGBox3D" parent="Geometry/Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -0.5, -51)
+size = Vector3(6, 1, 14)
+material = SubResource("mat_road")
+
+[node name="VillagePassage" type="CSGBox3D" parent="Geometry/Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -0.5, -61)
+size = Vector3(4, 1, 6)
+material = SubResource("mat_road")
+
+[node name="Square" type="CSGBox3D" parent="Geometry/Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -0.5, -76)
+size = Vector3(24, 1, 24)
+material = SubResource("mat_paving")
+
+[node name="ExitPassage" type="CSGBox3D" parent="Geometry/Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -0.5, -91)
+size = Vector3(4, 1, 6)
+material = SubResource("mat_road")
+
+[node name="ExitRoad" type="CSGBox3D" parent="Geometry/Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -0.5, -103)
+size = Vector3(8, 1, 18)
+material = SubResource("mat_road")
+
+[node name="StairsLanding" type="CSGBox3D" parent="Geometry/Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 0.1, -69.5)
+size = Vector3(3, 2.2, 5)
+material = SubResource("mat_stone")
+
+[node name="StairsRamp" type="CSGBox3D" parent="Geometry/Ground"]
+transform = Transform3D(0.9285, 0.3714, 0, -0.3714, 0.9285, 0, 0, 0, 1, -1.6857, 0.1358, -69.5)
+size = Vector3(3.2311, 1, 5)
+material = SubResource("mat_stone")
+
+[node name="Upland" type="CSGCombiner3D" parent="Geometry"]
+use_collision = true
+
+[node name="Upland00" type="CSGBox3D" parent="Geometry/Upland"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -8, 1, -124)
+size = Vector3(36, 4, 4)
+material = SubResource("mat_upland")
+
+[node name="Upland01" type="CSGBox3D" parent="Geometry/Upland"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 1, -108)
+size = Vector3(28, 4, 28)
+material = SubResource("mat_upland")
+
+[node name="Upland02" type="CSGBox3D" parent="Geometry/Upland"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -16, 1, -90.5)
+size = Vector3(20, 4, 7)
+material = SubResource("mat_upland")
+
+[node name="Upland03" type="CSGBox3D" parent="Geometry/Upland"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16, 1, -91)
+size = Vector3(4, 4, 6)
+material = SubResource("mat_upland")
+
+[node name="Upland04" type="CSGBox3D" parent="Geometry/Upland"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -19, 1, -33.5)
+size = Vector3(14, 4, 107)
+material = SubResource("mat_upland")
+
+[node name="Upland05" type="CSGBox3D" parent="Geometry/Upland"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 1, -75.5)
+size = Vector3(6, 4, 3)
+material = SubResource("mat_upland")
+
+[node name="Upland06" type="CSGBox3D" parent="Geometry/Upland"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 1, -53.5)
+size = Vector3(6, 4, 23)
+material = SubResource("mat_upland")
+
+[node name="Upland07" type="CSGBox3D" parent="Geometry/Upland"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 1, -54)
+size = Vector3(4, 4, 20)
+material = SubResource("mat_upland")
+
+[node name="Upland08" type="CSGBox3D" parent="Geometry/Upland"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 1, -51)
+size = Vector3(5, 4, 14)
+material = SubResource("mat_upland")
+
+[node name="Upland09" type="CSGBox3D" parent="Geometry/Upland"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 1, -43)
+size = Vector3(3, 4, 2)
+material = SubResource("mat_upland")
+
+[node name="Upland10" type="CSGBox3D" parent="Geometry/Upland"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.5, 1, -11)
+size = Vector3(3, 4, 62)
+material = SubResource("mat_upland")
+
+[node name="Upland11" type="CSGBox3D" parent="Geometry/Upland"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 1, -27)
+size = Vector3(6, 4, 14)
+material = SubResource("mat_upland")
+
+[node name="Upland12" type="CSGBox3D" parent="Geometry/Upland"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 1, 4)
+size = Vector3(6, 4, 32)
+material = SubResource("mat_upland")
+
+[node name="Upland13" type="CSGBox3D" parent="Geometry/Upland"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 18)
+size = Vector3(6, 4, 4)
+material = SubResource("mat_upland")
+
+[node name="Boundaries" type="CSGCombiner3D" parent="Geometry"]
+use_collision = true
+
+[node name="LowWall00" type="CSGBox3D" parent="Geometry/Boundaries"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.25, 0.05, -12)
+size = Vector3(0.5, 2.1, 36)
+material = SubResource("mat_stone")
+
+[node name="LowWall01" type="CSGBox3D" parent="Geometry/Boundaries"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.25, 0.05, -51)
+size = Vector3(0.5, 2.1, 14)
+material = SubResource("mat_stone")
+
+[node name="LowWall02" type="CSGBox3D" parent="Geometry/Boundaries"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.25, 0.05, -103)
+size = Vector3(0.5, 2.1, 18)
+material = SubResource("mat_stone")
+
+[node name="LowWall03" type="CSGBox3D" parent="Geometry/Boundaries"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.25, 0.05, -37)
+size = Vector3(0.5, 2.1, 14)
+material = SubResource("mat_stone")
+
+[node name="LowWall04" type="CSGBox3D" parent="Geometry/Boundaries"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.25, 0.05, -76)
+size = Vector3(0.5, 2.1, 24)
+material = SubResource("mat_stone")
+
+[node name="LowWall05" type="CSGBox3D" parent="Geometry/Boundaries"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15, 0.05, -63.75)
+size = Vector3(6, 2.1, 0.5)
+material = SubResource("mat_stone")
+
+[node name="LowWall06" type="CSGBox3D" parent="Geometry/Boundaries"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0.05, -44.25)
+size = Vector3(2, 2.1, 0.5)
+material = SubResource("mat_stone")
+
+[node name="LowWall07" type="CSGBox3D" parent="Geometry/Boundaries"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7, 0.05, -29.75)
+size = Vector3(8, 2.1, 0.5)
+material = SubResource("mat_stone")
+
+[node name="Gate0" type="CSGBox3D" parent="Geometry/Boundaries"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.9, -112.15)
+size = Vector3(8, 3.8, 0.3)
+material = SubResource("mat_wood")
+
+[node name="Gate0Post0" type="CSGBox3D" parent="Geometry/Boundaries"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.8, 1.1, -112.15)
+size = Vector3(0.4, 4.2, 0.4)
+material = SubResource("mat_wood")
+
+[node name="Gate0Post1" type="CSGBox3D" parent="Geometry/Boundaries"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.2, 1.1, -112.15)
+size = Vector3(0.4, 4.2, 0.4)
+material = SubResource("mat_wood")
+
+[node name="Gate1" type="CSGBox3D" parent="Geometry/Boundaries"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 6.15)
+size = Vector3(6, 3.8, 0.3)
+material = SubResource("mat_wood")
+
+[node name="Gate1Post0" type="CSGBox3D" parent="Geometry/Boundaries"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.2, 1.1, 6.15)
+size = Vector3(0.4, 4.2, 0.4)
+material = SubResource("mat_wood")
+
+[node name="Gate1Post1" type="CSGBox3D" parent="Geometry/Boundaries"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.2, 1.1, 6.15)
+size = Vector3(0.4, 4.2, 0.4)
+material = SubResource("mat_wood")
+
+[node name="Buildings" type="CSGCombiner3D" parent="Geometry"]
+use_collision = true
+
+[node name="RoadsideCottage" type="CSGBox3D" parent="Geometry/Buildings"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 1.75, -16)
+size = Vector3(6, 5.5, 8)
+material = SubResource("mat_plaster")
+
+[node name="RoadsideCottageRoof" type="CSGBox3D" parent="Geometry/Buildings"]
+transform = Transform3D(0.7071, -0.7071, 0, 0.7071, 0.7071, 0, 0, 0, 1, -6, 4.5, -16)
+size = Vector3(4.6669, 4.6669, 8)
+material = SubResource("mat_roof")
+
+[node name="Barn" type="CSGBox3D" parent="Geometry/Buildings"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -6, 1.75, -38)
+size = Vector3(6, 5.5, 8)
+material = SubResource("mat_plaster")
+
+[node name="BarnRoof" type="CSGBox3D" parent="Geometry/Buildings"]
+transform = Transform3D(0.7071, -0.7071, 0, 0.7071, 0.7071, 0, 0, 0, 1, -6, 4.5, -38)
+size = Vector3(4.6669, 4.6669, 8)
+material = SubResource("mat_roof")
+
+[node name="PassageHouseWest" type="CSGBox3D" parent="Geometry/Buildings"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 1.75, -61)
+size = Vector3(6, 5.5, 6)
+material = SubResource("mat_plaster")
+
+[node name="PassageHouseWestRoof" type="CSGBox3D" parent="Geometry/Buildings"]
+transform = Transform3D(0.7071, -0.7071, 0, 0.7071, 0.7071, 0, 0, 0, 1, 1, 4.5, -61)
+size = Vector3(4.6669, 4.6669, 6)
+material = SubResource("mat_roof")
+
+[node name="PassageHouseEast" type="CSGBox3D" parent="Geometry/Buildings"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 1.75, -61)
+size = Vector3(4, 5.5, 6)
+material = SubResource("mat_plaster")
+
+[node name="PassageHouseEastRoof" type="CSGBox3D" parent="Geometry/Buildings"]
+transform = Transform3D(0.7071, -0.7071, 0, 0.7071, 0.7071, 0, 0, 0, 1, 10, 4.5, -61)
+size = Vector3(3.1113, 3.1113, 6)
+material = SubResource("mat_roof")
+
+[node name="SquareHouseStairs" type="CSGBox3D" parent="Geometry/Buildings"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 1.75, -69.5)
+size = Vector3(6, 5.5, 9)
+material = SubResource("mat_plaster")
+
+[node name="SquareHouseStairsRoof" type="CSGBox3D" parent="Geometry/Buildings"]
+transform = Transform3D(0.7071, -0.7071, 0, 0.7071, 0.7071, 0, 0, 0, 1, -9, 4.5, -69.5)
+size = Vector3(4.6669, 4.6669, 9)
+material = SubResource("mat_roof")
+
+[node name="SquareHouseWest" type="CSGBox3D" parent="Geometry/Buildings"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9, 1.75, -82)
+size = Vector3(6, 5.5, 10)
+material = SubResource("mat_plaster")
+
+[node name="SquareHouseWestRoof" type="CSGBox3D" parent="Geometry/Buildings"]
+transform = Transform3D(0.7071, -0.7071, 0, 0.7071, 0.7071, 0, 0, 0, 1, -9, 4.5, -82)
+size = Vector3(4.6669, 4.6669, 10)
+material = SubResource("mat_roof")
+
+[node name="SquareHouseSouthWest" type="CSGBox3D" parent="Geometry/Buildings"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 1.75, -91)
+size = Vector3(10, 5.5, 6)
+material = SubResource("mat_plaster")
+
+[node name="SquareHouseSouthWestRoof" type="CSGBox3D" parent="Geometry/Buildings"]
+transform = Transform3D(1, 0, 0, 0, 0.7071, -0.7071, 0, 0.7071, 0.7071, -1, 4.5, -91)
+size = Vector3(10, 4.6669, 4.6669)
+material = SubResource("mat_roof")
+
+[node name="SquareHouseSouthEast" type="CSGBox3D" parent="Geometry/Buildings"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11, 1.75, -91)
+size = Vector3(6, 5.5, 6)
+material = SubResource("mat_plaster")
+
+[node name="SquareHouseSouthEastRoof" type="CSGBox3D" parent="Geometry/Buildings"]
+transform = Transform3D(0.7071, -0.7071, 0, 0.7071, 0.7071, 0, 0, 0, 1, 11, 4.5, -91)
+size = Vector3(4.6669, 4.6669, 6)
+material = SubResource("mat_roof")
+
+[node name="Props" type="CSGCombiner3D" parent="Geometry"]
+use_collision = true
+
+[node name="BellPlinth0" type="CSGBox3D" parent="Geometry/Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.6, 0.4, -74.4)
+size = Vector3(1, 0.8, 1)
+material = SubResource("mat_stone")
+
+[node name="BellPost0" type="CSGBox3D" parent="Geometry/Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.6, 2.6, -74.4)
+size = Vector3(0.45, 4, 0.45)
+material = SubResource("mat_wood")
+
+[node name="BellPlinth1" type="CSGBox3D" parent="Geometry/Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.6, 0.4, -78.6)
+size = Vector3(1, 0.8, 1)
+material = SubResource("mat_stone")
+
+[node name="BellPost1" type="CSGBox3D" parent="Geometry/Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.6, 2.6, -78.6)
+size = Vector3(0.45, 4, 0.45)
+material = SubResource("mat_wood")
+
+[node name="BellBeam" type="CSGBox3D" parent="Geometry/Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.6, 4.5, -76.5)
+size = Vector3(0.5, 0.45, 5.2)
+material = SubResource("mat_wood")
+
+[node name="Bell" type="CSGCylinder3D" parent="Geometry/Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 16.6, 3.55, -76.5)
+radius = 0.65
+height = 1.2
+sides = 16
+cone = true
+material = SubResource("mat_bronze")
+
+[node name="Well" type="CSGCylinder3D" parent="Geometry/Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.5, 0.5, -68.5)
+radius = 1.1
+height = 1.0
+sides = 16
+material = SubResource("mat_stone")
+
+[node name="Ledger" type="CSGBox3D" parent="Geometry/Props"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2, 0.55, -76)
+size = Vector3(0.8, 1.1, 0.6)
+material = SubResource("mat_wood")
+
+[node name="Placeholders" type="CSGCombiner3D" parent="Geometry"]
+use_collision = true
+
+[node name="MaraPlaceholder" type="CSGCylinder3D" parent="Geometry/Placeholders"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1, 0.85, -74.8)
+radius = 0.35
+height = 1.75
+sides = 12
+material = SubResource("mat_mara")
+
+[node name="GuardPlaceholder" type="CSGCylinder3D" parent="Geometry/Placeholders"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.5, 0.9, -78)
+radius = 0.35
+height = 1.85
+sides = 12
+material = SubResource("mat_guard")
+
+[node name="Vista" type="CSGCombiner3D" parent="Geometry"]
+use_collision = false
+
+[node name="ValleyFloor" type="CSGBox3D" parent="Geometry/Vista"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 200, -6.5, -60)
+size = Vector3(400, 1, 400)
+material = SubResource("mat_valley")
+
+[node name="WestRidge" type="CSGBox3D" parent="Geometry/Vista"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -60, 2, -50)
+size = Vector3(68, 12, 260)
+material = SubResource("mat_upland")
+
+[node name="RoadBehindStartGate" type="CSGBox3D" parent="Geometry/Vista"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 11)
+size = Vector3(6, 1, 10)
+material = SubResource("mat_road")
+
+[node name="RoadBeyondEndGate" type="CSGBox3D" parent="Geometry/Vista"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, -0.5, -117)
+size = Vector3(8, 1, 10)
+material = SubResource("mat_road")
+
+[node name="DuelMark" type="CSGCylinder3D" parent="Geometry/Vista"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0.01, -78)
+radius = 5.5
+height = 0.02
+sides = 32
+material = SubResource("mat_duel_mark")
+
+[node name="FarVillageHouse0" type="CSGBox3D" parent="Geometry/Vista"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 70, -5, -30)
+size = Vector3(3, 2, 4)
+material = SubResource("mat_plaster")
+
+[node name="FarVillageRoof0" type="CSGBox3D" parent="Geometry/Vista"]
+transform = Transform3D(0.7071, -0.7071, 0, 0.7071, 0.7071, 0, 0, 0, 1, 70, -4, -30)
+size = Vector3(2.2, 2.2, 4)
+material = SubResource("mat_roof")
+
+[node name="FarVillageHouse1" type="CSGBox3D" parent="Geometry/Vista"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 75, -5, -24)
+size = Vector3(3, 2, 4)
+material = SubResource("mat_plaster")
+
+[node name="FarVillageRoof1" type="CSGBox3D" parent="Geometry/Vista"]
+transform = Transform3D(0.7071, -0.7071, 0, 0.7071, 0.7071, 0, 0, 0, 1, 75, -4, -24)
+size = Vector3(2.2, 2.2, 4)
+material = SubResource("mat_roof")
+
+[node name="FarVillageHouse2" type="CSGBox3D" parent="Geometry/Vista"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 66, -5, -20)
+size = Vector3(3, 2, 4)
+material = SubResource("mat_plaster")
+
+[node name="FarVillageRoof2" type="CSGBox3D" parent="Geometry/Vista"]
+transform = Transform3D(0.7071, -0.7071, 0, 0.7071, 0.7071, 0, 0, 0, 1, 66, -4, -20)
+size = Vector3(2.2, 2.2, 4)
+material = SubResource("mat_roof")
+
+[node name="FarVillageHouse3" type="CSGBox3D" parent="Geometry/Vista"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 80, -5, -33)
+size = Vector3(3, 2, 4)
+material = SubResource("mat_plaster")
+
+[node name="FarVillageRoof3" type="CSGBox3D" parent="Geometry/Vista"]
+transform = Transform3D(0.7071, -0.7071, 0, 0.7071, 0.7071, 0, 0, 0, 1, 80, -4, -33)
+size = Vector3(2.2, 2.2, 4)
+material = SubResource("mat_roof")
+
+[node name="FarVillageHouse4" type="CSGBox3D" parent="Geometry/Vista"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 72, -5, -40)
+size = Vector3(3, 2, 4)
+material = SubResource("mat_plaster")
+
+[node name="FarVillageRoof4" type="CSGBox3D" parent="Geometry/Vista"]
+transform = Transform3D(0.7071, -0.7071, 0, 0.7071, 0.7071, 0, 0, 0, 1, 72, -4, -40)
+size = Vector3(2.2, 2.2, 4)
+material = SubResource("mat_roof")
+
+[node name="FarTower" type="CSGCylinder3D" parent="Geometry/Vista"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 118, 12, -88)
+radius = 2.5
+height = 14.0
+sides = 8
+material = SubResource("mat_stone")
+
+[node name="FarHill0" type="CSGSphere3D" parent="Geometry/Vista"]
+transform = Transform3D(70, 0, 0, 0, 24, 0, 0, 0, 45, 120, -14, -10)
+radius = 1.0
+radial_segments = 16
+rings = 8
+material = SubResource("mat_hills")
+
+[node name="FarHill1" type="CSGSphere3D" parent="Geometry/Vista"]
+transform = Transform3D(90, 0, 0, 0, 30, 0, 0, 0, 60, 150, -16, -90)
+radius = 1.0
+radial_segments = 16
+rings = 8
+material = SubResource("mat_hills")
+
+[node name="FarHill2" type="CSGSphere3D" parent="Geometry/Vista"]
+transform = Transform3D(60, 0, 0, 0, 20, 0, 0, 0, 40, 95, -12, -150)
+radius = 1.0
+radial_segments = 16
+rings = 8
+material = SubResource("mat_hills")
+
+[node name="FarHill3" type="CSGSphere3D" parent="Geometry/Vista"]
+transform = Transform3D(110, 0, 0, 0, 45, 0, 0, 0, 80, 210, -20, -40)
+radius = 1.0
+radial_segments = 16
+rings = 8
+material = SubResource("mat_hills")
+
+[node name="FarHill4" type="CSGSphere3D" parent="Geometry/Vista"]
+transform = Transform3D(50, 0, 0, 0, 16, 0, 0, 0, 35, 80, -10, 40)
+radius = 1.0
+radial_segments = 16
+rings = 8
+material = SubResource("mat_hills")
+
+[node name="Route" type="Node3D" parent="."]
+
+[node name="Waypoint00" type="Marker3D" parent="Route"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -4)
+
+[node name="Waypoint01" type="Marker3D" parent="Route"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -24)
+
+[node name="Waypoint02" type="Marker3D" parent="Route"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -33)
+
+[node name="Waypoint03" type="Marker3D" parent="Route"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 8, 0, -37)
+
+[node name="Waypoint04" type="Marker3D" parent="Route"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -50)
+
+[node name="Waypoint05" type="Marker3D" parent="Route"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -61)
+
+[node name="Waypoint06" type="Marker3D" parent="Route"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -66)
+
+[node name="Waypoint07" type="Marker3D" parent="Route"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, -69.5)
+
+[node name="Waypoint08" type="Marker3D" parent="Route"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.5, 1.2, -69.5)
+
+[node name="Waypoint09" type="Marker3D" parent="Route"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1, 0, -69.5)
+
+[node name="Waypoint10" type="Marker3D" parent="Route"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -78)
+
+[node name="Waypoint11" type="Marker3D" parent="Route"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10, 0, -81.5)
+
+[node name="Waypoint12" type="Marker3D" parent="Route"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 0, -76.5)
+
+[node name="Waypoint13" type="Marker3D" parent="Route"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -86)
+
+[node name="Waypoint14" type="Marker3D" parent="Route"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -91)
+
+[node name="Waypoint15" type="Marker3D" parent="Route"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -100)
+
+[node name="Waypoint16" type="Marker3D" parent="Route"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 0, -109.5)
+
+[node name="BeatTriggers" type="Node3D" parent="."]
+
+[node name="Beat1_DawnRoad" type="Area3D" parent="BeatTriggers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 1)
+monitorable = false
+metadata/beat = 1
+
+[node name="Shape" type="CollisionShape3D" parent="BeatTriggers/Beat1_DawnRoad"]
+shape = SubResource("shape_1")
+
+[node name="Beat2_VillageSquare" type="Area3D" parent="BeatTriggers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 1.5, -63.5)
+monitorable = false
+metadata/beat = 2
+
+[node name="Shape" type="CollisionShape3D" parent="BeatTriggers/Beat2_VillageSquare"]
+shape = SubResource("shape_2")
+
+[node name="Beat3_Duel" type="Area3D" parent="BeatTriggers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 1.5, -78)
+monitorable = false
+metadata/beat = 3
+
+[node name="Shape" type="CollisionShape3D" parent="BeatTriggers/Beat3_Duel"]
+shape = SubResource("shape_3")
+
+[node name="Beat4_Awakening" type="Area3D" parent="BeatTriggers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 1.5, -76.5)
+monitorable = false
+metadata/beat = 4
+
+[node name="Shape" type="CollisionShape3D" parent="BeatTriggers/Beat4_Awakening"]
+shape = SubResource("shape_4")
+
+[node name="Beat5_Consequence" type="Area3D" parent="BeatTriggers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 1.5, -91)
+monitorable = false
+metadata/beat = 5
+
+[node name="Shape" type="CollisionShape3D" parent="BeatTriggers/Beat5_Consequence"]
+shape = SubResource("shape_5")
+
+[node name="RouteEnd" type="Area3D" parent="BeatTriggers"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6, 1.5, -109)
+monitorable = false
+
+[node name="Shape" type="CollisionShape3D" parent="BeatTriggers/RouteEnd"]
+shape = SubResource("shape_6")
